@@ -49,6 +49,8 @@
       rust-bin.stable.latest.default
       sccache
       rlwrap
+      alejandra
+      nil
     ])
     ++ [
       inputs.ragenix.packages.${vars.arch}.default

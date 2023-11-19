@@ -105,5 +105,6 @@
     ./git.nix
     ./fzf.nix
     ./lazygit.nix
+    ./vscode.nix
   ];
 }

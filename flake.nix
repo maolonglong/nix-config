@@ -63,6 +63,7 @@
           {
             home-manager = {
               verbose = true;
+              backupFileExtension = "hm_bak~";
               useGlobalPkgs = true;
               useUserPackages = true;
               users.${vars.username} = import ./home;
@@ -84,8 +85,9 @@
       };
     in {
       devShells.default = pkgs.mkShell {
-        buildInputs = [
-          pkgs.alejandra
+        buildInputs = with pkgs; [
+          alejandra
+          nil
         ];
       };
     });

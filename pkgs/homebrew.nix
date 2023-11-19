@@ -8,7 +8,9 @@ _: {
       upgrade = true;
     };
 
-    taps = [];
+    taps = [
+      "localsend/localsend"
+    ];
 
     brews = [];
 
@@ -20,13 +22,16 @@ _: {
       "monitorcontrol"
       "only-switch"
       "postman"
-      "postman"
       "raycast"
       "scroll-reverser"
       "sequel-ace"
       "snipaste"
       "spectacle"
       "the-unarchiver"
+      "keepassxc"
+      "sfm"
+      "localsend"
+      "yesplaymusic"
     ];
   };
 }

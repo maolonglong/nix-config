@@ -39,12 +39,18 @@
   programs.zsh.enable = true; # default shell on catalina
   # programs.fish.enable = true;
 
-  # Set Git commit hash for darwin-version.
-  system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
+  system = {
+    # Set Git commit hash for darwin-version.
+    configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
-  # Used for backwards compatibility, please read the changelog before changing.
-  # $ darwin-rebuild changelog
-  system.stateVersion = 4;
+    # Used for backwards compatibility, please read the changelog before changing.
+    # $ darwin-rebuild changelog
+    stateVersion = 4;
+
+    defaults = {
+      NSGlobalDomain.ApplePressAndHoldEnabled = false;
+    };
+  };
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = vars.arch;
