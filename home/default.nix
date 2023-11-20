@@ -94,6 +94,9 @@
       enable = true;
       config.theme = "Monokai Extended";
     };
+
+    less.enable = true;
+    lesspipe.enable = true;
   };
 
   imports = [
