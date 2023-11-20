@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nur.url = "github:nix-community/NUR";
+    maolonglong-nur.url = "github:maolonglong/nur-packages";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -33,6 +35,8 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    nur,
+    maolonglong-nur,
     nix-darwin,
     home-manager,
     ragenix,
@@ -47,30 +51,49 @@
       homeDir = "/Users/chensl";
       hostname = "chensl-mba"; # scutil --get LocalHostName
     };
+
+    overlays = [
+      rust-overlay.overlays.default
+      (final: prev: {
+        nur = import nur {
+          nurpkgs = prev;
+          pkgs = prev;
+          repoOverrides = {
+            maolonglong = import maolonglong-nur {pkgs = prev;};
+          };
+        };
+      })
+    ];
+
+    commonModules = [
+      ragenix.darwinModules.default
+      {nixpkgs = {inherit overlays;};}
+      home-manager.darwinModules.home-manager
+      nix-index-database.darwinModules.nix-index # command-not-found
+    ];
   in
     {
       # Build darwin flake using:
-      # $ darwin-rebuild build --flake .#QNR3WWC3PW
+      # $ darwin-rebuild build --flake .#chensl-mba
       darwinConfigurations.${vars.hostname} = nix-darwin.lib.darwinSystem {
-        modules = [
-          ({pkgs, ...}: {
-            nixpkgs.overlays = [rust-overlay.overlays.default];
-          })
-          ragenix.darwinModules.default
-          ./configuration.nix
-          home-manager.darwinModules.home-manager
-          nix-index-database.darwinModules.nix-index # command-not-found
-          {
-            home-manager = {
-              verbose = true;
-              backupFileExtension = "hm_bak~";
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.${vars.username} = import ./home;
-              extraSpecialArgs = {inherit vars;};
-            };
-          }
-        ];
+        modules =
+          commonModules
+          ++ [
+            ./configuration.nix
+            {
+              home-manager = {
+                verbose = true;
+                backupFileExtension = "hm_bak~";
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.${vars.username} = import ./home;
+                sharedModules = [
+                  maolonglong-nur.hmModules.default
+                ];
+                extraSpecialArgs = {inherit vars;};
+              };
+            }
+          ];
         specialArgs = {
           inherit inputs;
           inherit vars;

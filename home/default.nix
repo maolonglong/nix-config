@@ -97,7 +97,6 @@
   };
 
   imports = [
-    ../modules/jump.nix
     ./zsh.nix
     ./go.nix
     ./git.nix

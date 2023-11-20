@@ -147,6 +147,24 @@
         "type": "github"
       }
     },
+    "maolonglong-nur": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1700465879,
+        "narHash": "sha256-gKADwqEa9YocL610enwCeuBaXeRV51Qk9x/wdy7CX1w=",
+        "owner": "maolonglong",
+        "repo": "nur-packages",
+        "rev": "51cacf67fff050777e65fcd7ce421b07cd263410",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maolonglong",
+        "repo": "nur-packages",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -189,6 +207,22 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1700444282,
+        "narHash": "sha256-s/+tgT+Iz0LZO+nBvSms+xsMqvHt2LqYniG9r+CYyJc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3f21a22b5aafefa1845dec6f4a378a8f53d8681c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
         "lastModified": 1700014976,
         "narHash": "sha256-dSGpS2YeJrXW5aH9y7Abd235gGufY3RuZFth6vuyVtU=",
         "owner": "NixOS",
@@ -200,6 +234,21 @@
         "owner": "NixOS",
         "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nur": {
+      "locked": {
+        "lastModified": 1700466986,
+        "narHash": "sha256-fIo3/il98fHXKC5XWUyeV3/kF1L4MWK1Cobctbb3w4k=",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "dceea9c120d99dc75ddeec5e6f8ea3c80b10d938",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "NUR",
         "type": "github"
       }
     },
@@ -233,9 +282,11 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
+        "maolonglong-nur": "maolonglong-nur",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
+        "nur": "nur",
         "ragenix": "ragenix",
         "rust-overlay": "rust-overlay"
       }

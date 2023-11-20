@@ -52,6 +52,10 @@
       alejandra
       nil
     ])
+    ++ (with pkgs.nur.repos.maolonglong; [
+      gosimports
+      gofumpt
+    ])
     ++ [
       inputs.ragenix.packages.${vars.arch}.default
     ];
