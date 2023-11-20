@@ -5,31 +5,6 @@
   vars,
   ...
 }: {
-  # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
-  nix = {
-    package = pkgs.nixUnstable;
-
-    settings = {
-      # Necessary for using flakes on this system.
-      experimental-features = "nix-command flakes";
-
-      # https://mirrors.sjtug.sjtu.edu.cn/docs/nix-channels/store
-      substituters = ["https://mirror.sjtu.edu.cn/nix-channels/store"];
-    };
-
-    gc = {
-      automatic = true;
-      options = "--delete-older-than 5d";
-    };
-  };
-
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-  };
-
   users.users.${vars.username} = {
     name = vars.username;
     home = vars.homeDir;
@@ -46,18 +21,17 @@
     # Used for backwards compatibility, please read the changelog before changing.
     # $ darwin-rebuild changelog
     stateVersion = 4;
-
-    defaults = {
-      NSGlobalDomain.ApplePressAndHoldEnabled = false;
-    };
   };
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = vars.arch;
 
   imports = [
-    ./pkgs/fonts.nix
-    ./pkgs/system.nix
+    ./modules/fonts.nix
+    ./modules/nix.nix
+    ./modules/system.nix
+
     ./pkgs/homebrew.nix
+    ./pkgs/system.nix
   ];
 }
