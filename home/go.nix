@@ -13,4 +13,14 @@
       "go.chensl.me"
     ];
   };
+
+  home.sessionVariables = {
+    GO111MODULE = "on";
+    GOPROXY = lib.concatStringsSep "|" [
+      "https://goproxy.cn"
+      "https://goproxy.io"
+      "https://proxy.golang.org"
+      "direct"
+    ];
+  };
 }

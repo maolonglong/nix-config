@@ -35,8 +35,6 @@
 
     sessionVariables = {
       EDITOR = "vim";
-      GO111MODULE = "on";
-      GOPROXY = "https://goproxy.cn|https://goproxy.io|direct";
       GIT_SSH_COMMAND = "/usr/bin/ssh";
       HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
       HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles";
