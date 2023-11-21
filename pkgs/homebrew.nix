@@ -3,7 +3,7 @@ _: {
     enable = true;
 
     onActivation = {
-      cleanup = "none"; # zap;
+      cleanup = "zap"; # none;
       autoUpdate = true;
       upgrade = true;
     };
@@ -33,5 +33,10 @@ _: {
       "localsend"
       "yesplaymusic"
     ];
+
+    masApps = {
+      "Bob - 翻译和 OCR 工具" = 1630034110;
+      Xcode = 497799835;
+    };
   };
 }
