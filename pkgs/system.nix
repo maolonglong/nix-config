@@ -51,6 +51,7 @@
       rlwrap
       alejandra
       nil
+      commitizen
     ])
     ++ (with pkgs.nur.repos.maolonglong; [
       gosimports
