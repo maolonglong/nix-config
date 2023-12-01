@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   inputs,
   vars,
   ...
@@ -12,7 +11,6 @@
       vim
       neovim
       bat
-      asdf-vm
       coreutils
       eza
       fd
@@ -49,9 +47,12 @@
       rust-bin.stable.latest.default
       sccache
       rlwrap
+      lima
+      hyperfine
       alejandra
       nil
       commitizen
+      graphviz
     ])
     ++ (with pkgs.nur.repos.maolonglong; [
       gosimports

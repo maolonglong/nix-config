@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
+{lib, ...}: {
   programs.go = rec {
     enable = true;
     goPath = "go";

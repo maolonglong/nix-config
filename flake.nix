@@ -71,6 +71,20 @@
       home-manager.darwinModules.home-manager
       nix-index-database.darwinModules.nix-index # command-not-found
     ];
+
+    home = {
+      home-manager = {
+        verbose = true;
+        backupFileExtension = "hm_bak~";
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        users.${vars.username} = import ./home;
+        sharedModules = [
+          maolonglong-nur.homeManagerModules.default
+        ];
+        extraSpecialArgs = {inherit vars;};
+      };
+    };
   in
     {
       # Build darwin flake using:
@@ -80,24 +94,9 @@
           commonModules
           ++ [
             ./configuration.nix
-            {
-              home-manager = {
-                verbose = true;
-                backupFileExtension = "hm_bak~";
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.${vars.username} = import ./home;
-                sharedModules = [
-                  maolonglong-nur.hmModules.default
-                ];
-                extraSpecialArgs = {inherit vars;};
-              };
-            }
+            home
           ];
-        specialArgs = {
-          inherit inputs;
-          inherit vars;
-        };
+        specialArgs = {inherit inputs vars;};
       };
     }
     // flake-utils.lib.eachDefaultSystem
