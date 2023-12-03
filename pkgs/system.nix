@@ -53,6 +53,7 @@
       nil
       commitizen
       graphviz
+      cachix
     ])
     ++ (with pkgs.nur.repos.maolonglong; [
       gosimports

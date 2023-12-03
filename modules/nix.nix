@@ -1,5 +1,6 @@
 {
   inputs,
+  vars,
   pkgs,
   ...
 }: {
@@ -15,11 +16,18 @@
 
       # https://mirrors.sjtug.sjtu.edu.cn/docs/nix-channels/store
       substituters = ["https://mirror.sjtu.edu.cn/nix-channels/store"];
+
+      trusted-users = [vars.username];
     };
 
     gc = {
       automatic = true;
-      options = "--delete-older-than 5d";
+      interval = {
+        Weekday = 0;
+        Hour = 0;
+        Minute = 0;
+      };
+      options = "--delete-older-than 30d";
     };
   };
 
