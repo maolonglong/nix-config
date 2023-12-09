@@ -69,7 +69,6 @@
       ragenix.darwinModules.default
       {nixpkgs = {inherit overlays;};}
       home-manager.darwinModules.home-manager
-      nix-index-database.darwinModules.nix-index # command-not-found
     ];
 
     home = {
@@ -85,6 +84,19 @@
         extraSpecialArgs = {inherit vars;};
       };
     };
+
+    devShells =
+      flake-utils.lib.eachDefaultSystem
+      (system: let
+        pkgs = import nixpkgs {inherit system overlays;};
+      in {
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            alejandra
+            nil
+          ];
+        };
+      });
   in
     {
       # Build darwin flake using:
@@ -95,22 +107,10 @@
           ++ [
             ./configuration.nix
             home
+            nix-index-database.darwinModules.nix-index # command-not-found
           ];
         specialArgs = {inherit inputs vars;};
       };
     }
-    // flake-utils.lib.eachDefaultSystem
-    (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [];
-      };
-    in {
-      devShells.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          alejandra
-          nil
-        ];
-      };
-    });
+    // devShells;
 }
