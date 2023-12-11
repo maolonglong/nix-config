@@ -58,6 +58,7 @@
     ++ (with pkgs.nur.repos.maolonglong; [
       gosimports
       gofumpt
+      fx
     ])
     ++ [
       inputs.ragenix.packages.${vars.arch}.default

@@ -152,11 +152,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1701416005,
-        "narHash": "sha256-8Z5aV+BgVNAbfWm3BfrJv/dZRicuGKef4vI9/rqwyr8=",
+        "lastModified": 1702269543,
+        "narHash": "sha256-cTtrNwqxYbj2NVpEzsbUReuhXWKbGFbhA7Zbdzheoac=",
         "owner": "maolonglong",
         "repo": "nur-packages",
-        "rev": "e611d01166b4efd91049c181554171ec70f019e2",
+        "rev": "123c950808563659ed786fd5ae7c4210f3a69535",
         "type": "github"
       },
       "original": {
