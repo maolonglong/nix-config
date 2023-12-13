@@ -74,6 +74,13 @@
     starship = {
       enable = true;
       enableZshIntegration = true;
+      settings = {
+        time = {
+          disabled = false;
+          format = ''🕙[\[ $time \]]($style)'';
+          time_format = "%T";
+        };
+      };
     };
 
     jump = {

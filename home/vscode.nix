@@ -140,6 +140,7 @@
         "ui.diagnostic.analyses" = {
           fieldalignment = true;
           nilness = true;
+          # shadow = true;
           unusedparams = true;
           unusedvariable = true;
           unusedwrite = true;
@@ -147,13 +148,13 @@
         };
         "ui.semanticTokens" = true;
       };
-      "haskell.manageHLS" = "GHCup";
-      "haskell.toolchain" = {
-        cabal = "3.6.2.0";
-        ghc = "9.2.8";
-        hls = "2.2.0.0";
-        stack = "2.9.3";
-      };
+      # "haskell.manageHLS" = "GHCup";
+      # "haskell.toolchain" = {
+      #   cabal = "3.6.2.0";
+      #   ghc = "9.2.8";
+      #   hls = "2.2.0.0";
+      #   stack = "2.9.3";
+      # };
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
       "nix.serverSettings" = {
@@ -166,8 +167,8 @@
           };
         };
       };
-      "prettier.semi" = false;
-      "prettier.singleQuote" = true;
+      # "prettier.semi" = false;
+      # "prettier.singleQuote" = true;
       "python.analysis.typeCheckingMode" = "basic";
       "redhat.telemetry.enabled" = false;
       "security.workspace.trust.enabled" = false;
@@ -265,6 +266,7 @@
       "workbench.editor.highlightModifiedTabs" = true;
       "workbench.editor.wrapTabs" = true;
       "workbench.iconTheme" = "material-icon-theme";
+      "workbench.tree.enableStickyScroll" = true;
       "zig.initialSetupDone" = true;
       "zig.path" = "/run/current-system/sw/bin/zig";
       "zig.zls.path" = "/run/current-system/sw/bin/zls";
