@@ -76,7 +76,7 @@
       enableZshIntegration = true;
       settings = {
         time = {
-          disabled = false;
+          disabled = true;
           format = ''🕙[\[ $time \]]($style)'';
           time_format = "%T";
         };
@@ -105,11 +105,11 @@
   };
 
   imports = [
-    ./zsh.nix
-    ./go.nix
-    ./git.nix
+    ./vscode
     ./fzf.nix
+    ./git.nix
+    ./go.nix
     ./lazygit.nix
-    ./vscode.nix
+    ./zsh.nix
   ];
 }

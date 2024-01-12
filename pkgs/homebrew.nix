@@ -10,32 +10,36 @@
 
     taps = [
       "localsend/localsend"
+      "pot-app/homebrew-tap"
     ];
 
-    brews = [];
+    brews = [
+      # TODO: move to nix
+      "kcov"
+    ];
 
     casks = [
       "element"
       "iterm2"
+      "keepassxc"
       "keycastr"
+      "localsend"
       "logseq"
       "monitorcontrol"
       "only-switch"
       "postman"
+      "pot"
       "raycast"
       "scroll-reverser"
       "sequel-ace"
+      "sfm"
       "snipaste"
       "spectacle"
       "the-unarchiver"
-      "keepassxc"
-      "sfm"
-      "localsend"
       "yesplaymusic"
     ];
 
     masApps = {
-      "Bob - 翻译和 OCR 工具" = 1630034110;
       Xcode = 497799835;
     };
   };

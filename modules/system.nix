@@ -7,4 +7,6 @@
       };
     };
   };
+
+  security.pam.enableSudoTouchIdAuth = true;
 }

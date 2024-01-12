@@ -8,57 +8,58 @@
   # $ nix-env -qaP | grep wget
   environment.systemPackages =
     (with pkgs; [
-      vim
-      neovim
+      age
+      alejandra
       bat
+      # cachix
+      commitizen
       coreutils
+      curl
+      delta
+      direnv
+      duf
       eza
       fd
       fzf
       git
+      gnupg
+      go
+      graphviz
       htop
+      hyperfine
       jq
+      jump
+      lazygit
+      lima
       lsof
+      mutagen
+      neofetch
+      neovim
+      nil
       procs
+      pueue
       ripgrep
+      rlwrap
+      (rust-bin.stable.latest.default.override {extensions = ["rust-src"];})
+      sccache
+      socat
+      # tinygo
       tldr
       tmux
       tree
       unzip
+      vim
       wget
-      curl
-      yq
-      go
-      tinygo
-      lazygit
-      delta
-      duf
-      jump
-      direnv
-      gnupg
-      zig
-      zls
-      pueue
-      age
       wrk
-      mutagen
-      neofetch
-      socat
-      rust-bin.stable.latest.default
-      sccache
-      rlwrap
-      lima
-      hyperfine
-      alejandra
-      nil
-      commitizen
-      graphviz
-      cachix
+      yq
+      zig
+      zig-shell-completions
+      zls
     ])
     ++ (with pkgs.nur.repos.maolonglong; [
-      gosimports
-      gofumpt
       fx
+      gofumpt
+      gosimports
     ])
     ++ [
       inputs.ragenix.packages.${vars.arch}.default

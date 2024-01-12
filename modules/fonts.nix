@@ -2,8 +2,8 @@
   fonts = {
     fontDir.enable = true;
     fonts = with pkgs; [
-      jetbrains-mono
       fira-code-nerdfont
+      jetbrains-mono
       meslo-lgs-nf
       noto-fonts-cjk-sans
     ];
