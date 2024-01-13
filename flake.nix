@@ -19,12 +19,9 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ragenix = {
-      url = "github:yaxitech/ragenix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        rust-overlay.follows = "rust-overlay";
-      };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
@@ -39,7 +36,7 @@
     maolonglong-nur,
     nix-darwin,
     home-manager,
-    ragenix,
+    agenix,
     flake-utils,
     nix-index-database,
     rust-overlay,
@@ -66,7 +63,6 @@
     ];
 
     commonModules = [
-      ragenix.darwinModules.default
       {nixpkgs = {inherit overlays;};}
       home-manager.darwinModules.home-manager
     ];
@@ -79,6 +75,7 @@
         useUserPackages = true;
         users.${vars.username} = import ./home;
         sharedModules = [
+          agenix.homeManagerModules.default
           maolonglong-nur.homeManagerModules.default
         ];
         extraSpecialArgs = {inherit vars;};

@@ -62,6 +62,6 @@
       gosimports
     ])
     ++ [
-      inputs.ragenix.packages.${vars.arch}.default
+      inputs.agenix.packages.${vars.arch}.default
     ];
 }
