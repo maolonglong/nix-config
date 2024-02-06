@@ -32,7 +32,6 @@
       "raycast"
       "scroll-reverser"
       "sequel-ace"
-      "sfm"
       "snipaste"
       "spectacle"
       "the-unarchiver"
