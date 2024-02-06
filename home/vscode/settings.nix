@@ -89,6 +89,7 @@
       };
       "python.analysis.typeCheckingMode" = "basic";
       "redhat.telemetry.enabled" = false;
+      "remote.SSH.configFile" = "/Users/chensl/.lima/debian/ssh.config";
       "security.workspace.trust.enabled" = false;
       "terminal.integrated.copyOnSelection" = true;
       "terminal.integrated.cursorBlinking" = true;
@@ -101,11 +102,11 @@
       "window.dialogStyle" = "custom";
       "window.nativeTabs" = true;
       "window.titleBarStyle" = "custom";
-      "workbench.colorTheme" = "Dracula";
+      "workbench.colorTheme" = "Catppuccin Mocha";
       "workbench.editor.closeOnFileDelete" = true;
       "workbench.editor.highlightModifiedTabs" = true;
       "workbench.editor.wrapTabs" = true;
-      "workbench.iconTheme" = "material-icon-theme";
+      "workbench.iconTheme" = "catppuccin-mocha";
       "workbench.tree.enableStickyScroll" = true;
       "zig.initialSetupDone" = true;
       "zig.path" = "${pkgs.zig}/bin/zig";

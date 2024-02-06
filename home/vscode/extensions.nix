@@ -3,6 +3,8 @@
     mutableExtensionsDir = true;
     extensions = with pkgs.vscode-extensions; [
       # alingse.thirft-formatter
+      catppuccin.catppuccin-vsc
+      catppuccin.catppuccin-vsc-icons
       christian-kohler.path-intellisense
       codezombiech.gitignore
       davidanson.vscode-markdownlint

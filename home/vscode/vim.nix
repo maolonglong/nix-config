@@ -107,6 +107,22 @@
           after = ["p" "g" "v" "y"];
           before = ["p"];
         }
+        {
+          before = ["g" "s"];
+          after = ["^"];
+        }
+        {
+          before = ["g" "h"];
+          after = ["0"];
+        }
+        {
+          before = ["g" "l"];
+          after = ["$"];
+        }
+        {
+          before = ["g" "e"];
+          after = ["G"];
+        }
       ];
 
       # To improve performance.
