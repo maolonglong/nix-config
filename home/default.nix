@@ -111,10 +111,14 @@
 
   imports = [
     ./vscode
+
+    ./alacritty.nix
     ./fzf.nix
     ./git.nix
     ./go.nix
+    ./helix.nix
     ./lazygit.nix
+    ./zellij.nix
     ./zsh.nix
   ];
 }
