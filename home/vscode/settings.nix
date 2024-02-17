@@ -101,6 +101,7 @@
       "todo-tree.highlights.enabled" = false;
       "window.dialogStyle" = "custom";
       "window.nativeTabs" = true;
+      "window.systemColorTheme" = "auto";
       "window.titleBarStyle" = "custom";
       "workbench.colorTheme" = "Catppuccin Mocha";
       "workbench.editor.closeOnFileDelete" = true;
