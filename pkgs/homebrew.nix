@@ -26,6 +26,7 @@
       "localsend"
       "logseq"
       "monitorcontrol"
+      "motrix"
       "only-switch"
       "postman"
       "pot"
