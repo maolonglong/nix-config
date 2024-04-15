@@ -15,6 +15,8 @@
           colorArg = "always";
           pager = "${pkgs.delta}/bin/delta --dark --paging=never";
         };
+        branchLogCmd = "git log --graph --color=always --abbrev-commit --decorate --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=medium {{branchName}} --";
+        allBranchesLogCmd = "git log --graph --all --color=always --abbrev-commit --decorate --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=medium";
       };
     };
   };

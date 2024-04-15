@@ -33,6 +33,9 @@
       fetch = {
         prune = true;
       };
+      log = {
+        date = "format-local:%Y-%m-%d %H:%M:%S";
+      };
     };
 
     ignores = [
