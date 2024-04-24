@@ -12,7 +12,8 @@
       "editor.cursorBlinking" = "phase";
       "editor.cursorSmoothCaretAnimation" = "on";
       "editor.cursorSurroundingLines" = 10;
-      "editor.fontFamily" = "Jetbrains Mono";
+      # "editor.fontFamily" = "Jetbrains Mono";
+      "editor.fontFamily" = "Noto Sans Mono CJK SC";
       "editor.fontSize" = 12;
       "editor.guides.bracketPairs" = "active";
       "editor.hover.sticky" = true;

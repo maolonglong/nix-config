@@ -55,6 +55,8 @@
       zig
       zig-shell-completions
       zls
+      restic
+      rclone
     ])
     ++ (with pkgs.nur.repos.maolonglong; [
       fx

@@ -70,6 +70,7 @@
           [build]
           rustc-wrapper = "${pkgs.sccache}/bin/sccache"
         '';
+      ".config/alacritty/alacritty.toml".source = ../rc/.config/alacritty/alacritty.toml;
     };
   };
 
@@ -110,14 +111,14 @@
   };
 
   imports = [
-    ./vscode
-
     ./alacritty.nix
     ./fzf.nix
     ./git.nix
     ./go.nix
     ./helix.nix
     ./lazygit.nix
+    ./restic.nix
+    ./vscode
     ./zellij.nix
     ./zsh.nix
   ];

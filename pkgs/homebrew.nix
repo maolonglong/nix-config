@@ -10,7 +10,6 @@
 
     taps = [
       "localsend/localsend"
-      "pot-app/homebrew-tap"
     ];
 
     brews = [
@@ -29,7 +28,6 @@
       "motrix"
       "only-switch"
       "postman"
-      "pot"
       "raycast"
       "scroll-reverser"
       "sequel-ace"
