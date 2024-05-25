@@ -37,6 +37,7 @@
       "files.simpleDialog.enable" = true;
       "files.trimFinalNewlines" = true;
       "files.trimTrailingWhitespace" = true;
+      "github.copilot.editor.enableAutoCompletions" = true;
       "git.autofetch" = true;
       "git.mergeEditor" = true;
       "go.alternateTools" = {
