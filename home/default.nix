@@ -47,23 +47,45 @@
     };
 
     file = let
-      gpakosz-tmux = pkgs.fetchFromGitHub {
+      fetchWithPatch = {
+        owner,
+        repo,
+        rev,
+        hash,
+        patches,
+      }:
+        pkgs.stdenv.mkDerivation {
+          pname = repo;
+          version = rev;
+          src = pkgs.fetchFromGitHub {
+            inherit owner repo rev hash;
+          };
+          inherit patches;
+          installPhase = ''
+            runHook preInstall
+            mkdir -p $out
+            cp -R . $out/
+            runHook postInstall
+          '';
+        };
+      gpakosz-tmux = fetchWithPatch {
         owner = "gpakosz";
         repo = ".tmux";
-        rev = "fd1bbb56148101f4b286ddafd98f2ac2dcd69cd8";
-        sha256 = "sha256-LkoRWds7PHsteJCDvsBpZ80zvlLtFenLU3CPAxdEHYA";
+        rev = "8e3b90c6c8d0eea022cbcb007dc518503a823765";
+        hash = "sha256-Dg94ZMAxaF9okoNWFJymOY+NrNkfjugMZ8P66Se78yU=";
+        patches = [../rc/.tmux.conf.local.patch];
       };
       amix-vimrc = pkgs.fetchFromGitHub {
         owner = "amix";
         repo = "vimrc";
         rev = "63419d6513fd10b42ad1fcc1ed80ca8c8c1508ec";
-        sha256 = "sha256-mMoo4SEBhi8KlVH8ehwwKqGO3gAZuHjTtDwSc4c5vj4=";
+        hash = "sha256-mMoo4SEBhi8KlVH8ehwwKqGO3gAZuHjTtDwSc4c5vj4=";
       };
     in {
       ".ssh/config".source = ../rc/.ssh/config;
       ".vimrc".source = "${amix-vimrc}/vimrcs/basic.vim";
       ".tmux.conf".source = "${gpakosz-tmux}/.tmux.conf";
-      ".tmux.conf.local".source = ../rc/.tmux.conf.local;
+      ".tmux.conf.local".source = "${gpakosz-tmux}/.tmux.conf.local";
       ".cargo/config".text =
         (builtins.readFile ../rc/.cargo/config)
         + ''
