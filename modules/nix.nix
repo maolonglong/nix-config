@@ -7,7 +7,7 @@
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nix = {
-    package = pkgs.nixUnstable;
+    package = pkgs.nixVersions.latest;
     nixPath = ["nixpkgs=${inputs.nixpkgs}"];
 
     settings = {

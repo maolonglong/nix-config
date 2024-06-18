@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   fonts = {
-    fontDir.enable = true;
-    fonts = with pkgs; [
+    packages = with pkgs; [
       fira-code-nerdfont
       jetbrains-mono
       meslo-lgs-nf

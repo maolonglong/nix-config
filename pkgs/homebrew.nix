@@ -13,8 +13,7 @@
     ];
 
     brews = [
-      # TODO: move to nix
-      "kcov"
+      "flyctl"
     ];
 
     casks = [

@@ -2,21 +2,23 @@
   description = "chensl's system config";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable-small";
+    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-24.05-darwin";
+    nix-darwin = {
+      url = "github:lnl7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
     nur.url = "github:nix-community/NUR";
     maolonglong-nur.url = "github:maolonglong/nur-packages";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
-    nix-darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     agenix = {
@@ -32,6 +34,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    nixpkgs-darwin,
     nur,
     maolonglong-nur,
     nix-darwin,
@@ -63,9 +66,24 @@
     ];
 
     commonModules = [
-      {nixpkgs = {inherit overlays;};}
+      {
+        nixpkgs = {
+          pkgs = import nixpkgs-darwin {system = vars.arch;};
+          inherit overlays;
+        };
+      }
       home-manager.darwinModules.home-manager
     ];
+
+    specialArgs =
+      {inherit inputs vars;}
+      // {
+        pkgs-unstable = import inputs.nixpkgs-unstable {
+          system = vars.arch; # refer the `system` parameter form outer scope recursively
+          # To use chrome, we need to allow the installation of non-free software
+          config.allowUnfree = true;
+        };
+      };
 
     home = {
       home-manager = {
@@ -78,7 +96,7 @@
           agenix.homeManagerModules.default
           maolonglong-nur.homeManagerModules.default
         ];
-        extraSpecialArgs = {inherit vars;};
+        extraSpecialArgs = specialArgs;
       };
     };
 
@@ -106,7 +124,7 @@
             home
             nix-index-database.darwinModules.nix-index # command-not-found
           ];
-        specialArgs = {inherit inputs vars;};
+        inherit specialArgs;
       };
     }
     // devShells;
