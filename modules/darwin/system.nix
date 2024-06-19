@@ -33,28 +33,28 @@
       menuExtraClock.Show24Hour = true; # show 24 hour clock
 
       # customize dock
-      dock = {
-        autohide = true; # automatically hide and show the dock
-        show-recents = false; # do not show recent apps in dock
-        # do not automatically rearrange spaces based on most recent use.
-        mru-spaces = false;
+      # dock = {
+      #   autohide = true; # automatically hide and show the dock
+      #   show-recents = false; # do not show recent apps in dock
+      #   # do not automatically rearrange spaces based on most recent use.
+      #   mru-spaces = false;
 
-        # customize Hot Corners(触发角, 鼠标移动到屏幕角落时触发的动作)
-        # wvous-tl-corner = 2; # top-left - Mission Control
-        # wvous-tr-corner = 4; # top-right - Desktop
-        # wvous-bl-corner = 3; # bottom-left - Application Windows
-        # wvous-br-corner = 13; # bottom-right - Lock Screen
-      };
+      #   # customize Hot Corners(触发角, 鼠标移动到屏幕角落时触发的动作)
+      #   wvous-tl-corner = 2; # top-left - Mission Control
+      #   wvous-tr-corner = 4; # top-right - Desktop
+      #   wvous-bl-corner = 3; # bottom-left - Application Windows
+      #   wvous-br-corner = 13; # bottom-right - Lock Screen
+      # };
 
       # customize finder
-      finder = {
-        _FXShowPosixPathInTitle = true; # show full path in finder title
-        AppleShowAllExtensions = true; # show all file extensions
-        FXEnableExtensionChangeWarning = false; # disable warning when changing file extension
-        QuitMenuItem = true; # enable quit menu item
-        ShowPathbar = true; # show path bar
-        ShowStatusBar = true; # show status bar
-      };
+      # finder = {
+      #   _FXShowPosixPathInTitle = true; # show full path in finder title
+      #   AppleShowAllExtensions = true; # show all file extensions
+      #   FXEnableExtensionChangeWarning = false; # disable warning when changing file extension
+      #   QuitMenuItem = true; # enable quit menu item
+      #   ShowPathbar = true; # show path bar
+      #   ShowStatusBar = true; # show status bar
+      # };
 
       # customize trackpad
       trackpad = {
