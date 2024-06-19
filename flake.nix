@@ -24,7 +24,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     agenix = {
-      url = "github:ryantm/agenix";
+      url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-index-database = {
@@ -68,7 +68,7 @@
         useUserPackages = true;
         users.${myvars.username} = import ./home;
         sharedModules = [
-          agenix.homeManagerModules.default
+          # agenix.homeManagerModules.default
           maolonglong-nur.homeManagerModules.default
         ];
         extraSpecialArgs = specialArgs;
@@ -83,6 +83,7 @@
           {nixpkgs.pkgs = import nixpkgs-darwin {inherit (myvars) system;};}
           home-manager.darwinModules.home-manager
           nix-index-database.darwinModules.nix-index # command-not-found
+          ./secrets/darwin.nix
           ./configuration.nix
           home
         ];

@@ -134,7 +134,8 @@
     ./go.nix
     ./helix.nix
     ./lazygit.nix
-    ./restic.nix
+    # TODO: ...
+    # ./restic.nix
     # TODO: vscode 太经常变更了，考虑不用 nix 配置
     # ./vscode
     ./zellij.nix

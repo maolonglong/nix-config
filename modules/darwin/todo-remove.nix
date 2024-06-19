@@ -64,8 +64,5 @@
       fx
       gofumpt
       gosimports
-    ])
-    ++ [
-      inputs.agenix.packages.${myvars.system}.default
-    ];
+    ]);
 }
