@@ -40,7 +40,8 @@
       pueue
       ripgrep
       rlwrap
-      (rust-bin.stable.latest.default.override {extensions = ["rust-src"];})
+      # TODO: 看看有没有更好的方式，感觉还是 rustup 方便些
+      # (rust-bin.stable.latest.default.override {extensions = ["rust-src"];})
       sccache
       socat
       # tinygo
@@ -52,9 +53,10 @@
       wget
       wrk
       yq
-      zig
-      zig-shell-completions
-      zls
+      # TODO: 好像需要 override，后面再修
+      # zig
+      # zig-shell-completions
+      # zls
       restic
       rclone
     ])

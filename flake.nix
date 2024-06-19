@@ -1,5 +1,5 @@
 {
-  description = "chensl's system config";
+  description = "My nix config for macOS";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
@@ -44,6 +44,7 @@
     nix-index-database,
     ...
   } @ inputs: let
+    mylib = import ./lib {inherit (nixpkgs) lib;};
     myvars = {
       system = "aarch64-darwin";
       username = "chensl";
@@ -52,7 +53,7 @@
     };
 
     specialArgs = {
-      inherit inputs myvars;
+      inherit inputs myvars mylib;
       pkgs-unstable = import inputs.nixpkgs-unstable {
         inherit (myvars) system;
         config.allowUnfree = true;

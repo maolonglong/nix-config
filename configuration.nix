@@ -3,15 +3,6 @@
   myvars,
   ...
 }: {
-  users.users.${myvars.username} = {
-    name = myvars.username;
-    home = myvars.homeDir;
-  };
-
-  # Create /etc/zshrc that loads the nix-darwin environment.
-  programs.zsh.enable = true; # default shell on catalina
-  # programs.fish.enable = true;
-
   system = {
     # Set Git commit hash for darwin-version.
     configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
@@ -25,11 +16,6 @@
   nixpkgs.hostPlatform = myvars.system;
 
   imports = [
-    ./modules/fonts.nix
-    ./modules/nix.nix
-    ./modules/system.nix
-
-    ./pkgs/homebrew.nix
-    ./pkgs/system.nix
+    ./modules/darwin
   ];
 }
