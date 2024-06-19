@@ -1,11 +1,11 @@
 {
   inputs,
-  vars,
+  myvars,
   ...
 }: {
-  users.users.${vars.username} = {
-    name = vars.username;
-    home = vars.homeDir;
+  users.users.${myvars.username} = {
+    name = myvars.username;
+    home = myvars.homeDir;
   };
 
   # Create /etc/zshrc that loads the nix-darwin environment.
@@ -22,7 +22,7 @@
   };
 
   # The platform the configuration will be used on.
-  nixpkgs.hostPlatform = vars.arch;
+  nixpkgs.hostPlatform = myvars.system;
 
   imports = [
     ./modules/fonts.nix

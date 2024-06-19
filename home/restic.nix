@@ -1,14 +1,12 @@
 {
   config,
-  pkgs,
-  lib,
-  vars,
+  myvars,
   ...
 }: {
   age.secrets = {
     rclone-config = {
       file = ../secrets/rclone-config.age;
-      path = "${vars.homeDir}/.config/rclone/rclone.conf";
+      path = "${myvars.homeDir}/.config/rclone/rclone.conf";
     };
     restic-passwd = {
       file = ../secrets/restic-passwd.age;

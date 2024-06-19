@@ -10,8 +10,10 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
+    # TODO: remove nur
     nur.url = "github:nix-community/NUR";
     maolonglong-nur.url = "github:maolonglong/nur-packages";
+
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -31,59 +33,31 @@
     };
   };
 
-  outputs = inputs @ {
-    self,
+  outputs = {
     nixpkgs,
     nixpkgs-darwin,
-    nur,
     maolonglong-nur,
     nix-darwin,
     home-manager,
     agenix,
     flake-utils,
     nix-index-database,
-    rust-overlay,
     ...
-  }: let
-    vars = {
-      arch = "aarch64-darwin";
+  } @ inputs: let
+    myvars = {
+      system = "aarch64-darwin";
       username = "chensl";
       homeDir = "/Users/chensl";
       hostname = "chensl-mba"; # scutil --get LocalHostName
     };
 
-    overlays = [
-      rust-overlay.overlays.default
-      (final: prev: {
-        nur = import nur {
-          nurpkgs = prev;
-          pkgs = prev;
-          repoOverrides = {
-            maolonglong = import maolonglong-nur {pkgs = prev;};
-          };
-        };
-      })
-    ];
-
-    commonModules = [
-      {
-        nixpkgs = {
-          pkgs = import nixpkgs-darwin {system = vars.arch;};
-          inherit overlays;
-        };
-      }
-      home-manager.darwinModules.home-manager
-    ];
-
-    specialArgs =
-      {inherit inputs vars;}
-      // {
-        pkgs-unstable = import inputs.nixpkgs-unstable {
-          system = vars.arch; # refer the `system` parameter form outer scope recursively
-          # To use chrome, we need to allow the installation of non-free software
-          config.allowUnfree = true;
-        };
+    specialArgs = {
+      inherit inputs myvars;
+      pkgs-unstable = import inputs.nixpkgs-unstable {
+        inherit (myvars) system;
+        config.allowUnfree = true;
       };
+    };
 
     home = {
       home-manager = {
@@ -91,7 +65,7 @@
         backupFileExtension = "hm_bak~";
         useGlobalPkgs = true;
         useUserPackages = true;
-        users.${vars.username} = import ./home;
+        users.${myvars.username} = import ./home;
         sharedModules = [
           agenix.homeManagerModules.default
           maolonglong-nur.homeManagerModules.default
@@ -99,33 +73,32 @@
         extraSpecialArgs = specialArgs;
       };
     };
-
-    devShells =
-      flake-utils.lib.eachDefaultSystem
-      (system: let
-        pkgs = import nixpkgs {inherit system overlays;};
-      in {
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            alejandra
-            nil
-          ];
-        };
-      });
   in
     {
       # Build darwin flake using:
       # $ darwin-rebuild build --flake .#chensl-mba
-      darwinConfigurations.${vars.hostname} = nix-darwin.lib.darwinSystem {
-        modules =
-          commonModules
-          ++ [
-            ./configuration.nix
-            home
-            nix-index-database.darwinModules.nix-index # command-not-found
-          ];
+      darwinConfigurations.${myvars.hostname} = nix-darwin.lib.darwinSystem {
+        modules = [
+          {nixpkgs.pkgs = import nixpkgs-darwin {inherit (myvars) system;};}
+          home-manager.darwinModules.home-manager
+          nix-index-database.darwinModules.nix-index # command-not-found
+          ./configuration.nix
+          home
+        ];
         inherit specialArgs;
       };
     }
-    // devShells;
+    // flake-utils.lib.eachDefaultSystem
+    (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      devShells.default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          alejandra
+          nil
+        ];
+      };
+
+      formatter = pkgs.alejandra;
+    });
 }

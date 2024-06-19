@@ -1,18 +1,13 @@
 {
+  myvars,
   pkgs,
-  vars,
-  config,
   ...
 }: {
-  age.secrets = {
-    # ...
-  };
-
   home = {
     # Home Manager needs a bit of information about you and the
     # paths it should manage.
-    inherit (vars) username;
-    homeDirectory = vars.homeDir;
+    inherit (myvars) username;
+    homeDirectory = myvars.homeDir;
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -140,7 +135,8 @@
     ./helix.nix
     ./lazygit.nix
     ./restic.nix
-    ./vscode
+    # TODO: vscode 太经常变更了，考虑不用 nix 配置
+    # ./vscode
     ./zellij.nix
     ./zsh.nix
   ];

@@ -1,7 +1,7 @@
 {
   pkgs,
   inputs,
-  vars,
+  myvars,
   ...
 }: {
   # List packages installed in system profile. To search by name, run:
@@ -64,6 +64,6 @@
       gosimports
     ])
     ++ [
-      inputs.agenix.packages.${vars.arch}.default
+      inputs.agenix.packages.${myvars.system}.default
     ];
 }

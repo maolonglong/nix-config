@@ -1,14 +1,16 @@
 {
   inputs,
-  vars,
+  myvars,
   pkgs,
   ...
-}: {
+} @ args: let
+  inherit (inputs) nixpkgs rust-overlay;
+in {
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nix = {
     package = pkgs.nixVersions.latest;
-    nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+    nixPath = ["nixpkgs=${nixpkgs}"];
 
     settings = {
       # Necessary for using flakes on this system.
@@ -30,7 +32,7 @@
       # "maolonglong.cachix.org-1:da0YR8cbEEEtWhqWhz1AF5S6Awl+is2PV6Y34Si7Ivg="
       # ];
 
-      trusted-users = [vars.username];
+      trusted-users = [myvars.username];
     };
 
     gc = {
@@ -44,9 +46,12 @@
     };
   };
 
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-  };
+  nixpkgs.config.allowUnfree = true;
+
+  # TODO: 看下要不要找个更合适的地方，放这个配置
+  nixpkgs.overlays =
+    [
+      rust-overlay.overlays.default
+    ]
+    ++ (import ../overlays args);
 }
