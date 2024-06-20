@@ -1,1 +1,0 @@
-{myvars, ...}: myvars.hostname
