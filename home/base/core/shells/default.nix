@@ -6,18 +6,10 @@
     enableCompletion = true;
     syntaxHighlighting.enable = true;
 
-    envExtra = ''
-      [ -f "/opt/homebrew/bin/" ] && eval "$(/opt/homebrew/bin/brew shellenv)"
-    '';
-
     localVariables = {
       DISABLE_MAGIC_FUNCTIONS = "true";
       HIST_STAMPS = "yyyy-mm-dd";
     };
-
-    initExtraBeforeCompInit = ''
-      [ "$(command -v brew)" ] && fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
-    '';
 
     oh-my-zsh = {
       enable = true;
@@ -37,6 +29,7 @@
         src = pkgs.fetchFromGitHub {
           owner = "nix-community";
           repo = "nix-zsh-completions";
+          # TODO: 0.5.1
           rev = "0.5.0";
           sha256 = "sha256-DKvCpjAeCiUwD5l6PUW7WlEvM0cNZEOk41IiVXoh9D8";
         };
@@ -47,8 +40,6 @@
       unalias gup
       unalias gops
       unalias gsu
-
-      export GPG_TTY=$(tty)
 
       lg() {
         export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
@@ -65,9 +56,9 @@
     '';
 
     shellAliases = {
-      ls = "${pkgs.eza}/bin/eza";
-      ll = "${pkgs.eza}/bin/eza -lhg";
-      la = "${pkgs.eza}/bin/eza -lhga";
+      ls = "eza";
+      ll = "eza -lhg";
+      la = "eza -lhga";
     };
   };
 }

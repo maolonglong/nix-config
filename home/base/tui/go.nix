@@ -9,6 +9,10 @@
     ];
   };
 
+  home.sessionPath = [
+    "$GOPATH/bin"
+  ];
+
   home.sessionVariables = {
     GO111MODULE = "on";
     GOPROXY = lib.concatStringsSep "|" [

@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  pkgs-unstable,
   ...
 }:
 ##########################################################################
@@ -52,8 +51,9 @@ in {
   # Related Discussion: https://discourse.nixos.org/t/darwin-again/29331
   environment.systemPackages = with pkgs; [
     neovim
+    rlwrap
     git
-    nushell # my custom shell
+    # nushell # my custom shell
     gnugrep # replacee macos's grep
     gnutar # replacee macos's tar
 

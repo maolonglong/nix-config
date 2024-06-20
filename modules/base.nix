@@ -53,6 +53,9 @@ in {
     tree
     gnutar
     rsync
+
+    htop
+    neofetch
   ];
 
   nix.settings = {

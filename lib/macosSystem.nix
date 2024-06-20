@@ -32,6 +32,7 @@ in
               users.${myvars.username}.imports = home-modules;
               sharedModules = [
                 # agenix.homeManagerModules.default
+                # TODO: ...
                 maolonglong-nur.homeManagerModules.default
               ];
               extraSpecialArgs = specialArgs;

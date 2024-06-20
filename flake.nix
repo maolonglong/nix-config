@@ -34,11 +34,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    haumea = {
-      url = "github:nix-community/haumea/v0.2.2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -92,13 +87,14 @@
             hostname = "chensl-mba";
           };
           modules = {
-            darwin-modules = map mylib.relativeToRoot [
-              "secrets/darwin.nix"
-              "configuration.nix"
-              "hosts/darwin-${myvars.hostname}"
+            darwin-modules = [
+              ./secrets/darwin.nix
+              ./configuration.nix
+              (./. + "/hosts/darwin-${myvars.hostname}")
             ];
-            home-modules = map mylib.relativeToRoot [
-              "home"
+            home-modules = [
+              ./home/darwin
+              (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
             ];
           };
         in
