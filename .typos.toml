@@ -1,0 +1,15 @@
+[files]
+ignore-dot = true
+ignore-files = true
+
+[type.age]
+extend-glob = ["*.age"]
+check-file = false
+
+[default]
+binary = false
+
+# ignore some special identifiers(sha256, mac address, crypto keys, etc)
+[default.extend-identifiers]
+"iterm2" = "iterm2"
+"wrk" = "wrk"
