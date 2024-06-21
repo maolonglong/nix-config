@@ -57,18 +57,7 @@
 
     bat = {
       enable = true;
-      config = {
-        pager = "less -FR";
-        # theme = "catppuccin-mocha";
-      };
-      # TODO: ...
-      # themes = {
-      #   # https://raw.githubusercontent.com/catppuccin/bat/main/Catppuccin-mocha.tmTheme
-      #   catppuccin-mocha = {
-      #     src = nur-ryan4yin.packages.${pkgs.system}.catppuccin-bat;
-      #     file = "Catppuccin-mocha.tmTheme";
-      #   };
-      # };
+      config.theme = "Monokai Extended";
     };
 
     fzf = rec {

@@ -52,7 +52,6 @@ in {
   environment.systemPackages = with pkgs; [
     neovim
     rlwrap
-    git
     # nushell # my custom shell
     gnugrep # replacee macos's grep
     gnutar # replacee macos's tar

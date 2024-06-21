@@ -1,9 +1,8 @@
-{...}: {
+{lib, ...}: {
   programs.git = {
     enable = true;
-    # TODO: mkDefault ?
-    userName = "Shaolong Chen";
-    userEmail = "shaolong.chen@outlook.it";
+    userName = lib.mkDefault "Shaolong Chen";
+    userEmail = lib.mkDefault "shaolong.chen@outlook.it";
 
     delta = {
       enable = true;

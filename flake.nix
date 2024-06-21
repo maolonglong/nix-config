@@ -106,18 +106,14 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in {
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
+          packages = with pkgs; [
             alejandra
             nil
+            taplo
             typos
           ];
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
         };
-
-        # Format the nix code in this flake
-        formatter =
-          # alejandra is a nix formatter with a beautiful output
-          pkgs.alejandra;
 
         checks = {
           pre-commit-check = pre-commit-hooks.lib.${system}.run {
@@ -132,9 +128,15 @@
                   configPath = "./.typos.toml"; # relative to the flake root
                 };
               };
+              taplo.enable = true;
             };
           };
         };
+
+        # Format the nix code in this flake
+        formatter =
+          # alejandra is a nix formatter with a beautiful output
+          pkgs.alejandra;
       }
     );
 }
