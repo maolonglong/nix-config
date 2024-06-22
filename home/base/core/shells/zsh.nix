@@ -42,5 +42,9 @@
 
       [ "$(command -v mutagen)" ] && mutagen daemon start
     '';
+
+    shellAliases = {
+      j = "just";
+    };
   };
 }

@@ -3,5 +3,7 @@
     qemu
     lima
     mutagen
+    docker-client
+    docker-credential-helpers
   ];
 }

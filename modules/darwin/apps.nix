@@ -133,6 +133,7 @@ in {
       "the-unarchiver"
       "yesplaymusic"
       "visual-studio-code"
+      "orbstack"
     ];
   };
 }

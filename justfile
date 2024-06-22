@@ -10,5 +10,5 @@ check:
   nix flake check
 
 [macos]
-build:
-  darwin-rebuild build --flake .
+build flake=".":
+  darwin-rebuild build --flake {{flake}}
