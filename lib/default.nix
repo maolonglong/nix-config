@@ -1,5 +1,6 @@
 {lib, ...}: {
   macosSystem = import ./macosSystem.nix;
+  nixosSystem = import ./nixosSystem.nix;
   attrs = import ./attrs.nix {inherit lib;};
 
   # use path relative to the root of the project

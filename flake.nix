@@ -76,15 +76,53 @@
         // modules;
     in
       mylib.macosSystem args;
+
+    mkNixOS = myvars: modules: let
+      args =
+        {
+          inherit (myvars) system;
+          inherit inputs lib mylib myvars genSpecialArgs;
+        }
+        // modules;
+    in
+      mylib.nixosSystem args;
   in
     {
+      # NixOS Hosts
+      nixosConfigurations = {
+        # orbstack-nixos
+        nixos = let
+          myvars = {
+            system = "aarch64-linux";
+            username = "chensl";
+            homeDirectory = "/home/chensl";
+            hostname = "nixos";
+          };
+          modules = {
+            nixos-modules = [
+              ./modules/nixos
+              # ./secrets/nixos.nix
+              (./. + "/hosts/orbstack-${myvars.hostname}")
+            ];
+            home-modules = [
+              ./home/base/core
+              # ./home/base/gui
+              ./home/base/tui
+              ./home/base/home.nix
+              # (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
+            ];
+          };
+        in
+          mkNixOS myvars modules;
+      };
+
       # macOS Hosts
       darwinConfigurations = {
         chensl-mba = let
           myvars = {
             system = "aarch64-darwin";
             username = "chensl";
-            homeDir = "/Users/chensl";
+            homeDirectory = "/Users/chensl";
             hostname = "chensl-mba";
           };
           modules = {

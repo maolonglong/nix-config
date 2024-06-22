@@ -13,3 +13,5 @@ binary = false
 [default.extend-identifiers]
 "iterm2" = "iterm2"
 "wrk" = "wrk"
+"localed" = "localed"
+"importd" = "importd"
