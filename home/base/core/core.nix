@@ -34,13 +34,7 @@
   ];
 
   programs = {
-    eza = {
-      enable = true;
-      # do not enable aliases in zsh!
-      enableZshIntegration = false;
-      git = false;
-      icons = false;
-    };
+    eza.enable = true;
 
     zoxide = {
       enable = true;

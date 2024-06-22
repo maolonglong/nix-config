@@ -226,6 +226,23 @@
         "type": "github"
       }
     },
+    "mysecrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1719039717,
+        "narHash": "sha256-CG0GRKeoJo1GyfJpcCPGLRGWwsydFKiyveOu+oJ2050=",
+        "ref": "refs/heads/main",
+        "rev": "0104cd362d866c56043dabc9df2757bbb7af7ff3",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/maolonglong/nix-secrets.git"
+      },
+      "original": {
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/maolonglong/nix-secrets.git"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -358,6 +375,7 @@
         "agenix": "agenix",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager_2",
+        "mysecrets": "mysecrets",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",

@@ -34,6 +34,11 @@
       url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    mysecrets = {
+      url = "git+ssh://git@github.com/maolonglong/nix-secrets.git?shallow=1";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -84,8 +89,8 @@
           };
           modules = {
             darwin-modules = [
+              ./modules/darwin
               ./secrets/darwin.nix
-              ./configuration.nix
               (./. + "/hosts/darwin-${myvars.hostname}")
             ];
             home-modules = [

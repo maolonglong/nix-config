@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (inputs) agenix;
+  inherit (inputs) agenix mysecrets;
 in {
   imports = [
     agenix.darwinModules.default
@@ -37,7 +37,7 @@ in {
   in {
     "nix-access-tokens" =
       {
-        file = ./nix-access-tokens.age;
+        file = "${mysecrets}/nix-access-tokens.age";
       }
       // high_security;
   };

@@ -9,5 +9,6 @@ default:
 check:
   nix flake check
 
+[macos]
 build:
   darwin-rebuild build --flake .
