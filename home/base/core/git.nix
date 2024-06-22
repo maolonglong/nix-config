@@ -9,7 +9,6 @@
       options = {
         navigate = true;
         line-numbers = true;
-        # TODO: catppuccin_mocha?
         syntax-theme = "Monokai Extended";
       };
     };

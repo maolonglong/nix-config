@@ -1,27 +1,5 @@
 {pkgs, ...}: let
-  # TODO: overlays?
-  fetchWithPatch = {
-    owner,
-    repo,
-    rev,
-    hash,
-    patches,
-  }:
-    pkgs.stdenv.mkDerivation {
-      pname = repo;
-      version = rev;
-      src = pkgs.fetchFromGitHub {
-        inherit owner repo rev hash;
-      };
-      inherit patches;
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out
-        cp -R . $out/
-        runHook postInstall
-      '';
-    };
-  gpakosz-tmux = fetchWithPatch {
+  gpakosz-tmux = pkgs.fetchFromGitHubWithPatches {
     owner = "gpakosz";
     repo = ".tmux";
     rev = "8e3b90c6c8d0eea022cbcb007dc518503a823765";

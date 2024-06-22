@@ -10,10 +10,6 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    # TODO: remove nur
-    nur.url = "github:nix-community/NUR";
-    maolonglong-nur.url = "github:maolonglong/nur-packages";
-
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";

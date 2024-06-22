@@ -9,7 +9,7 @@
   specialArgs ? (genSpecialArgs myvars),
   ...
 }: let
-  inherit (inputs) nixpkgs-darwin home-manager nix-darwin maolonglong-nur nix-index-database;
+  inherit (inputs) nixpkgs-darwin home-manager nix-darwin nix-index-database;
 in
   nix-darwin.lib.darwinSystem {
     inherit system specialArgs;
@@ -30,11 +30,6 @@ in
               useGlobalPkgs = true;
               useUserPackages = true;
               users.${myvars.username}.imports = home-modules;
-              sharedModules = [
-                # agenix.homeManagerModules.default
-                # TODO: ...
-                maolonglong-nur.homeManagerModules.default
-              ];
               extraSpecialArgs = specialArgs;
             };
           }

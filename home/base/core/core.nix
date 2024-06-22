@@ -38,14 +38,12 @@
       enable = true;
       # do not enable aliases in zsh!
       enableZshIntegration = false;
-      git = true;
-      icons = true;
+      git = false;
+      icons = false;
     };
 
-    # TODO: zoxide?
-    jump = {
+    zoxide = {
       enable = true;
-      bind = "z";
       enableZshIntegration = true;
     };
 

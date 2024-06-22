@@ -29,9 +29,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "nix-community";
           repo = "nix-zsh-completions";
-          # TODO: 0.5.1
-          rev = "0.5.0";
-          sha256 = "sha256-DKvCpjAeCiUwD5l6PUW7WlEvM0cNZEOk41IiVXoh9D8";
+          rev = "0.5.1";
+          sha256 = "sha256-bgbMc4HqigqgdkvUe/CWbUclwxpl17ESLzCIP8Sz+F8=";
         };
       }
     ];
@@ -40,17 +39,6 @@
       unalias gup
       unalias gops
       unalias gsu
-
-      lg() {
-        export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
-
-        lazygit "$@"
-
-        if [ -f $LAZYGIT_NEW_DIR_FILE ]; then
-          cd "$(cat $LAZYGIT_NEW_DIR_FILE)"
-          rm -f $LAZYGIT_NEW_DIR_FILE >/dev/null
-        fi
-      }
 
       [ "$(command -v mutagen)" ] && mutagen daemon start
     '';
