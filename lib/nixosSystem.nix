@@ -9,12 +9,15 @@
   specialArgs ? (genSpecialArgs myvars),
   ...
 }: let
-  inherit (inputs) nixpkgs home-manager;
+  inherit (inputs) nixpkgs home-manager nix-index-database;
 in
   nixpkgs.lib.nixosSystem {
     inherit system specialArgs;
     modules =
       nixos-modules
+      ++ [
+        nix-index-database.darwinModules.nix-index # command-not-found
+      ]
       ++ (
         lib.optionals ((lib.lists.length home-modules) > 0)
         [

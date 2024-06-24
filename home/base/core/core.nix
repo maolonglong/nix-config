@@ -27,7 +27,6 @@
     delta # A viewer for git and diff output
     hyperfine # command-line benchmarking tool
     duf # Disk Usage/Free Utility - a better 'df' alternative
-    tmux # Terminal multiplexer
     procs
     tldr
     wrk

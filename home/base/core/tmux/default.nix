@@ -11,4 +11,9 @@ in {
     ".tmux.conf".source = "${gpakosz-tmux}/.tmux.conf";
     ".tmux.conf.local".source = "${gpakosz-tmux}/.tmux.conf.local";
   };
+
+  home.packages = with pkgs; [
+    tmux
+    perl # gpakosz-tmux requires perl
+  ];
 }
