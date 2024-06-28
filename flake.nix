@@ -72,12 +72,15 @@
       # };
     };
 
+    commonArgs = {inherit inputs lib mylib genSpecialArgs;};
+
     mkDarwin = myvars: modules: let
       args =
         {
           inherit (myvars) system;
-          inherit inputs lib mylib myvars genSpecialArgs;
+          inherit myvars;
         }
+        // commonArgs
         // modules;
     in
       mylib.macosSystem args;
@@ -86,8 +89,9 @@
       args =
         {
           inherit (myvars) system;
-          inherit inputs lib mylib myvars genSpecialArgs;
+          inherit myvars;
         }
+        // commonArgs
         // modules;
     in
       mylib.nixosSystem args;
@@ -104,12 +108,12 @@
             hostname = "nixos";
           };
           modules = {
-            nixos-modules = [
+            nixosModules = [
               ./modules/nixos
               # ./secrets/nixos.nix
               (./. + "/hosts/orbstack-${myvars.hostname}")
             ];
-            home-modules = [
+            homeModules = [
               ./home/base/core
               # ./home/base/gui
               ./home/base/tui
@@ -136,7 +140,7 @@
               ./secrets/darwin.nix
               (./. + "/hosts/darwin-${myvars.hostname}")
             ];
-            home-modules = [
+            homeModules = [
               ./home/darwin
               (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
             ];

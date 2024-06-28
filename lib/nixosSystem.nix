@@ -2,24 +2,24 @@
   inputs,
   lib,
   myvars,
-  system,
   genSpecialArgs,
-  nixos-modules,
-  home-modules ? [],
+  nixosModules,
+  homeModules ? [],
   specialArgs ? (genSpecialArgs myvars),
   ...
 }: let
+  inherit (myvars) system;
   inherit (inputs) nixpkgs home-manager nix-index-database;
 in
   nixpkgs.lib.nixosSystem {
     inherit system specialArgs;
     modules =
-      nixos-modules
+      nixosModules
       ++ [
         nix-index-database.darwinModules.nix-index # command-not-found
       ]
       ++ (
-        lib.optionals ((lib.lists.length home-modules) > 0)
+        lib.optionals ((lib.lists.length homeModules) > 0)
         [
           home-manager.nixosModules.home-manager
           {
@@ -28,7 +28,7 @@ in
               backupFileExtension = "hm_bak~";
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.${myvars.username}.imports = home-modules;
+              users.${myvars.username}.imports = homeModules;
               extraSpecialArgs = specialArgs;
             };
           }
