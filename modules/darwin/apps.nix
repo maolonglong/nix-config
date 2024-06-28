@@ -50,7 +50,6 @@ in {
   #
   # Related Discussion: https://discourse.nixos.org/t/darwin-again/29331
   environment.systemPackages = with pkgs; [
-    neovim
     rlwrap
     # nushell # my custom shell
     gnugrep # replacee macos's grep
@@ -122,7 +121,6 @@ in {
       "localsend"
       "logseq"
       "monitorcontrol"
-      "motrix"
       "only-switch"
       "postman"
       "raycast"
