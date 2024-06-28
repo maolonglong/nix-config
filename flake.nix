@@ -39,6 +39,11 @@
       url = "git+ssh://git@github.com/maolonglong/nix-secrets.git?shallow=1";
       flake = false;
     };
+
+    mynur = {
+      url = "github:maolonglong/nur-packages";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

@@ -226,6 +226,26 @@
         "type": "github"
       }
     },
+    "mynur": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1719569519,
+        "narHash": "sha256-GJkvnQQ8ShQ6hqULwS7iaxgOvmBv3VzkDbe7VMVIe6Y=",
+        "owner": "maolonglong",
+        "repo": "nur-packages",
+        "rev": "a94435828bd25423e12cadcd42d5dcd7209402f1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maolonglong",
+        "repo": "nur-packages",
+        "type": "github"
+      }
+    },
     "mysecrets": {
       "flake": false,
       "locked": {
@@ -375,6 +395,7 @@
         "agenix": "agenix",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager_2",
+        "mynur": "mynur",
         "mysecrets": "mysecrets",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
