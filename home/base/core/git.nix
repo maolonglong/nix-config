@@ -1,8 +1,16 @@
-{lib, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
+  home.packages = [pkgs.git-lfs];
+
   programs.git = {
     enable = true;
     userName = lib.mkDefault "Shaolong Chen";
     userEmail = lib.mkDefault "shaolong.chen@outlook.it";
+
+    lfs.enable = true;
 
     delta = {
       enable = true;

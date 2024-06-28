@@ -1,8 +1,4 @@
-{
-  mylib,
-  myvars,
-  ...
-}: {
+{mylib, ...}: {
   imports =
     (mylib.scanPaths ./.)
     ++ [
