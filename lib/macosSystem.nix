@@ -1,7 +1,7 @@
 {
   lib,
   inputs,
-  darwin-modules,
+  darwinModules,
   homeModules ? [],
   myvars,
   genSpecialArgs,
@@ -14,7 +14,7 @@ in
   nix-darwin.lib.darwinSystem {
     inherit system specialArgs;
     modules =
-      darwin-modules
+      darwinModules
       ++ [
         {nixpkgs.pkgs = import nixpkgs-darwin {inherit system;};}
         nix-index-database.darwinModules.nix-index # command-not-found

@@ -1,10 +1,10 @@
 {
-  description = "My nix config for macOS";
+  description = "My nix config for macOS & NixOS";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable-small";
-    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-24.05-darwin";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nix-darwin = {
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
@@ -72,82 +72,66 @@
       # };
     };
 
+    # common arguments pass to darwin & nixos hosts
     commonArgs = {inherit inputs lib mylib genSpecialArgs;};
 
-    mkDarwin = myvars: modules: let
-      args =
-        {
-          inherit (myvars) system;
-          inherit myvars;
-        }
-        // commonArgs
-        // modules;
-    in
-      mylib.macosSystem args;
+    nixosHosts = {
+      nixos = rec {
+        myvars = {
+          system = "aarch64-linux";
+          username = "chensl";
+          homeDirectory = "/home/chensl";
+          hostname = "nixos";
+        };
+        nixosModules = [
+          ./modules/nixos
+          # ./secrets/nixos.nix
+          (./. + "/hosts/orbstack-${myvars.hostname}")
+        ];
+        homeModules = [
+          ./home/base/core
+          # ./home/base/gui
+          ./home/base/tui
+          ./home/base/home.nix
+          # (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
+        ];
+      };
+    };
 
-    mkNixOS = myvars: modules: let
-      args =
-        {
-          inherit (myvars) system;
-          inherit myvars;
-        }
-        // commonArgs
-        // modules;
-    in
-      mylib.nixosSystem args;
+    darwinHosts = {
+      chensl-mba = rec {
+        myvars = {
+          system = "aarch64-darwin";
+          username = "chensl";
+          homeDirectory = "/Users/chensl";
+          hostname = "chensl-mba";
+        };
+        darwinModules = [
+          ./modules/darwin
+          ./secrets/darwin.nix
+          (./. + "/hosts/darwin-${myvars.hostname}")
+        ];
+        homeModules = [
+          ./home/darwin
+          (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
+        ];
+      };
+    };
   in
     {
-      # NixOS Hosts
-      nixosConfigurations = {
-        # orbstack-nixos
-        nixos = let
-          myvars = {
-            system = "aarch64-linux";
-            username = "chensl";
-            homeDirectory = "/home/chensl";
-            hostname = "nixos";
-          };
-          modules = {
-            nixosModules = [
-              ./modules/nixos
-              # ./secrets/nixos.nix
-              (./. + "/hosts/orbstack-${myvars.hostname}")
-            ];
-            homeModules = [
-              ./home/base/core
-              # ./home/base/gui
-              ./home/base/tui
-              ./home/base/home.nix
-              # (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
-            ];
-          };
-        in
-          mkNixOS myvars modules;
-      };
+      nixosConfigurations =
+        builtins.mapAttrs (
+          _: value:
+            mylib.nixosSystem (commonArgs // value)
+        )
+        nixosHosts;
 
-      # macOS Hosts
-      darwinConfigurations = {
-        chensl-mba = let
-          myvars = {
-            system = "aarch64-darwin";
-            username = "chensl";
-            homeDirectory = "/Users/chensl";
-            hostname = "chensl-mba";
-          };
-          modules = {
-            darwin-modules = [
-              ./modules/darwin
-              ./secrets/darwin.nix
-              (./. + "/hosts/darwin-${myvars.hostname}")
-            ];
-            homeModules = [
-              ./home/darwin
-              (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
-            ];
-          };
-        in
-          mkDarwin myvars modules;
-      };
+      darwinConfigurations =
+        builtins.mapAttrs (
+          _: value:
+            mylib.macosSystem (commonArgs // value)
+        )
+        darwinHosts;
     }
     // flake-utils.lib.eachDefaultSystem (
       system: let

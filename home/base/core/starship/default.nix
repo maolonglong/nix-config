@@ -13,6 +13,6 @@ in {
         container.disabled = true;
         palette = "catppuccin_mocha";
       }
-      // builtins.fromTOML (builtins.readFile "${mynur.packages.${pkgs.system}.catppuccin-starship}/palettes/mocha.toml");
+      // builtins.fromTOML (builtins.readFile "${mynur.legacyPackages.${pkgs.system}.catppuccinThemes.starship}/palettes/mocha.toml");
   };
 }
