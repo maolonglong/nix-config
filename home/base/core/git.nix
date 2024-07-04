@@ -6,7 +6,7 @@
   home.packages = [pkgs.git-lfs];
 
   programs.git = {
-    enable = true;
+    enable = lib.mkDefault true;
     userName = lib.mkDefault "Shaolong Chen";
     userEmail = lib.mkDefault "shaolong.chen@outlook.it";
 

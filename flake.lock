@@ -233,11 +233,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1720001676,
-        "narHash": "sha256-iXFTuMnBrANIrH0+ao2h33Xp6wa+ricWZi1yaxMYMtY=",
+        "lastModified": 1720063629,
+        "narHash": "sha256-djiIapJ8yhfXLctY75ABny8C9af4/pYdsXiWbDQ4r58=",
         "owner": "maolonglong",
         "repo": "nur-packages",
-        "rev": "e0b18913e051fdf8611b7c068525711485276242",
+        "rev": "23c167d5e4c8fee056aebf1b1360565b02ce65fe",
         "type": "github"
       },
       "original": {
@@ -249,10 +249,10 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1719039717,
-        "narHash": "sha256-CG0GRKeoJo1GyfJpcCPGLRGWwsydFKiyveOu+oJ2050=",
+        "lastModified": 1720064791,
+        "narHash": "sha256-RcZ6TLsldwYdiP9PFc4B3DtFMcljwYvPiuNuDYCNJQQ=",
         "ref": "refs/heads/main",
-        "rev": "0104cd362d866c56043dabc9df2757bbb7af7ff3",
+        "rev": "efc4b7f99cecf450a2487274e73a081969379d26",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/maolonglong/nix-secrets.git"

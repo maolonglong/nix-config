@@ -116,6 +116,22 @@
           (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
         ];
       };
+      work = {
+        myvars = {
+          system = "aarch64-darwin";
+          username = "bytedance";
+          homeDirectory = "/Users/bytedance";
+        };
+        darwinModules = [
+          ./modules/darwin
+          ./secrets/darwin.nix
+          ./hosts/darwin-work
+        ];
+        homeModules = [
+          ./home/darwin
+          ./hosts/darwin-work/home.nix
+        ];
+      };
     };
   in
     {
