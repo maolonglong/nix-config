@@ -1,8 +1,11 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
-}: {
+}: let
+  inherit (inputs) mynur;
+in {
   home.packages = [pkgs.git-lfs];
 
   programs.git = {
@@ -12,12 +15,13 @@
 
     lfs.enable = true;
 
+    includes = [
+      {path = "${mynur.legacyPackages.${pkgs.system}.catppuccinThemes.delta}/catppuccin.gitconfig";}
+    ];
     delta = {
       enable = true;
       options = {
-        navigate = true;
-        line-numbers = true;
-        syntax-theme = "Monokai Extended";
+        features = "catppuccin-mocha";
       };
     };
 

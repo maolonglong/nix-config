@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: let
+  inherit (inputs) mynur;
+in {
   home.sessionPath = [
     "/usr/local/bin"
     "$HOME/bin"
@@ -48,7 +54,13 @@
 
     bat = {
       enable = true;
-      config.theme = "Monokai Extended";
+      config.theme = "Catppuccin Mocha";
+      themes = {
+        "Catppuccin Mocha" = {
+          src = mynur.legacyPackages.${pkgs.system}.catppuccinThemes.bat;
+          file = "themes/Catppuccin Mocha.tmTheme";
+        };
+      };
     };
 
     fzf = rec {
