@@ -10,8 +10,9 @@ in {
 
   programs.git = {
     enable = lib.mkDefault true;
-    userName = lib.mkDefault "Shaolong Chen";
-    userEmail = lib.mkDefault "shaolong.chen@outlook.it";
+    userName = "Shaolong Chen";
+    userEmail = "shaolong.chen@outlook.it";
+    signing.key = "80263B1A6D611DE4";
 
     lfs.enable = true;
 
