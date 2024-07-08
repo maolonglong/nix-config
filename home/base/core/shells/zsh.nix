@@ -35,6 +35,10 @@
       }
     ];
 
+    envExtra = ''
+      [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+    '';
+
     initExtra = ''
       unalias gup
       unalias gops
