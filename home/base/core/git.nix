@@ -6,7 +6,10 @@
 }: let
   inherit (inputs) mynur;
 in {
-  home.packages = [pkgs.git-lfs];
+  home.packages = with pkgs; [
+    git-lfs
+    git-extras
+  ];
 
   programs.git = {
     enable = lib.mkDefault true;
