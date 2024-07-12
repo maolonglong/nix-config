@@ -133,6 +133,23 @@
         ];
       };
     };
+
+    homeOnlyHosts = {
+      devbox = {
+        myvars = {
+          system = "x86_64-linux";
+          username = "chenshaolong.1016";
+          homeDirectory = "/home/chenshaolong.1016";
+        };
+        homeModules = [
+          ./home/base/core
+          # ./home/base/gui
+          ./home/base/tui
+          ./home/base/home.nix
+          ./hosts/linux-devbox/home.nix
+        ];
+      };
+    };
   in
     {
       nixosConfigurations =
@@ -148,6 +165,13 @@
             mylib.macosSystem (commonArgs // value)
         )
         darwinHosts;
+
+      homeConfigurations =
+        builtins.mapAttrs (
+          _: value:
+            mylib.homeOnlySystem (commonArgs // value)
+        )
+        homeOnlyHosts;
     }
     // flake-utils.lib.eachDefaultSystem (
       system: let

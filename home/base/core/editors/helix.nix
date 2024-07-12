@@ -3,6 +3,7 @@
     enable = true;
     settings = {
       editor = {
+        true-color = true;
         bufferline = "multiple";
         color-modes = true;
         cursor-shape = {

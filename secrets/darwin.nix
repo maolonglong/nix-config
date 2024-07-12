@@ -21,24 +21,10 @@ in {
     "/etc/ssh/ssh_host_ed25519_key" # macOS, using the host key for decryption
   ];
 
-  age.secrets = let
-    noaccess = {
-      mode = "0000";
-      owner = "root";
+  age.secrets = {
+    "nix-access-tokens" = {
+      file = "${mysecrets}/nix-access-tokens.age";
+      mode = "444";
     };
-    high_security = {
-      mode = "0500";
-      owner = "root";
-    };
-    user_readable = {
-      mode = "0500";
-      owner = myvars.username;
-    };
-  in {
-    "nix-access-tokens" =
-      {
-        file = "${mysecrets}/nix-access-tokens.age";
-      }
-      // high_security;
   };
 }
