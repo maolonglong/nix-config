@@ -3,12 +3,10 @@
   myvars,
   pkgs,
   ...
-} @ args: let
-  inherit (inputs) rust-overlay;
-in {
+} @ args: {
   nixpkgs.overlays =
     [
-      rust-overlay.overlays.default
+      # rust-overlay.overlays.default
     ]
     ++ (import ../overlays args);
 
