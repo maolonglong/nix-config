@@ -26,5 +26,15 @@ in {
       file = "${mysecrets}/nix-access-tokens.age";
       mode = "444";
     };
+
+    # TODO: mount to home
+    "rclone-config" = {
+      file = "${mysecrets}/rclone-config.age";
+      mode = "444";
+    };
+    "restic-config" = {
+      file = "${mysecrets}/restic-config.age";
+      mode = "444";
+    };
   };
 }

@@ -165,10 +165,10 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1720064791,
-        "narHash": "sha256-RcZ6TLsldwYdiP9PFc4B3DtFMcljwYvPiuNuDYCNJQQ=",
+        "lastModified": 1722155455,
+        "narHash": "sha256-KfviLmFQlfhlCcfbxkS9DPU/xY8NhMI+RddipyQ+eyU=",
         "ref": "refs/heads/main",
-        "rev": "efc4b7f99cecf450a2487274e73a081969379d26",
+        "rev": "0bd739d5dacadddc626705a6f736960956939890",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/maolonglong/nix-secrets.git"
