@@ -127,7 +127,7 @@ in {
       "scroll-reverser"
       "sequel-ace"
       "snipaste"
-      "spectacle"
+      "rectangle"
       "the-unarchiver"
       "yesplaymusic"
       "visual-studio-code"
