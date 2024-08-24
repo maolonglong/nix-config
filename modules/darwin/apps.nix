@@ -116,22 +116,23 @@ in {
     casks = [
       "element"
       "iterm2"
+      "jordanbaird-ice"
       "keepassxc"
       "keycastr"
       "localsend"
       "logseq"
       "monitorcontrol"
       "only-switch"
+      "orbstack"
       "postman"
       "raycast"
+      "rectangle"
       "scroll-reverser"
       "sequel-ace"
       "snipaste"
-      "rectangle"
       "the-unarchiver"
-      "yesplaymusic"
       "visual-studio-code"
-      "orbstack"
+      "yesplaymusic"
     ];
   };
 }
