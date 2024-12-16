@@ -1,7 +1,5 @@
 {
-  config,
   inputs,
-  myvars,
   pkgs,
   ...
 }: let

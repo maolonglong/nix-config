@@ -1,4 +1,4 @@
-{pkgs, ...}:
+{...}:
 ###################################################################################
 #
 #  macOS's System configuration
@@ -66,7 +66,15 @@
 
       # customize macOS
       NSGlobalDomain = {
-        ApplePressAndHoldEnabled = true; # enable press and hold
+        # defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false              # For VS Code
+        # defaults write com.microsoft.VSCodeInsiders ApplePressAndHoldEnabled -bool false      # For VS Code Insider
+        # defaults write com.vscodium ApplePressAndHoldEnabled -bool false                      # For VS Codium
+        # defaults write com.microsoft.VSCodeExploration ApplePressAndHoldEnabled -bool false   # For VS Codium Exploration users
+        # defaults delete -g ApplePressAndHoldEnabled                                           # If necessary, reset global default
+        # ApplePressAndHoldEnabled = true; # enable press and hold
+
+        InitialKeyRepeat = 15;
+        KeyRepeat = 2;
       };
 
       # customize settings that not supported by nix-darwin directly
@@ -120,6 +128,11 @@
         # };
         # Prevent Photos from opening automatically when devices are plugged in
         # "com.apple.ImageCapture".disableHotPlug = true;
+
+        "com.microsoft.VSCode".ApplePressAndHoldEnabled = false;
+        "com.microsoft.VSCodeInsiders".ApplePressAndHoldEnabled = false;
+        "com.vscodium".ApplePressAndHoldEnabled = false;
+        "com.microsoft.VSCodeExploration".ApplePressAndHoldEnabled = false;
       };
     };
   };

@@ -114,7 +114,7 @@ in {
 
     # `brew install --cask`
     casks = [
-      "element"
+      "battery"
       "iterm2"
       "jordanbaird-ice"
       "keepassxc"
@@ -132,7 +132,6 @@ in {
       "snipaste"
       "the-unarchiver"
       "visual-studio-code"
-      "yesplaymusic"
     ];
   };
 }

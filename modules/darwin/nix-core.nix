@@ -1,10 +1,4 @@
-{
-  lib,
-  inputs,
-  ...
-}: let
-  inherit (inputs) nixpkgs;
-in {
+{...}: {
   ###################################################################################
   #
   #  Core configuration for nix-darwin
@@ -31,11 +25,10 @@ in {
 
   nix.gc.automatic = false;
 
-  # make `nix run nixpkgs#nixpkgs` use the same nixpkgs as the one used by this flake.
-  nix.registry.nixpkgs.flake = nixpkgs;
-
-  environment.etc."nix/inputs/nixpkgs".source = "${nixpkgs}";
-  # make `nix repl '<nixpkgs>'` use the same nixpkgs as the one used by this flake.
-  # discard all the default paths, and only use the one from this flake.
-  nix.nixPath = lib.mkForce ["/etc/nix/inputs"];
+  # https://github.com/LnL7/nix-darwin/issues/1082
+  # default is true
+  nixpkgs.flake = {
+    setFlakeRegistry = true;
+    setNixPath = true;
+  };
 }
