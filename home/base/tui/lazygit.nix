@@ -22,6 +22,7 @@
         };
       };
       git = {
+        autoFetch = false;
         paging = {
           colorArg = "always";
           pager = "delta --dark --paging=never";
