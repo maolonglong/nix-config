@@ -16,7 +16,7 @@
 
     # Used for backwards compatibility, please read the changelog before changing.
     # $ darwin-rebuild changelog
-    stateVersion = 4;
+    stateVersion = 5;
   };
 
   # The platform the configuration will be used on.
