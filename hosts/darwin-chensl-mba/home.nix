@@ -7,7 +7,7 @@
           Port 443
           User git
 
-      Host gitea-ssh.chensl.me
+      Host git-ssh.chensl.me
           ProxyCommand cloudflared access ssh --hostname %h
     '';
   };
