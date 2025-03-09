@@ -119,6 +119,7 @@ in {
       "jordanbaird-ice"
       "keepassxc"
       "keycastr"
+      "librewolf"
       "localsend"
       "logseq"
       "monitorcontrol"
