@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: let
+  inherit (inputs) mynur;
+in {
   fonts = {
     packages = with pkgs; [
       # icon fonts
@@ -31,7 +37,10 @@
       noto-fonts-cjk-sans
 
       # https://github.com/subframe7536/maple-font
-      # maple-mono-SC-NF
+      maple-mono-SC-NF
+
+      # https://github.com/SpaceTimee/Fusion-JetBrainsMapleMono
+      mynur.legacyPackages.${pkgs.system}.jetbrains-maple-mono
     ];
   };
 }
