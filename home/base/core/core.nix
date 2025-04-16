@@ -12,31 +12,35 @@ in {
     "$HOME/.local/bin"
   ];
 
-  home.packages = with pkgs; [
-    # Misc
-    tldr
-    cowsay
-    gnupg
-    gnumake
-    # coreutils
+  home.packages = with pkgs;
+    [
+      # Misc
+      tldr
+      cowsay
+      gnupg
+      gnumake
+      # coreutils
 
-    # search for files by name, faster than find
-    fd
-    # search for files by its content, replacement of grep
-    (ripgrep.override {withPCRE2 = true;})
+      # search for files by name, faster than find
+      fd
+      # search for files by its content, replacement of grep
+      (ripgrep.override {withPCRE2 = true;})
 
-    # A fast and polyglot tool for code searching, linting, rewriting at large scale
-    # supported languages: only some mainstream languages currently(do not support nix/nginx/yaml/toml/...)
-    ast-grep
+      # A fast and polyglot tool for code searching, linting, rewriting at large scale
+      # supported languages: only some mainstream languages currently(do not support nix/nginx/yaml/toml/...)
+      ast-grep
 
-    just # a command runner like make, but simpler
-    delta # A viewer for git and diff output
-    hyperfine # command-line benchmarking tool
-    duf # Disk Usage/Free Utility - a better 'df' alternative
-    procs
-    tldr
-    wrk
-  ];
+      just # a command runner like make, but simpler
+      delta # A viewer for git and diff output
+      hyperfine # command-line benchmarking tool
+      duf # Disk Usage/Free Utility - a better 'df' alternative
+      procs
+      tldr
+      wrk
+    ]
+    ++ (with mynur.legacyPackages.${pkgs.system}; [
+      shell-safe-rm
+    ]);
 
   programs = {
     eza.enable = true;

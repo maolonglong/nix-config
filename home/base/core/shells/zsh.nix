@@ -49,6 +49,7 @@
 
     shellAliases = {
       j = "just";
+      rm = "safe-rm";
     };
   };
 }
