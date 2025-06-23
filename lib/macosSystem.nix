@@ -16,7 +16,12 @@ in
     modules =
       darwinModules
       ++ [
-        {nixpkgs.pkgs = import nixpkgs-darwin {inherit system;};}
+        {
+          nixpkgs.pkgs = import nixpkgs-darwin {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        }
         nix-index-database.darwinModules.nix-index # command-not-found
       ]
       ++ (

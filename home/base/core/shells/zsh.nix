@@ -39,11 +39,12 @@
       [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
     '';
 
-    initExtra = ''
+    initContent = ''
       unalias gup
       unalias gops
       unalias gsu
 
+      export GPG_TTY=$(tty)
       [ "$(command -v mutagen)" ] && mutagen daemon start
     '';
 

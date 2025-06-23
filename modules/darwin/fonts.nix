@@ -18,26 +18,15 @@ in {
       source-han-serif # 思源宋体
 
       # nerdfonts
-      # https://github.com/NixOS/nixpkgs/blob/nixos-24.11/pkgs/data/fonts/nerdfonts/shas.nix
-      (nerdfonts.override {
-        fonts = [
-          # symbols icon only
-          "NerdFontsSymbolsOnly"
-
-          # Characters
-          "FiraCode"
-          "JetBrainsMono"
-          # "Iosevka"
-        ];
-      })
+      # https://github.com/NixOS/nixpkgs/blob/nixos-25.05/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
+      nerd-fonts.symbols-only
+      nerd-fonts.fira-code
+      nerd-fonts.jetbrains-mono
 
       # julia-mono
       # dejavu_fonts
       meslo-lgs-nf
       noto-fonts-cjk-sans
-
-      # https://github.com/subframe7536/maple-font
-      maple-mono-SC-NF
 
       # https://github.com/SpaceTimee/Fusion-JetBrainsMapleMono
       mynur.legacyPackages.${pkgs.system}.jetbrains-maple-mono
