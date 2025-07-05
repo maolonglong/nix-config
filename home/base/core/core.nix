@@ -10,6 +10,8 @@ in {
     "$HOME/bin"
     "$HOME/.bin"
     "$HOME/.local/bin"
+    "$HOME/.bun/bin"
+    "$HOME/.claude/local"
   ];
 
   home.packages = with pkgs;
