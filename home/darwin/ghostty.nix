@@ -17,7 +17,6 @@ in {
     copy-on-select = true
     cursor-style = block
     cursor-style-blink = false
-    Font-family = JetBrains Maple Mono
     font-family = FiraCode Nerd Font Mono
     font-size = 12
     macos-option-as-alt = left
