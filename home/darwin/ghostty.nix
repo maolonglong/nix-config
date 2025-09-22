@@ -17,6 +17,8 @@ in {
     copy-on-select = true
     cursor-style = block
     cursor-style-blink = false
+    font-family = JetBrains Maple Mono
+    font-family = JetBrainsMono Nerd Font
     font-family = FiraCode Nerd Font Mono
     font-size = 12
     macos-option-as-alt = left
@@ -30,5 +32,6 @@ in {
     window-padding-x = 10
     window-padding-y = 10
     keybind = shift+enter=text:\n
+    auto-update-channel = tip
   '';
 }

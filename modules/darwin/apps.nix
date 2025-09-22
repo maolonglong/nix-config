@@ -118,7 +118,7 @@ in {
       "iterm2"
       "jordanbaird-ice"
       "keepassxc"
-      "keycastr"
+      # "keycastr"
       "librewolf"
       "localsend"
       "logseq"

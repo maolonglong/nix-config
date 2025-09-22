@@ -5,7 +5,7 @@
   # Configure GOPRIVATE and GOPROXY manually
   programs.go = rec {
     enable = true;
-    package = pkgs-unstable.go_1_23;
+    package = pkgs-unstable.go_1_25;
     goPath = "go";
     goBin = "${goPath}/bin";
     # goPrivate = [
