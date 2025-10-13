@@ -3,38 +3,53 @@
 Purpose: help AI agents work effectively in this Nix flake that configures macOS (nix-darwin), NixOS, and Home Manager.
 
 ## Architecture snapshot
-- Flake entry: `flake.nix` wires inputs (nixpkgs stable/unstable, nix-darwin, home-manager, agenix, nix-index-database, private `mysecrets`, `mynur`) and exposes:
+- **Flake entry**: `flake.nix` wires inputs (nixpkgs stable/unstable/darwin variants, nix-darwin, home-manager, agenix, nix-index-database, private `mysecrets`, `mynur`) and exposes:
   - `darwinConfigurations`: `chensl-mba`, `work`
   - `nixosConfigurations`: `nixos`
-- Core helpers in `lib/`:
-  - `macosSystem`, `nixosSystem`, `homeOnlySystem`: glue nix(-darwin)/home-manager and inject `specialArgs`.
-  - `scanPaths path`: auto-imports all submodules (directories and `.nix` files) except `default.nix`.
-  - `genSpecialArgs myvars`: provides `inputs`, `mylib`, `myvars`, and `pkgs-unstable` (use this in modules when you need newer packages).
-- System modules:
-  - macOS: `modules/darwin/{nix-core.nix,security.nix,system.nix,fonts.nix,apps.nix,...}` plus `modules/darwin/default.nix` (imports `../base.nix` and `scanPaths ./`).
-  - NixOS: `modules/nixos/*` with `modules/nixos/default.nix` importing `../base.nix` and `scanPaths ./`.
-- Home Manager:
-  - OS-agnostic base under `home/base/{core,gui,tui}`; platform variants under `home/darwin` and `home/linux`.
-  - Example: `home/base/core/shells/zsh.nix` configures oh-my-zsh and pins `nix-zsh-completions` via `pkgs.fetchFromGitHub`.
-- Hosts: per-host wiring under `hosts/**` and referenced in `flake.nix` (`darwinHosts`, `nixosHosts`).
-- Overlays: `overlays/default.nix` loads every overlay in the folder; `overlays/gh-patch.nix` adds `fetchFromGitHubWithPatches` derivation helper.
-- Secrets: `secrets/darwin.nix` enables agenix, expects `/etc/ssh/ssh_host_ed25519_key` and decrypts files from private `nix-secrets`.
+  - `homeConfigurations`: `devbox` (standalone home-manager for remote systems)
+- **Core helpers in `lib/`**:
+  - `macosSystem`, `nixosSystem`, `homeOnlySystem`: construct system configs and inject `specialArgs`
+  - `scanPaths path`: auto-imports all submodules (directories + `.nix` files) except `default.nix` — this is the magic behind auto-discovery
+  - `genSpecialArgs myvars`: provides `inputs`, `mylib`, `myvars`, and `pkgs-unstable` (use this when needing newer packages than stable channel)
+  - `attrs.nix`: convenience wrappers for common lib functions (listToAttrs, mapAttrs, mergeAttrsList, etc.)
+- **System modules**:
+  - macOS: `modules/darwin/{nix-core.nix,security.nix,system.nix,fonts.nix,apps.nix,...}` plus `modules/darwin/default.nix` (imports `../base.nix` + `scanPaths ./`)
+  - NixOS: `modules/nixos/*` with `modules/nixos/default.nix` importing `../base.nix` + `scanPaths ./`
+  - Shared: `modules/base.nix` configures mirrors (TUNA/SJTU/USTC), cachix, core packages, and experimental features
+- **Home Manager**:
+  - OS-agnostic base under `home/base/{core,gui,tui}`; platform-specific under `home/darwin` and `home/linux`
+  - Each layer uses `mylib.scanPaths ./.` in its `default.nix` for automatic imports
+  - Example: `home/base/core/shells/zsh.nix` configures oh-my-zsh and pins `nix-zsh-completions` via `pkgs.fetchFromGitHub`
+- **Hosts**: per-host config under `hosts/**`, referenced in `flake.nix` via `darwinHosts`, `nixosHosts`, `homeOnlyHosts` attribute sets
+- **Overlays**: `overlays/default.nix` auto-loads every `.nix` file in the folder (except `default.nix`/`README.md`); example: `gh-patch.nix` provides `fetchFromGitHubWithPatches` helper
+- **Secrets**: `secrets/darwin.nix` enables agenix, requires `/etc/ssh/ssh_host_ed25519_key` and decrypts files from private `nix-secrets` repo
 
 ## Daily workflows
-- Dev shell: `nix develop` gives alejandra (formatter), nil (LSP), taplo, typos; pre-commit hooks are wired via `checks.pre-commit-check.shellHook`.
-- Format & checks: `nix fmt` (alejandra) and `nix flake check` (or `just c`).
-- Build/apply configs (examples):
-  - macOS: `darwin-rebuild switch --flake .#work` or `.#chensl-mba` (or `just b flake=.#work`).
-  - NixOS: `nixos-rebuild switch --flake .#nixos`.
-- Homebrew: managed via nix-darwin (`home/darwin/homebrew.nix`), with mirror env and MAS apps; ensure Brew is installed outside Nix.
+- **Dev shell**: `nix develop` gives alejandra (formatter), nil (LSP), taplo (TOML), typos (spell checker); pre-commit hooks auto-run via `checks.pre-commit-check.shellHook`
+- **Format & checks**: `nix fmt` (alejandra) and `nix flake check` (or `just c` shortcut)
+- **Build/apply configs**:
+  - macOS: `darwin-rebuild switch --flake .#work` or `.#chensl-mba` (or `just b flake=.#work`)
+  - NixOS: `nixos-rebuild switch --flake .#nixos`
+  - Home Manager standalone: `home-manager switch --flake .#devbox` (for remote dev machines)
+  - Debug: add `--show-trace` flag for detailed error backtraces
+  - Build-only (no activation): `darwin-rebuild build --flake .#work`
+- **Homebrew**: managed declaratively via `home/darwin/homebrew.nix` with mirror env vars and MAS apps; Homebrew itself must be installed outside Nix
+- **Garbage collection**: `sudo nix-collect-garbage --delete-old` and `sudo nix store gc --debug` (see `modules/darwin/apps.nix` for context)
 
 ## Conventions and patterns
-- Auto-import: aggregator `default.nix` files commonly do `imports = mylib.scanPaths ./.;` or similar; drop a new module next to it and it gets picked up automatically (no manual list edits).
-- Special args: modules may accept `pkgs-unstable`, `mylib`, `myvars` (see `flake.nix` → `genSpecialArgs`). Example: `hosts/darwin-work/home.nix` picks `pkgs-unstable.go_1_23`.
-- Home Manager is integrated into nix-darwin/NixOS systems; prefer `darwin-rebuild`/`nixos-rebuild`.
-- Mirrors/caches: `modules/base.nix` sets `substituters` (TUNA/SJTU/USTC, cachix) and trusted keys; keep them intact for fast builds.
-- Known macOS choices: `nix.settings.auto-optimise-store = false` (upstream issue); TouchID for sudo; system defaults tuned in `modules/darwin/system.nix`.
-- Shell: system default stays zsh; nushell is commented to avoid app breakage; zsh extras and aliases live in `home/base/core/shells/zsh.nix` and `home/darwin/homebrew.nix` (note `lib.mkOrder 550`).
+- **Auto-import magic**: aggregator `default.nix` files use `imports = mylib.scanPaths ./.;` — just drop a new `.nix` file next to it, no manual import list needed
+  - Example: create `home/base/tui/mytool.nix` → automatically imported by `home/base/tui/default.nix`
+  - Exceptions: `default.nix` itself is always excluded from `scanPaths`
+- **Special args injection**: modules receive `pkgs-unstable`, `mylib`, `myvars`, `inputs` via `specialArgs` (defined in `flake.nix` → `genSpecialArgs`)
+  - Example: `hosts/darwin-work/home.nix` uses `pkgs-unstable.go_1_25` for newer Go version
+  - Access pattern: `{ pkgs-unstable, mylib, myvars, ... }: { ... }`
+- **Home Manager integration**: tightly coupled with nix-darwin/NixOS; always use `darwin-rebuild`/`nixos-rebuild` (not standalone `home-manager` CLI for system hosts)
+- **Binary caches**: `modules/base.nix` configures TUNA/SJTU/USTC mirrors + cachix for faster builds in China; keep these intact
+- **Platform-specific gotchas**:
+  - macOS: `nix.settings.auto-optimise-store = false` (upstream compatibility issue), TouchID for sudo enabled
+  - System defaults tuned in `modules/darwin/system.nix` (dock, finder, keyboard, etc.)
+- **Shell configuration**: system default shell is zsh; nushell commented out to avoid breaking GUI apps; zsh customization in `home/base/core/shells/zsh.nix` with `lib.mkOrder 550` for initExtra ordering
+- **Overlay pattern**: `overlays/default.nix` auto-loads all `.nix` files (except `default.nix`/`README.md`); each overlay is a function `args: (final: prev: { ... })`
 
 ## Practical examples
 - Add a new TUI tool: create `home/base/tui/mytool.nix` with `{ pkgs, ... }: { programs.mytool.enable = true; }` — aggregator will import it.

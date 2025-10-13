@@ -106,10 +106,12 @@ in {
 
     taps = [
       "localsend/localsend"
+      "tw93/tap"
     ];
 
     brews = [
       "flyctl"
+      "tw93/tap/mole"
     ];
 
     # `brew install --cask`

@@ -109,6 +109,11 @@
           # When performing a search, search the current folder by default
           FXDefaultSearchScope = "SCcf";
         };
+        "com.apple.dock" = {
+          "mru-spaces" = true;
+          "autohide-time-modifier" = 0.2;
+          "autohide-delay" = 0;
+        };
         "com.apple.desktopservices" = {
           # Avoid creating .DS_Store files on network or USB volumes
           DSDontWriteNetworkStores = true;
