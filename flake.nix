@@ -199,6 +199,13 @@
                 };
               };
               taplo.enable = true;
+              gitleaks = {
+                enable = true;
+                name = "Detect hardcoded secrets";
+                entry = "${pkgs.gitleaks}/bin/gitleaks git --pre-commit --redact --staged --verbose";
+                language = "golang";
+                pass_filenames = false;
+              };
             };
           };
         };

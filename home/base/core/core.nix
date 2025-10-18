@@ -37,7 +37,6 @@ in {
       hyperfine # command-line benchmarking tool
       duf # Disk Usage/Free Utility - a better 'df' alternative
       procs
-      tldr
       wrk
     ]
     ++ (with mynur.legacyPackages.${pkgs.system}; [
