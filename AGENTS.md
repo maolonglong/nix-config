@@ -2,40 +2,28 @@
 
 ## Project Structure & Module Organization
 
-- `flake.nix` defines inputs, shared utilities in `lib/`, and enumerates darwin, NixOS, and home-only hosts.
-- System modules live in `modules/` (`base.nix`, `darwin/`, `nixos/`), while user environments sit under `home/` grouped into `base/`, `darwin/`, and host overrides.
-- Host-specific overrides belong in `hosts/<platform>-<hostname>/`, e.g. `hosts/darwin-work/` or `hosts/linux-devbox/`, keeping secrets isolated in `secrets/` (agenix encrypted).
-- Overlays and package tweaks go in `overlays/`; reusable helper functions belong in `lib/`.
+The flake root holds `flake.nix`, which wires inputs and exports `darwin`, `nixos`, and standalone Home Manager configurations. Host-specific overrides live under `hosts/<platform>-<name>/`, and compose with shared modules in `modules/{darwin,nixos}` and `home/base`. Development overlays sit in `overlays/`, with helper functions in `lib/`. Secrets encrypted by agenix belong in `secrets/`; keep new sensitive values out of git and reference them via `.age` files instead. Use `home/darwin` and `home/base` for reusable per-user modules before adding host overrides.
 
 ## Build, Test, and Development Commands
 
-- `nix develop` enters the devshell with `alejandra`, `nil`, `taplo`, and `typos`.
-- `just check` or `nix flake check` validates the flake, runs pre-commit hooks, and ensures module evaluation succeeds.
-- `just build flake=.#work` builds the macOS host configuration; substitute `.#chensl-mba` or `.#nixos` as needed.
-- Apply changes with `darwin-rebuild switch --flake .#work` or `nixos-rebuild switch --flake .#nixos` after a dry-run.
+- `just` — run `just --list` to discover recipes; aliases `c` and `b` wrap common tasks.
+- `just c` / `nix flake check` — evaluate all configurations and run pre-commit hooks (formatting, typos, Taplo).
+- `just b flake=.#{host}` — build the selected macOS host via `darwin-rebuild`.
+- `nixos-rebuild build --flake .#{host}` — build a NixOS host; use `switch` when ready to activate.
+- `nix develop` — enter the dev shell with `alejandra`, `nil`, `taplo`, and `typos`, plus pre-commit hooks in `shellHook`.
 
 ## Coding Style & Naming Conventions
 
-- Format Nix files with `alejandra`; keep indentation at two spaces and prefer attribute names with kebab-case (e.g. `system.defaults`).
-- TOML manifests (such as `.typos.toml`) should respect `taplo fmt`; avoid inline tables for readability.
-- Name host modules and home modules using the `<platform>-<hostname>` pattern to align with `flake.nix`.
-- Enable the repo’s hooks (`nix develop` + `git commit`) so `typos` auto-fixes spelling and `alejandra` runs before each commit.
+Write Nix using 2-space indentation and align attribute sets for readability. Format code with `alejandra` or `nix fmt` before committing; the dev shell and pre-commit hook enforce this. Name host files as `<platform>-<hostname>/default.nix` and `home.nix` to mirror `flake.nix` entries, and keep module names kebab-cased (e.g., `modules/darwin/networking.nix`). Prefer pure functions in `lib/` so they can be reused across systems.
 
 ## Testing Guidelines
 
-- Always run `nix flake check` before pushing; it exercises module option validation and the pre-commit suite.
-- For host touches, run `darwin-rebuild build --flake .#target` or `nixos-rebuild build --flake .#target` to ensure system closure builds.
-- Verify home-manager changes via `home-manager build --flake .#devbox` (or the relevant profile) prior to switching.
-- Keep test files or sample configs alongside their modules (e.g. `modules/darwin/`) and mirror the attribute path in the filename.
+Run `nix flake check` (or `just c`) after every change; it ensures modules evaluate, formatting stays clean, and typos are fixed automatically. For host-specific verification, build with `darwin-rebuild build --flake .#{host}` or `nixos-rebuild build --flake .#{host}` before switching. When adding new modules, include lightweight assertions using `lib.asserts` so evaluation fails fast if prerequisites are missing.
 
 ## Commit & Pull Request Guidelines
 
-- Follow the existing Conventional Commit style (`feat:`, `fix:`, `chore:`) and mention the platform or module touched (`feat(darwin): tweak finder defaults`).
-- Squash incidental formatting into the functional commit; pre-commit hooks should leave diffs clean.
-- Pull requests should highlight the target host(s), note any secret or agenix updates, and include the command used for verification (`nix flake check`, rebuild dry-run).
-- Include screenshots only when UI-facing tweaks (e.g. finder defaults) change visible behavior; otherwise link to relevant module paths.
+Follow the existing Conventional Commits style (`feat(scope): message`, `fix: message`, `chore:`). Keep scope identifiers short (`darwin`, `starship`, `flake`). Each pull request should describe the host or module touched, list tested commands, and mention any secrets or follow-up actions. Link related issues when available, and add screenshots only for UI-facing tooling changes (e.g., terminal themes).
 
-## Secrets & Configuration Tips
+## Security & Secrets
 
-- Encrypted secrets live in `secrets/` and are managed with agenix; edit via `nix run github:ryantm/agenix -- -e secrets/<file>.age`.
-- Ensure target machines have the expected SSH host keys before deploying secrets, and avoid committing decrypted material anywhere in the repo.
+Never commit raw credentials; use agenix to create `.age` files and list them in `secrets/`. Confirm the relevant key resides in your age keyring before pushing. When updating secrets, note the change in the PR and coordinate key distribution with affected users.
