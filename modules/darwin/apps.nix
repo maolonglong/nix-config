@@ -99,9 +99,9 @@ in {
     # For details, see https://github.com/mas-cli/mas
     masApps = {
       # Xcode = 497799835;
-      Wechat = 836500024;
-      QQ = 451108668;
-      Bob = 1630034110;
+      # Wechat = 836500024;
+      # QQ = 451108668;
+      # Bob = 1630034110;
     };
 
     taps = [
@@ -117,6 +117,7 @@ in {
     # `brew install --cask`
     casks = [
       "battery"
+      "claude-code"
       "iterm2"
       "jordanbaird-ice"
       "keepassxc"

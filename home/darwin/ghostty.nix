@@ -32,6 +32,5 @@ in {
     window-padding-x = 10
     window-padding-y = 10
     keybind = shift+enter=text:\n
-    auto-update-channel = tip
   '';
 }
