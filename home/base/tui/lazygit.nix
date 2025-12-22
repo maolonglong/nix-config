@@ -24,10 +24,12 @@
       };
       git = {
         autoFetch = false;
-        paging = {
-          colorArg = "always";
-          pager = "delta --dark --paging=never";
-        };
+        pagers = [
+          {
+            pager = "delta --dark --paging=never";
+            colorArg = "always";
+          }
+        ];
         branchLogCmd = "git log --graph --color=always --abbrev-commit --decorate --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=medium {{branchName}} --";
         allBranchesLogCmds = ["git log --graph --all --color=always --abbrev-commit --decorate --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=medium"];
       };
