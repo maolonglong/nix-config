@@ -1,13 +1,19 @@
-{pkgs-unstable, ...}: {
+{
+  pkgs-unstable,
+  myvars,
+  ...
+}: {
   programs.ssh.enable = false;
   programs.git.enable = false;
 
   # Configure GOPRIVATE and GOPROXY manually
-  programs.go = rec {
+  programs.go = {
     enable = true;
     package = pkgs-unstable.go_1_25;
-    goPath = "go";
-    goBin = "${goPath}/bin";
+    env = rec {
+      GOPATH = "${myvars.homeDirectory}/go";
+      GOBIN = "${GOPATH}/bin";
+    };
     # goPrivate = [
     #   "github.com/maolonglong"
     #   "go.chensl.me"

@@ -1,11 +1,8 @@
 {
   pkgs,
   lib,
-  inputs,
   ...
-}: let
-  inherit (inputs) mynur;
-in {
+}: {
   home.packages = with pkgs; [
     git-lfs
     git-extras
@@ -13,23 +10,14 @@ in {
 
   programs.git = {
     enable = lib.mkDefault true;
-    userName = "Shaolong Chen";
-    userEmail = "shaolong.chen@outlook.it";
     signing.key = "80263B1A6D611DE4";
 
-    lfs.enable = true;
-
-    includes = [
-      {path = "${mynur.legacyPackages.${pkgs.system}.catppuccinThemes.delta}/catppuccin.gitconfig";}
-    ];
-    delta = {
-      enable = true;
-      options = {
-        features = "catppuccin-mocha";
+    settings = {
+      user = {
+        name = "Shaolong Chen";
+        email = "shaolong.chen@outlook.it";
       };
-    };
 
-    extraConfig = {
       branch = {
         sort = "-committerdate";
       };
@@ -90,9 +78,19 @@ in {
       };
     };
 
+    lfs.enable = true;
+
     ignores = [
       "*~"
       ".DS_Store"
     ];
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      features = "catppuccin-mocha";
+    };
   };
 }

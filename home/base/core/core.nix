@@ -33,13 +33,12 @@ in {
       ast-grep
 
       just # a command runner like make, but simpler
-      delta # A viewer for git and diff output
       hyperfine # command-line benchmarking tool
       duf # Disk Usage/Free Utility - a better 'df' alternative
       procs
       wrk
     ]
-    ++ (with mynur.legacyPackages.${pkgs.system}; [
+    ++ (with mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}; [
       shell-safe-rm
     ]);
 
@@ -67,7 +66,7 @@ in {
       config.theme = "Catppuccin Mocha";
       themes = {
         "Catppuccin Mocha" = {
-          src = mynur.legacyPackages.${pkgs.system}.catppuccinThemes.bat;
+          src = mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.catppuccinThemes.bat;
           file = "themes/Catppuccin Mocha.tmTheme";
         };
       };

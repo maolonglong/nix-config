@@ -18,7 +18,7 @@ in {
       source-han-serif # 思源宋体
 
       # nerdfonts
-      # https://github.com/NixOS/nixpkgs/blob/nixos-25.05/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
+      # https://github.com/NixOS/nixpkgs/blob/nixos-25.11/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
       nerd-fonts.symbols-only
       nerd-fonts.fira-code
       nerd-fonts.jetbrains-mono
@@ -29,7 +29,7 @@ in {
       noto-fonts-cjk-sans
 
       # https://github.com/SpaceTimee/Fusion-JetBrainsMapleMono
-      mynur.legacyPackages.${pkgs.system}.jetbrains-maple-mono
+      mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.jetbrains-maple-mono
     ];
   };
 }

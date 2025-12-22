@@ -14,6 +14,6 @@ in {
         docker_context.disabled = true;
         palette = "catppuccin_mocha";
       }
-      // builtins.fromTOML (builtins.readFile "${mynur.legacyPackages.${pkgs.system}.catppuccinThemes.starship}/themes/mocha.toml");
+      // builtins.fromTOML (builtins.readFile "${mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.catppuccinThemes.starship}/themes/mocha.toml");
   };
 }
