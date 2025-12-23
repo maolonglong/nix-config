@@ -78,7 +78,6 @@
         myvars = {
           system = "aarch64-linux";
           username = "chensl";
-          homeDirectory = "/home/chensl";
           hostname = "nixos";
         };
         nixosModules = [
@@ -97,28 +96,29 @@
     };
 
     darwinHosts = {
-      chensl-mba = rec {
+      chensl-mba = {
         myvars = {
           system = "aarch64-darwin";
           username = "chensl";
-          homeDirectory = "/Users/chensl";
-          hostname = "chensl-mba";
+          userfullname = "Shaolong Chen";
+          useremail = "shaolong.chen@outlook.it";
         };
         darwinModules = [
           ./modules/darwin
           ./secrets/darwin.nix
-          (./. + "/hosts/darwin-${myvars.hostname}")
+          ./hosts/darwin-chensl-mba
         ];
         homeModules = [
           ./home/darwin
-          (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
+          ./hosts/darwin-chensl-mba/home.nix
         ];
       };
       work = {
         myvars = {
           system = "aarch64-darwin";
           username = "bytedance";
-          homeDirectory = "/Users/bytedance";
+          userfullname = "Shaolong Chen";
+          useremail = "chenshaolong.1016@bytedance.com";
         };
         darwinModules = [
           ./modules/darwin
@@ -137,7 +137,6 @@
         myvars = {
           system = "x86_64-linux";
           username = "chenshaolong.1016";
-          homeDirectory = "/home/chenshaolong.1016";
         };
         homeModules = [
           ./home/base/core

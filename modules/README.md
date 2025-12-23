@@ -13,6 +13,6 @@
 
 开发提示：
 
-- 将平台无关逻辑放在 modules/base.nix；平台差异放在 darwin/ 或 nixos/ 下。
+- 将平台无关逻辑放在 modules/base/；平台差异放在 darwin/ 或 nixos/ 下。
 - 变更后在 macOS 上使用 `darwin-rebuild switch --flake .#work` 或 `.#chensl-mba`，NixOS 用 `nixos-rebuild switch --flake .#nixos` 应用。
 - 涉及密钥/agenix 的模块需确保目标机有 /etc/ssh/ssh_host_ed25519_key 与私库密文。

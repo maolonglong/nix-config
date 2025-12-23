@@ -3,7 +3,7 @@
   myvars,
   ...
 }: let
-  inherit (myvars) homeDirectory;
+  homeDir = config.users.users."${myvars.username}".home;
 in {
   # https://github.com/LnL7/nix-darwin/blob/master/modules/programs/gnupg.nix
   # try `pkill gpg-agent` if you have issues(such as `no pinentry`)
@@ -14,8 +14,8 @@ in {
 
   # enable logs for debugging
   launchd.user.agents.gnupg-agent.serviceConfig = {
-    StandardErrorPath = "${homeDirectory}/Library/Logs/gnupg-agent.stderr.log";
-    StandardOutPath = "${homeDirectory}/Library/Logs/gnupg-agent.stdout.log";
+    StandardErrorPath = "${homeDir}/Library/Logs/gnupg-agent.stderr.log";
+    StandardOutPath = "${homeDir}/Library/Logs/gnupg-agent.stdout.log";
   };
 
   nix.extraOptions = ''

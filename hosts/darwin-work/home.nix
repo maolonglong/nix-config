@@ -1,8 +1,10 @@
 {
-  pkgs-unstable,
   myvars,
+  pkgs-unstable,
   ...
-}: {
+}: let
+  homeDir = "/Users/${myvars.username}";
+in {
   programs.ssh.enable = false;
   programs.git.enable = false;
 
@@ -11,7 +13,7 @@
     enable = true;
     package = pkgs-unstable.go_1_25;
     env = rec {
-      GOPATH = "${myvars.homeDirectory}/go";
+      GOPATH = "${homeDir}/go";
       GOBIN = "${GOPATH}/bin";
     };
     # goPrivate = [
@@ -21,7 +23,7 @@
   };
 
   home.sessionPath = [
-    "$GOPATH/bin"
+    "${homeDir}/go/bin"
   ];
 
   home.sessionVariables = {

@@ -1,6 +1,7 @@
 {
-  pkgs,
   lib,
+  myvars,
+  pkgs,
   ...
 }: {
   home.packages = with pkgs; [
@@ -14,8 +15,8 @@
 
     settings = {
       user = {
-        name = "Shaolong Chen";
-        email = "shaolong.chen@outlook.it";
+        name = myvars.userfullname;
+        email = myvars.useremail;
       };
 
       branch = {

@@ -2,7 +2,7 @@
   imports =
     (mylib.scanPaths ./.)
     ++ [
-      ../base.nix
+      ../base
     ];
 
   system.stateVersion = "25.11";
