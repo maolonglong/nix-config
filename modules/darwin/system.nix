@@ -69,7 +69,7 @@
         # AppleInterfaceStyle = "Dark"; # dark mode
 
         # AppleKeyboardUIMode = 3; # Mode 3 enables full keyboard control.
-        # ApplePressAndHoldEnabled = true; # enable press and hold
+        ApplePressAndHoldEnabled = false; # disable press and hold
 
         # If you press and hold certain keyboard keys when in a text area, the key’s character begins to repeat.
         # This is very useful for vim users, they use `hjkl` to move cursor.
@@ -145,10 +145,10 @@
         # Prevent Photos from opening automatically when devices are plugged in
         "com.apple.ImageCapture".disableHotPlug = true;
 
-        "com.microsoft.VSCode".ApplePressAndHoldEnabled = false;
-        "com.microsoft.VSCodeInsiders".ApplePressAndHoldEnabled = false;
-        "com.vscodium".ApplePressAndHoldEnabled = false;
-        "com.microsoft.VSCodeExploration".ApplePressAndHoldEnabled = false;
+        # "com.microsoft.VSCode".ApplePressAndHoldEnabled = false;
+        # "com.microsoft.VSCodeInsiders".ApplePressAndHoldEnabled = false;
+        # "com.vscodium".ApplePressAndHoldEnabled = false;
+        # "com.microsoft.VSCodeExploration".ApplePressAndHoldEnabled = false;
       };
 
       loginwindow = {
