@@ -66,6 +66,8 @@ in {
       # };
     };
 
+    bat.enable = true;
+
     fzf = rec {
       enable = true;
       enableZshIntegration = true;
