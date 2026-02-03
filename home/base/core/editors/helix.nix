@@ -1,4 +1,6 @@
 {pkgs-unstable, ...}: {
+  catppuccin.helix.enable = true;
+
   programs.helix = {
     enable = true;
     package = pkgs-unstable.helix;
@@ -60,7 +62,6 @@
           tab = "goto_next_buffer";
         };
       };
-      theme = "catppuccin_mocha";
     };
     languages = {
       grammar = [

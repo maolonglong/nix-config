@@ -9,8 +9,11 @@ in {
   programs.git.enable = false;
 
   # Configure GOPRIVATE and GOPROXY manually
+  home.packages = [
+    pkgs-unstable.go_1_25
+  ];
   programs.go = {
-    enable = true;
+    enable = false;
     package = pkgs-unstable.go_1_25;
     env = rec {
       GOPATH = "${homeDir}/go";
@@ -26,8 +29,10 @@ in {
     "${homeDir}/go/bin"
   ];
 
-  home.sessionVariables = {
+  home.sessionVariables = rec {
     GO111MODULE = "on";
+    GOPATH = "${homeDir}/go";
+    GOBIN = "${GOPATH}/bin";
     # GOPROXY = lib.concatStringsSep "|" [
     #   "https://goproxy.cn"
     #   "https://goproxy.io"

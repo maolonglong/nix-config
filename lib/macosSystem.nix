@@ -9,7 +9,7 @@
   ...
 }: let
   inherit (myvars) system;
-  inherit (inputs) nixpkgs-darwin home-manager nix-darwin nix-index-database;
+  inherit (inputs) nixpkgs-darwin home-manager nix-darwin nix-index-database catppuccin;
 in
   nix-darwin.lib.darwinSystem {
     inherit system specialArgs;
@@ -34,7 +34,14 @@ in
               backupFileExtension = "hm_bak~";
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.${myvars.username}.imports = homeModules;
+              users.${myvars.username}.imports =
+                [
+                  catppuccin.homeModules.catppuccin
+                  {
+                    catppuccin.flavor = "mocha";
+                  }
+                ]
+                ++ homeModules;
               extraSpecialArgs = specialArgs;
             };
           }

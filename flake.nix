@@ -42,6 +42,8 @@
       url = "github:maolonglong/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    catppuccin.url = "github:catppuccin/nix";
   };
 
   outputs = {

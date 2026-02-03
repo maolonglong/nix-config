@@ -20,6 +20,7 @@ in {
     font-family = JetBrains Maple Mono
     font-family = JetBrainsMono Nerd Font
     font-family = FiraCode Nerd Font Mono
+    font-family = FiraCode Nerd Font
     font-size = 12
     macos-option-as-alt = left
     macos-titlebar-proxy-icon = hidden
@@ -32,5 +33,6 @@ in {
     window-padding-x = 10
     window-padding-y = 10
     keybind = shift+enter=text:\n
+    auto-update-channel = tip
   '';
 }

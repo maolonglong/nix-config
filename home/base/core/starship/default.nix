@@ -1,19 +1,12 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: let
-  inherit (inputs) mynur;
-in {
+{...}: {
+  catppuccin.starship.enable = true;
+
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
-    settings =
-      {
-        container.disabled = true;
-        docker_context.disabled = true;
-        palette = "catppuccin_mocha";
-      }
-      // builtins.fromTOML (builtins.readFile "${mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.catppuccinThemes.starship}/themes/mocha.toml");
+    settings = {
+      container.disabled = true;
+      docker_context.disabled = true;
+    };
   };
 }
