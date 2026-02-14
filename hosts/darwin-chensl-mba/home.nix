@@ -1,6 +1,25 @@
-{lib, ...}: {
+{
+  lib,
+  myvars,
+  ...
+}: let
+  homeDir = "/Users/${myvars.username}";
+in {
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
+    matchBlocks."*" = {
+      forwardAgent = false;
+      addKeysToAgent = "no";
+      compression = false;
+      serverAliveInterval = 0;
+      serverAliveCountMax = 3;
+      hashKnownHosts = false;
+      userKnownHostsFile = "~/.ssh/known_hosts";
+      controlMaster = "no";
+      controlPath = "~/.ssh/master-%r@%n:%p";
+      controlPersist = "no";
+    };
     extraConfig = ''
       Host github.com
           Hostname ssh.github.com
@@ -9,14 +28,16 @@
     '';
   };
 
-  programs.go = rec {
+  programs.go = {
     enable = true;
-    goPath = "go";
-    goBin = "${goPath}/bin";
-    goPrivate = [
-      "github.com/maolonglong"
-      "go.chensl.me"
-    ];
+    env = rec {
+      GOPATH = "${homeDir}/go";
+      GOBIN = "${GOPATH}/bin";
+      GOPRIVATE = lib.concatStringsSep "," [
+        "github.com/maolonglong"
+        "go.chensl.me"
+      ];
+    };
   };
 
   home.sessionPath = [
