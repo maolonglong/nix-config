@@ -41,6 +41,7 @@
 
     envExtra = ''
       [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+      [ "$(command -v fnm)" ] && eval "$(fnm env --use-on-cd --shell zsh)"
     '';
 
     initContent = ''
