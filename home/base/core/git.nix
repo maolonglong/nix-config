@@ -84,6 +84,7 @@
     ignores = [
       "*~"
       ".DS_Store"
+      "**/*.local.*"
     ];
   };
 
