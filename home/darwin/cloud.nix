@@ -5,6 +5,6 @@
     mutagen
     docker-client
     docker-credential-helpers
-    # cloudflared
+    cloudflared
   ];
 }
