@@ -105,13 +105,19 @@ in {
     };
 
     taps = [
+      "antoniorodr/memo"
       "localsend/localsend"
+      "steipete/tap"
       "tw93/tap"
     ];
 
     brews = [
+      "antoniorodr/memo/memo"
       "flyctl"
       "fnm"
+      "steipete/tap/gogcli"
+      "steipete/tap/imsg"
+      "steipete/tap/remindctl"
       "tw93/tap/mole"
     ];
 
