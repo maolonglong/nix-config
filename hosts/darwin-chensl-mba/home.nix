@@ -41,7 +41,7 @@ in {
   };
 
   home.sessionPath = [
-    "$GOPATH/bin"
+    "${homeDir}/go/bin"
   ];
 
   home.sessionVariables = {
