@@ -34,5 +34,6 @@ in {
     window-padding-y = 10
     keybind = shift+enter=text:\n
     auto-update-channel = tip
+    unfocused-split-opacity = 0.85
   '';
 }
