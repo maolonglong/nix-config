@@ -52,6 +52,7 @@
 
       export GPG_TTY=$(tty)
       [ "$(command -v mutagen)" ] && mutagen daemon start
+      [ "$(command -v jj)" ] && source <(jj util completion zsh)
     '';
 
     shellAliases = {
