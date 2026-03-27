@@ -112,6 +112,7 @@ in {
     brews = [
       "flyctl"
       "fnm"
+      "rtk"
       "tw93/tap/mole"
     ];
 
