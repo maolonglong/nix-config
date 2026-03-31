@@ -26,7 +26,7 @@ in {
     macos-titlebar-proxy-icon = hidden
     macos-titlebar-style = tabs
     shell-integration = zsh
-    shell-integration-features = sudo,no-cursor
+    shell-integration-features = sudo,no-cursor,ssh-terminfo,ssh-env
     theme = catppuccin-mocha
     window-decoration = true
     window-padding-balance = true
