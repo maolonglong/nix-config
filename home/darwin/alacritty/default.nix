@@ -6,7 +6,7 @@
   inherit (inputs) mynur;
 in {
   programs.alacritty = {
-    enable = true;
+    enable = false;
     # settings = builtins.fromTOML (builtins.readFile ./alacritty.toml);
   };
 
