@@ -1,14 +1,11 @@
 {
-  pkgs,
   inputs,
+  pkgs,
   ...
 }: let
   inherit (inputs) mynur;
 in {
-  programs.alacritty = {
-    enable = false;
-    # settings = builtins.fromTOML (builtins.readFile ./alacritty.toml);
-  };
+  programs.alacritty.enable = false;
 
   xdg.configFile."alacritty/alacritty.toml".text =
     (builtins.readFile ./alacritty.toml)

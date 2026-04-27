@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
-    autorestic
-    rclone
-    restic
+    ffmpeg-full
+    imagemagick
+    graphviz
   ];
 }

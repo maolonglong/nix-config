@@ -10,5 +10,5 @@ check:
   nix flake check
 
 [macos]
-build flake=".":
-  darwin-rebuild build --flake {{flake}}
+build host="work-mbp":
+  darwin-rebuild build --flake .#{{host}}

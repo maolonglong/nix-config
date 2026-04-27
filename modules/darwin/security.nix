@@ -3,16 +3,15 @@
   myvars,
   ...
 }: let
-  homeDir = config.users.users."${myvars.username}".home;
+  homeDir = config.users.users.${myvars.username}.home;
 in {
-  # https://github.com/LnL7/nix-darwin/blob/master/modules/programs/gnupg.nix
-  # try `pkill gpg-agent` if you have issues(such as `no pinentry`)
+  security.pam.services.sudo_local.touchIdAuth = true;
+
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = false;
   };
 
-  # enable logs for debugging
   launchd.user.agents.gnupg-agent.serviceConfig = {
     StandardErrorPath = "${homeDir}/Library/Logs/gnupg-agent.stderr.log";
     StandardOutPath = "${homeDir}/Library/Logs/gnupg-agent.stdout.log";

@@ -8,11 +8,6 @@
     then "Library/Application Support/com.mitchellh.ghostty"
     else "${config.xdg.configHome}/ghostty";
 in {
-  # It feels a bit strange to manage GUI applications with home-manager...
-  # programs.ghostty = {
-  #   enable = true;
-  # };
-
   home.file."${configDir}/config".text = ''
     copy-on-select = true
     cursor-style = block

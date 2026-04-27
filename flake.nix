@@ -1,35 +1,34 @@
 {
-  description = "My nix config for macOS & NixOS";
+  description = "My nix-darwin configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
+
     nix-darwin = {
       url = "github:lnl7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    flake-utils.url = "github:numtide/flake-utils";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     agenix = {
-      # url = "github:ryan4yin/ragenix";
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.darwin.follows = "nix-darwin";
     };
 
-    # add git hooks to format nix code before commit
-    pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-index-database = {
-      url = "github:Mic92/nix-index-database";
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -43,177 +42,132 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    catppuccin.url = "github:catppuccin/nix";
+    catppuccin.url = "github:catppuccin/nix/release-25.11";
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
-    flake-utils,
+    nixpkgs-darwin,
+    nixpkgs-unstable,
+    nix-darwin,
+    home-manager,
+    nix-index-database,
     pre-commit-hooks,
+    catppuccin,
     ...
-  } @ inputs: let
-    inherit (nixpkgs) lib;
-    mylib = import ./lib {inherit lib;};
+  }: let
+    system = "aarch64-darwin";
+    pkgs = nixpkgs-darwin.legacyPackages.${system};
 
-    genSpecialArgs = myvars: {
-      inherit inputs mylib myvars;
-
-      # use unstable branch for some packages to get the latest updates
-      pkgs-unstable = import inputs.nixpkgs-unstable {
-        inherit (myvars) system; # refer the `system` parameter form outer scope recursively
-        # To use chrome, we need to allow the installation of non-free software
+    mkDarwin = {
+      username,
+      userfullname,
+      useremail,
+      hostModules,
+      homeModules,
+    }: let
+      myvars = {
+        inherit system username userfullname useremail;
+      };
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
         config.allowUnfree = true;
       };
-      # pkgs-stable = import inputs.nixpkgs-stable {
-      #   inherit system;
-      #   # To use chrome, we need to allow the installation of non-free software
-      #   config.allowUnfree = true;
-      # };
-    };
-
-    # common arguments pass to darwin & nixos hosts
-    commonArgs = {inherit inputs lib mylib genSpecialArgs;};
-
-    nixosHosts = {
-      nixos = rec {
-        myvars = {
-          system = "aarch64-linux";
-          username = "chensl";
-          hostname = "nixos";
-        };
-        nixosModules = [
-          ./modules/nixos
-          # ./secrets/nixos.nix
-          (./. + "/hosts/orbstack-${myvars.hostname}")
-        ];
-        homeModules = [
-          ./home/base/core
-          # ./home/base/gui
-          ./home/base/tui
-          ./home/base/home.nix
-          # (./. + "/hosts/darwin-${myvars.hostname}/home.nix")
-        ];
+      specialArgs = {
+        inherit inputs myvars pkgs-unstable;
       };
-    };
-
-    darwinHosts = {
-      chensl-mba = {
-        myvars = {
-          system = "aarch64-darwin";
-          username = "chensl";
-          userfullname = "Shaolong Chen";
-          useremail = "shaolong.chen@outlook.it";
-        };
-        darwinModules = [
-          ./modules/darwin
-          ./secrets/darwin.nix
-          ./hosts/darwin-chensl-mba
-        ];
-        homeModules = [
-          ./home/darwin
-          ./hosts/darwin-chensl-mba/home.nix
-        ];
-      };
-      work = {
-        myvars = {
-          system = "aarch64-darwin";
-          username = "bytedance";
-          userfullname = "Shaolong Chen";
-          useremail = "chenshaolong.1016@bytedance.com";
-        };
-        darwinModules = [
-          ./modules/darwin
-          ./secrets/darwin.nix
-          ./hosts/darwin-work
-        ];
-        homeModules = [
-          ./home/darwin
-          ./hosts/darwin-work/home.nix
-        ];
-      };
-    };
-
-    homeOnlyHosts = {
-      devbox = {
-        myvars = {
-          system = "x86_64-linux";
-          username = "chenshaolong.1016";
-        };
-        homeModules = [
-          ./home/base/core
-          # ./home/base/gui
-          ./home/base/tui
-          ./home/base/home.nix
-          ./hosts/linux-devbox/home.nix
-        ];
-      };
-    };
-  in
-    {
-      nixosConfigurations =
-        builtins.mapAttrs (
-          _: value:
-            mylib.nixosSystem (commonArgs // value)
-        )
-        nixosHosts;
-
-      darwinConfigurations =
-        builtins.mapAttrs (
-          _: value:
-            mylib.macosSystem (commonArgs // value)
-        )
-        darwinHosts;
-
-      homeConfigurations =
-        builtins.mapAttrs (
-          _: value:
-            mylib.homeOnlySystem (commonArgs // value)
-        )
-        homeOnlyHosts;
-    }
-    // flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            alejandra
-            nil
-            taplo
-            typos
-          ];
-          shellHook = self.checks.${system}.pre-commit-check.shellHook;
-        };
-
-        checks = {
-          pre-commit-check = pre-commit-hooks.lib.${system}.run {
-            src = mylib.relativeToRoot ".";
-            hooks = {
-              alejandra.enable = true; # formatter
-              # Source code spell checker
-              typos = {
-                enable = true;
-                settings = {
-                  write = true; # Automatically fix typos
-                  configPath = "./.typos.toml"; # relative to the flake root
-                };
+    in
+      nix-darwin.lib.darwinSystem {
+        inherit system specialArgs;
+        modules =
+          [
+            {
+              nixpkgs.pkgs = import nixpkgs-darwin {
+                inherit system;
+                config.allowUnfree = true;
               };
-              taplo.enable = true;
-              gitleaks = {
-                enable = true;
-                name = "Detect hardcoded secrets";
-                entry = "${pkgs.gitleaks}/bin/gitleaks git --pre-commit --redact --staged --verbose";
-                pass_filenames = false;
+            }
+
+            ./modules/darwin
+            nix-index-database.darwinModules.nix-index
+
+            home-manager.darwinModules.home-manager
+            {
+              home-manager = {
+                verbose = true;
+                backupFileExtension = "hm_bak~";
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                extraSpecialArgs = specialArgs;
+                users.${username}.imports =
+                  [
+                    catppuccin.homeModules.catppuccin
+                    {
+                      catppuccin.flavor = "mocha";
+                    }
+                    ./home
+                  ]
+                  ++ homeModules;
               };
-            };
+            }
+          ]
+          ++ hostModules;
+      };
+
+    preCommitCheck = pre-commit-hooks.lib.${system}.run {
+      src = ./.;
+      hooks = {
+        alejandra.enable = true;
+        typos = {
+          enable = true;
+          settings = {
+            write = true;
+            configPath = "./.typos.toml";
           };
         };
+        taplo.enable = true;
+        gitleaks = {
+          enable = true;
+          name = "Detect hardcoded secrets";
+          entry = "${pkgs.gitleaks}/bin/gitleaks git --pre-commit --redact --staged --verbose";
+          pass_filenames = false;
+        };
+      };
+    };
+  in {
+    darwinConfigurations = {
+      personal-mba = mkDarwin {
+        username = "chensl";
+        userfullname = "Shaolong Chen";
+        useremail = "shaolong.chen@outlook.it";
+        hostModules = [./hosts/personal-mba];
+        homeModules = [./hosts/personal-mba/home.nix];
+      };
 
-        # Format the nix code in this flake
-        formatter =
-          # alejandra is a nix formatter with a beautiful output
-          pkgs.alejandra;
-      }
-    );
+      work-mbp = mkDarwin {
+        username = "bytedance";
+        userfullname = "Shaolong Chen";
+        useremail = "chenshaolong.1016@bytedance.com";
+        hostModules = [./hosts/work-mbp];
+        homeModules = [./hosts/work-mbp/home.nix];
+      };
+    };
+
+    checks.${system} = {
+      pre-commit-check = preCommitCheck;
+    };
+
+    formatter.${system} = pkgs.alejandra;
+
+    devShells.${system}.default = pkgs.mkShell {
+      packages = with pkgs; [
+        alejandra
+        nil
+        taplo
+        typos
+      ];
+      shellHook = preCommitCheck.shellHook;
+    };
+  };
 }
