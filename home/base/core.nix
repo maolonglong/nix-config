@@ -34,11 +34,21 @@ in {
     ]);
 
   catppuccin = {
+    atuin.enable = true;
     bat.enable = true;
     fzf.enable = true;
   };
 
   programs = {
+    atuin = {
+      enable = true;
+      enableZshIntegration = true;
+      flags = [
+        "--disable-up-arrow"
+        "--disable-ctrl-r"
+      ];
+    };
+
     eza.enable = true;
 
     zoxide = {
