@@ -10,7 +10,7 @@
     enableZshIntegration = true;
     globalConfig = {
       tools = {
-        bun = "latest";
+        bun = "1.3.13";
         node = "22";
         "npm:@github/copilot" = "latest";
         "npm:@mariozechner/pi-coding-agent" = "latest";
