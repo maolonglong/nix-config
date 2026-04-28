@@ -41,8 +41,6 @@
 
     envExtra = ''
       [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-      [ "$(command -v fnm)" ] && eval "$(fnm env --use-on-cd --shell zsh)"
-      [ -d "/Applications/Obsidian.app/Contents/MacOS" ] && export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
     '';
 
     initContent = ''
@@ -53,7 +51,6 @@
 
       export GPG_TTY=$(tty)
       [ "$(command -v mutagen)" ] && mutagen daemon start
-      [ "$(command -v jj)" ] && source <(jj util completion zsh)
     '';
 
     shellAliases = {
