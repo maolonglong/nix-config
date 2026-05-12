@@ -12,6 +12,7 @@ in {
     "$HOME/.local/bin"
     "$HOME/.bun/bin"
     "$HOME/.claude/local"
+    "$HOME/.local/share/mise/shims"
   ];
 
   home.packages = with pkgs;
