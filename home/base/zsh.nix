@@ -47,7 +47,6 @@
       unalias gog
       unalias gops
       unalias gsu
-      unalias gup
 
       export GPG_TTY=$(tty)
       [ "$(command -v mutagen)" ] && mutagen daemon start

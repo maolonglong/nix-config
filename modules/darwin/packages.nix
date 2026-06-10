@@ -33,7 +33,7 @@
     rsync
 
     htop
-    neofetch
+    fastfetch
 
     rlwrap
   ];

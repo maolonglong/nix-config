@@ -12,7 +12,6 @@
       tools = {
         bun = "1.3.13";
         node = "22";
-        "npm:@github/copilot" = "latest";
         "npm:@earendil-works/pi-coding-agent" = "latest";
         "npm:@openai/codex" = "latest";
         "npm:agent-browser" = "latest";

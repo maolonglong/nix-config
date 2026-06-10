@@ -53,6 +53,7 @@ in {
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
+      extraFlags = [ "--force-cleanup" ];
     };
     masApps = {};
     taps = [
