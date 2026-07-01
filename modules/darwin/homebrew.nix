@@ -59,13 +59,12 @@ in {
     taps = [
       "dmtrKovalenko/fff"
       "localsend/localsend"
-      "tw93/tap"
     ];
     brews = [
       "dmtrKovalenko/fff/fff-mcp"
       "flyctl"
       "rtk"
-      "tw93/tap/mole"
+      "mole"
     ];
     casks = [
       "battery"
