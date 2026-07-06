@@ -95,5 +95,5 @@
     };
   };
 
-  time.timeZone = "Asia/Shanghai";
+  time.timeZone = "America/New_York";
 }

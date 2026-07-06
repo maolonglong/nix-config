@@ -50,29 +50,43 @@ in {
 
   homebrew = {
     enable = true;
+
     onActivation = {
-      autoUpdate = true;
+      autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
+      upgrade = false; # Upgrade outdated casks, formulae, and App Store apps
+      # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
       cleanup = "zap";
-      extraFlags = [ "--force-cleanup" ];
     };
+
     masApps = {};
+
     taps = [
       "dmtrKovalenko/fff"
-      "localsend/localsend"
     ];
+
     brews = [
+      # `brew install`
+      "wget" # download tool
+      "curl" # no not install curl via nixpkgs, it's not working well on macOS!
+      "aria2" # download tool
+
+      # commands like `gsed` `gtar` are required by some tools
+      "gnu-sed"
+      "gnu-tar"
+
       "dmtrKovalenko/fff/fff-mcp"
       "flyctl"
       "rtk"
       "mole"
     ];
+
+    # `brew install --cask`
     casks = [
       "battery"
       "claude-code"
       "iterm2"
       "thaw"
       "keepassxc"
-      "librewolf"
       "localsend"
       "logseq"
       "monitorcontrol"

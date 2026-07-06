@@ -18,9 +18,6 @@
     iperf3
     dnsutils
     ldns
-    wget
-    curl
-    aria2
     socat
     nmap
     ipcalc
