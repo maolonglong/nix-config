@@ -1,6 +1,7 @@
 {
   inputs,
   pkgs,
+  pkgs-unstable,
   ...
 }: let
   inherit (inputs) mynur;
@@ -23,13 +24,15 @@ in {
       gnumake
       fd
       (ripgrep.override {withPCRE2 = true;})
-      ast-grep
       just
       hyperfine
       duf
       procs
       wrk
     ]
+    ++ (with pkgs-unstable; [
+      ast-grep
+    ])
     ++ (with mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}; [
       shell-safe-rm
     ]);
