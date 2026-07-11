@@ -7,7 +7,8 @@ The flake root holds `flake.nix`, which wires inputs and exports `darwinConfigur
 ## Build, Test, and Development Commands
 
 - `just` — run `just --list` to discover recipes; aliases `c` and `b` wrap common tasks.
-- `just c` / `nix flake check` — evaluate all configurations and run pre-commit hooks (formatting, typos, Taplo, gitleaks).
+- `just c` / `nix flake check --show-trace` — run flake checks, including formatting, typos, Taplo, and gitleaks.
+- `just eval <host>` — evaluate the selected nix-darwin configuration without building or activating it (defaults to `work-mbp`).
 - `just b <host>` — build the selected macOS host via `darwin-rebuild` (defaults to `work-mbp`).
 - `darwin-rebuild switch --flake .#<host>` — activate the configuration on the current machine.
 - `nix develop` — enter the dev shell with `alejandra`, `nil`, `taplo`, and `typos`, plus pre-commit hooks installed via `shellHook`.
@@ -18,7 +19,17 @@ Write Nix using 2-space indentation and align attribute sets for readability. Fo
 
 ## Testing Guidelines
 
-Run `nix flake check` (or `just c`) after every change; it ensures modules evaluate, formatting stays clean, and typos are fixed automatically. For host-specific verification, build with `darwin-rebuild build --flake .#<host>` before switching. When adding new modules, include lightweight assertions using `lib.asserts` so evaluation fails fast if prerequisites are missing.
+Run `just c` after every change. For host-specific changes, run `just eval <host>` first, then `just b <host>` when a full build is warranted. When adding new modules, include lightweight assertions using `lib.asserts` so evaluation fails fast if prerequisites are missing.
+
+## Agent Workflow for Nix Changes
+
+- Home Manager is integrated as a nix-darwin module; this flake does not export standalone `homeConfigurations`.
+- Never assume an option exists from model memory. Query Nix documentation, then verify it against the inputs pinned by `flake.lock`.
+- When online documentation and the pinned version disagree, treat the local flake input source as authoritative.
+- The nix-darwin package set comes from `nixpkgs-darwin`; `pkgs-unstable` is passed explicitly through `specialArgs`.
+- Do not update `flake.lock` unless explicitly requested.
+- Do not run `darwin-rebuild switch`, `home-manager switch`, or activation commands unless explicitly requested.
+- Fix the first root evaluation error before making unrelated changes.
 
 ## Commit & Pull Request Guidelines
 
