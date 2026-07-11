@@ -10,7 +10,6 @@ in {
     "/usr/local/bin"
     "$HOME/bin"
     "$HOME/.bin"
-    "$HOME/.local/bin"
     "$HOME/.bun/bin"
     "$HOME/.claude/local"
     "$HOME/.local/share/mise/shims"

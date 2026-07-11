@@ -25,5 +25,10 @@
     stateVersion = "26.05";
   };
 
+  xdg = {
+    enable = true;
+    localBinInPath = true;
+  };
+
   programs.home-manager.enable = true;
 }
