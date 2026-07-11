@@ -83,7 +83,6 @@ in {
     # `brew install --cask`
     casks = [
       "battery"
-      "claude-code"
       "ghostty"
       "iterm2"
       "thaw"
