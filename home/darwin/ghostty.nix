@@ -9,7 +9,6 @@
     else "${config.xdg.configHome}/ghostty";
 in {
   home.file."${configDir}/config".text = ''
-    auto-update-channel = tip
     clipboard-paste-protection = true
     clipboard-trim-trailing-spaces = true
     copy-on-select = false
