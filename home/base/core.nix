@@ -48,7 +48,6 @@ in {
       enableZshIntegration = true;
       flags = [
         "--disable-up-arrow"
-        "--disable-ctrl-r"
       ];
     };
 
@@ -69,6 +68,8 @@ in {
 
     fzf = rec {
       enable = true;
+      # Home Manager loads fzf at order 910 and Atuin at the default order 1000,
+      # so Atuin initializes later and owns Ctrl-R while fzf keeps its other widgets.
       enableZshIntegration = true;
       defaultCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
       fileWidgetCommand = defaultCommand;
