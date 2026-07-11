@@ -1,14 +1,5 @@
-{
-  pkgs,
-  config,
-  ...
-}: let
-  configDir =
-    if pkgs.stdenv.isDarwin
-    then "Library/Application Support/com.mitchellh.ghostty"
-    else "${config.xdg.configHome}/ghostty";
-in {
-  home.file."${configDir}/config".text = ''
+{...}: {
+  xdg.configFile."ghostty/config.ghostty".text = ''
     clipboard-paste-protection = true
     clipboard-trim-trailing-spaces = true
     copy-on-select = false
