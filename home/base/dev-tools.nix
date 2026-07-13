@@ -14,6 +14,7 @@
         node = "22";
         "npm:@earendil-works/pi-coding-agent" = "latest";
         "npm:@openai/codex" = "latest";
+        "npm:@zed-industries/codex-acp" = "latest";
         "npm:agent-browser" = "latest";
         "npm:opencode-ai" = "latest";
         "npm:pnpm" = "latest";
