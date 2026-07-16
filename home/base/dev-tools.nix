@@ -10,8 +10,8 @@
     enableZshIntegration = true;
     globalConfig = {
       tools = {
-        bun = "1.3.13";
-        node = "22";
+        bun = "latest";
+        node = "24";
         "npm:@earendil-works/pi-coding-agent" = "latest";
         "npm:@openai/codex" = "latest";
         "npm:@zed-industries/codex-acp" = "latest";
