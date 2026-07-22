@@ -19,13 +19,6 @@
       serialization_interval = 30;
       show_startup_tips = false;
       show_release_notes = false;
-      default_layout = "compact";
-      plugins = {
-        compact-bar = {
-          location = "zellij:compact-bar";
-          tooltip = "F1";
-        };
-      };
       copy_command = "pbcopy";
       copy_clipboard = "system";
       copy_on_select = false;
