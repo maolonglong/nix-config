@@ -1,13 +1,16 @@
 {...}: {
   xdg.configFile."ghostty/config.ghostty".text = ''
+    clipboard-read = ask
+    clipboard-write = allow
     clipboard-paste-protection = true
-    clipboard-trim-trailing-spaces = true
+    clipboard-paste-bracketed-safe = true
     copy-on-select = false
     cursor-style = block
     cursor-style-blink = false
-    font-family = FiraCode Nerd Font
     font-family = FiraCode Nerd Font Mono
+    font-family = FiraCode Nerd Font
     font-family = JetBrains Maple Mono
+    font-family = JetBrainsMono Nerd Font Mono
     font-family = JetBrainsMono Nerd Font
     font-size = 12
     keybind = shift+enter=text:\n
@@ -15,7 +18,7 @@
     macos-titlebar-proxy-icon = hidden
     macos-titlebar-style = tabs
     mouse-hide-while-typing = true
-    scrollback-limit = 104857600
+    scrollback-limit = 10000000
     shell-integration = zsh
     shell-integration-features = sudo,no-cursor,ssh-terminfo,ssh-env
     theme = Catppuccin Mocha
