@@ -95,5 +95,5 @@
     };
   };
 
-  time.timeZone = "Asia/Singapore";
+  time.timeZone = "America/New_York";
 }
