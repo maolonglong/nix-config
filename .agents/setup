@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+node_version="22.19.0"
+
+log_step() {
+  printf '\n==> %s\n' "$1"
+}
+
+ensure_apt_packages() {
+  local packages=(ca-certificates curl git nix-bin xz-utils)
+  local missing=()
+  local package
+
+  for package in "${packages[@]}"; do
+    dpkg-query -W -f='${db:Status-Status}' "$package" 2>/dev/null | grep -qx installed || missing+=("$package")
+  done
+
+  if ((${#missing[@]})); then
+    log_step "Installing system packages: ${missing[*]}"
+    sudo apt-get update
+    sudo apt-get install -y "${missing[@]}"
+  fi
+}
+
+ensure_nix_flakes() {
+  local nix_conf=/etc/nix/nix.conf
+
+  if ! grep -Eq '^\s*experimental-features\s*=.*\bflakes\b' "$nix_conf" 2>/dev/null; then
+    log_step "Enabling Nix flakes"
+    sudo mkdir -p /etc/nix
+    printf 'experimental-features = nix-command flakes\n' | sudo tee -a "$nix_conf" >/dev/null
+  fi
+
+  if ! getent group nix-users | cut --delimiter=: --fields=4 | tr , '\n' | grep -Fxq "$USER"; then
+    log_step "Granting ${USER} access to the Nix daemon"
+    sudo usermod --append --groups nix-users "$USER"
+  fi
+
+  if ! systemctl is-active --quiet nix-daemon.service; then
+    log_step "Starting the Nix daemon"
+    sudo systemctl start nix-daemon.socket nix-daemon.service
+  fi
+}
+
+ensure_node() {
+  if [[ "$(node --version 2>/dev/null || true)" == "v${node_version}" ]]; then
+    return
+  fi
+
+  log_step "Installing Node.js ${node_version}"
+  local archive="node-v${node_version}-linux-x64.tar.xz"
+  local download_dir
+  download_dir="$(mktemp -d)"
+  trap 'rm -rf "$download_dir"' RETURN
+  curl --fail --location --retry 3 --output "$download_dir/$archive" \
+    "https://nodejs.org/dist/v${node_version}/${archive}"
+  sudo tar --extract --xz --file "$download_dir/$archive" --directory /usr/local --strip-components=1
+  rm -rf "$download_dir"
+  trap - RETURN
+}
+
+log_step "Preparing Amp orb dependencies"
+ensure_apt_packages
+ensure_nix_flakes
+ensure_node
+
+log_step "Enabling pnpm"
+corepack enable pnpm
+
+log_step "Installing upstream-watch dependencies"
+cd "$repo_root/automation/upstream-watch"
+pnpm install --frozen-lockfile
+
+log_step "Setup complete"
