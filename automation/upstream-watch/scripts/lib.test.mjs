@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { evaluatePullRequest, gitHubAuthArgs, markerFor, parseAnalysis, sanitizeText, sourceUrl } from './lib.mjs';
+import { gitHubAuthArgs, markerFor, parseAnalysis, sanitizeText, sourceUrl } from './lib.mjs';
 
 const validAnalysis = {
 	decision: 'issue',
@@ -10,7 +10,7 @@ const validAnalysis = {
 };
 
 test('parseAnalysis accepts each decision', () => {
-	for (const decision of ['irrelevant', 'issue', 'pull_request']) {
+	for (const decision of ['irrelevant', 'issue']) {
 		assert.equal(parseAnalysis({ ...validAnalysis, decision }).decision, decision);
 	}
 });
@@ -18,6 +18,7 @@ test('parseAnalysis accepts each decision', () => {
 test('parseAnalysis rejects malformed output', () => {
 	assert.throws(() => parseAnalysis({ ...validAnalysis, confidence: 'certain' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: 'home/base/packages.nix' }));
+	assert.throws(() => parseAnalysis({ ...validAnalysis, decision: 'pull_request' }));
 });
 
 test('gitHubAuthArgs adds ephemeral HTTPS authentication only when configured', () => {
@@ -28,39 +29,6 @@ test('gitHubAuthArgs adds ephemeral HTTPS authentication only when configured', 
 		`http.https://github.com/.extraheader=AUTHORIZATION: basic ${Buffer.from('x-access-token:test-token').toString('base64')}`,
 	]);
 	assert.deepEqual(args.slice(2), ['fetch']);
-});
-
-test('PR gate accepts one high-confidence two-line Nix modification', () => {
-	assert.deepEqual(
-		evaluatePullRequest({
-			confidence: 'high',
-			nameStatus: ['M\thome/base/packages.nix'],
-			numstat: ['1\t1\thome/base/packages.nix'],
-			summary: '',
-		}),
-		{ ok: true, file: 'home/base/packages.nix' },
-	);
-});
-
-test('PR gate rejects risky patches', () => {
-	const base = {
-		confidence: 'high',
-		nameStatus: ['M\thome/base/packages.nix'],
-		numstat: ['1\t1\thome/base/packages.nix'],
-		summary: '',
-	};
-	assert.equal(evaluatePullRequest({ ...base, confidence: 'medium' }).ok, false);
-	assert.equal(evaluatePullRequest({ ...base, nameStatus: ['A\thome/base/new.nix'] }).ok, false);
-	assert.equal(evaluatePullRequest({ ...base, nameStatus: ['M\tflake.nix'], numstat: ['1\t1\tflake.nix'] }).ok, false);
-	assert.equal(evaluatePullRequest({ ...base, numstat: ['2\t1\thome/base/packages.nix'] }).ok, false);
-	assert.equal(evaluatePullRequest({ ...base, numstat: ['-\t-\thome/base/packages.nix'] }).ok, false);
-	assert.equal(
-		evaluatePullRequest({
-			...base,
-			nameStatus: ['M\thome/base/packages.nix', 'M\thome/base/shell.nix'],
-		}).ok,
-		false,
-	);
 });
 
 test('rendered text avoids mentions, references, and direct GitHub URLs', () => {

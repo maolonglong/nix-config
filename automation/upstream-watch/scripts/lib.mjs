@@ -41,7 +41,7 @@ export function parseAnalysis(value) {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) {
 		throw new Error('analysis must be an object');
 	}
-	if (!['irrelevant', 'issue', 'pull_request'].includes(value.decision)) {
+	if (!['irrelevant', 'issue'].includes(value.decision)) {
 		throw new Error('analysis has an invalid decision');
 	}
 	if (typeof value.summary !== 'string' || value.summary.length === 0 || value.summary.length > 1200) {
@@ -57,42 +57,6 @@ export function parseAnalysis(value) {
 		throw new Error('analysis has an invalid uncertainty');
 	}
 	return value;
-}
-
-export function evaluatePullRequest({ confidence, nameStatus, numstat, summary }) {
-	if (confidence !== 'high') return { ok: false, reason: 'model confidence is not high' };
-
-	const files = nameStatus.filter(Boolean).map((line) => line.split('\t'));
-	if (files.length !== 1) return { ok: false, reason: 'patch must modify exactly one file' };
-	const [status, file, extra] = files[0];
-	if (status !== 'M' || !file || extra) return { ok: false, reason: 'file operations are not allowed' };
-	if (!file.endsWith('.nix')) return { ok: false, reason: 'changed file is not a Nix file' };
-	if (!(file.startsWith('home/') || file.startsWith('modules/darwin/'))) {
-		return { ok: false, reason: 'changed file is outside the allowed directories' };
-	}
-	if (
-		file === 'modules/darwin/secrets.nix' ||
-		file === 'flake.nix' ||
-		file === 'flake.lock' ||
-		file.startsWith('hosts/') ||
-		file.startsWith('.github/') ||
-		file.startsWith('.agents/') ||
-		file.startsWith('automation/')
-	) {
-		return { ok: false, reason: 'changed file is protected' };
-	}
-
-	const stats = numstat.filter(Boolean).map((line) => line.split('\t'));
-	if (stats.length !== 1 || stats[0][2] !== file) return { ok: false, reason: 'patch statistics are inconsistent' };
-	const additions = Number(stats[0][0]);
-	const deletions = Number(stats[0][1]);
-	if (!Number.isInteger(additions) || !Number.isInteger(deletions)) {
-		return { ok: false, reason: 'binary changes are not allowed' };
-	}
-	if (additions + deletions > 2) return { ok: false, reason: 'patch changes more than two lines' };
-	if (summary.trim()) return { ok: false, reason: 'mode changes are not allowed' };
-
-	return { ok: true, file };
 }
 
 export function sanitizeText(value) {

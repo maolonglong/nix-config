@@ -19,15 +19,14 @@ pnpm run check:types
 pnpm test
 ```
 
-The daily workflow runs `scripts/analyze.mjs` in an unprivileged job and
-`scripts/publish.mjs` in a separate job with GitHub write permissions. Manual
-workflow runs are dry-run by default.
+The daily workflow runs `scripts/analyze.mjs` in a read-only GitHub job and
+`scripts/publish.mjs` in a separate job that can create issues and update the
+cursor branch. The agent never creates patches or pull requests. Manual runs
+are dry-run by default.
 
 ## Required repository settings
 
 - Add the `DEEPSEEK_API_KEY` Actions secret.
-- Add `NIX_SECRETS_DEPLOY_KEY` so PR candidates can evaluate the private flake input.
-- Allow GitHub Actions to create pull requests.
 
 Run the workflow once with `dry_run` disabled to establish the current upstream
 HEAD as the baseline. The first publishing run does not backfill older commits.
