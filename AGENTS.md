@@ -33,7 +33,9 @@ Run `just c` after every change. For host-specific changes, run `just eval <host
 
 ## Commit & Pull Request Guidelines
 
-Follow the existing Conventional Commits style (`feat(scope): message`, `fix: message`, `chore:`). Keep scope identifiers short (`darwin`, `starship`, `flake`). Each pull request should describe the host or module touched, list tested commands, and mention any secrets or follow-up actions. Link related issues when available, and add screenshots only for UI-facing tooling changes (e.g., terminal themes).
+- Use Conventional Commits: `<type>(<scope>): <summary>` — imperative, <= 72 chars, no trailing period. Keep scope identifiers short (`darwin`, `starship`, `flake`).
+- **Always write a commit body** explaining the *why* (bullets welcome), not just the *what*.
+- Each pull request should describe the host or module touched, list tested commands, and mention any secrets or follow-up actions. Link related issues when available, and add screenshots only for UI-facing tooling changes (e.g., terminal themes).
 
 ## Security & Secrets
 
