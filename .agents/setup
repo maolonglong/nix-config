@@ -9,7 +9,7 @@ log_step() {
 }
 
 ensure_apt_packages() {
-  local packages=(ca-certificates curl git nix-bin xz-utils)
+  local packages=(ca-certificates curl git xz-utils)
   local missing=()
   local package
 
@@ -24,23 +24,50 @@ ensure_apt_packages() {
   fi
 }
 
-ensure_nix_flakes() {
-  local nix_conf=/etc/nix/nix.conf
+ensure_nix() {
+  local installed_version
 
-  if ! grep -Eq '^\s*experimental-features\s*=.*\bflakes\b' "$nix_conf" 2>/dev/null; then
-    log_step "Enabling Nix flakes"
-    sudo mkdir -p /etc/nix
-    printf 'experimental-features = nix-command flakes\n' | sudo tee -a "$nix_conf" >/dev/null
+  if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+    # shellcheck disable=SC1091
+    unset __ETC_PROFILE_NIX_SOURCED
+    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  fi
+  installed_version="$(nix --version 2>/dev/null | awk '{print $3}' || true)"
+
+  if [[ -n "$installed_version" ]] && [[ "$(printf '%s\n%s\n' 2.18 "$installed_version" | sort -V | head -n1)" == 2.18 ]]; then
+    return
   fi
 
-  if ! getent group nix-users | cut --delimiter=: --fields=4 | tr , '\n' | grep -Fxq "$USER"; then
-    log_step "Granting ${USER} access to the Nix daemon"
-    sudo usermod --append --groups nix-users "$USER"
+  if dpkg-query -W -f='${db:Status-Status}' nix-bin 2>/dev/null | grep -qx installed; then
+    log_step "Removing the outdated Debian Nix package"
+    sudo systemctl stop nix-daemon.service nix-daemon.socket || true
+    sudo apt-get purge -y nix-bin nix-setup-systemd
+    while IFS=: read -r username _ uid gid _; do
+      if [[ "$username" == nixbld* ]]; then
+        sudo userdel "$username"
+      fi
+    done < <(getent passwd)
+    sudo groupdel nixbld || true
+    sudo rm -rf /nix
   fi
 
-  if ! systemctl is-active --quiet nix-daemon.service; then
-    log_step "Starting the Nix daemon"
-    sudo systemctl start nix-daemon.socket nix-daemon.service
+  log_step "Installing current Nix with flakes enabled"
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix |
+    sh -s -- install linux --no-confirm --diagnostic-endpoint=""
+}
+
+ensure_nix_login_profile() {
+  local profile_marker="# nix-config Nix profile v2"
+
+  if ! grep -Fqx "$profile_marker" "$HOME/.bash_profile" 2>/dev/null; then
+    cat >> "$HOME/.bash_profile" <<'EOF'
+
+# nix-config Nix profile v2
+if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+  unset __ETC_PROFILE_NIX_SOURCED
+  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+fi
+EOF
   fi
 }
 
@@ -63,7 +90,8 @@ ensure_node() {
 
 log_step "Preparing Amp orb dependencies"
 ensure_apt_packages
-ensure_nix_flakes
+ensure_nix
+ensure_nix_login_profile
 ensure_node
 
 log_step "Enabling pnpm"
