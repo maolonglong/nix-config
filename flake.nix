@@ -2,7 +2,6 @@
   description = "My nix-darwin configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
 
@@ -13,23 +12,24 @@
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
     agenix = {
       url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
       inputs.darwin.follows = "nix-darwin";
+      inputs.home-manager.follows = "home-manager";
     };
 
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
     mysecrets = {
@@ -39,15 +39,17 @@
 
     mynur = {
       url = "github:maolonglong/nur-packages";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    catppuccin.url = "github:catppuccin/nix/release-26.05";
+    catppuccin = {
+      url = "github:catppuccin/nix/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
   };
 
   outputs = inputs @ {
     self,
-    nixpkgs,
     nixpkgs-darwin,
     nixpkgs-unstable,
     nix-darwin,
@@ -135,6 +137,12 @@
         };
       };
     };
+
+    evalDarwinConfiguration = name:
+      pkgs.writeText "eval-${name}" (
+        builtins.unsafeDiscardStringContext
+        self.darwinConfigurations.${name}.config.system.build.toplevel.drvPath
+      );
   in {
     darwinConfigurations = {
       personal-mba = mkDarwin {
@@ -156,6 +164,8 @@
 
     checks.${system} = {
       pre-commit-check = preCommitCheck;
+      personal-mba-eval = evalDarwinConfiguration "personal-mba";
+      work-mbp-eval = evalDarwinConfiguration "work-mbp";
     };
 
     formatter.${system} = pkgs.alejandra;

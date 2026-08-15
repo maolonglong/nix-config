@@ -24,15 +24,6 @@ in {
     };
   };
 
-  programs.go = {
-    enable = false;
-    package = pkgs-unstable.go_1_25;
-    env = rec {
-      GOPATH = "${homeDir}/go";
-      GOBIN = "${GOPATH}/bin";
-    };
-  };
-
   home.sessionPath = [
     "${homeDir}/go/bin"
   ];
