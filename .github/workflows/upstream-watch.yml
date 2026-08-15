@@ -1,0 +1,115 @@
+name: Upstream watch
+
+on:
+  schedule:
+    - cron: "23 19 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Analyze without creating issues, branches, PRs, or cursor state
+        type: boolean
+        default: true
+
+concurrency:
+  group: upstream-watch
+  cancel-in-progress: false
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: automation/upstream-watch/package.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: pnpm
+          cache-dependency-path: automation/upstream-watch/pnpm-lock.yaml
+
+      - name: Install agent dependencies
+        working-directory: automation/upstream-watch
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze new upstream commits
+        working-directory: automation/upstream-watch
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_WATCH_OUTPUT: ${{ runner.temp }}/upstream-watch
+        run: node scripts/analyze.mjs
+
+      - name: Upload analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: upstream-watch-analysis
+          path: ${{ runner.temp }}/upstream-watch
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: analyze
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: upstream-watch-analysis
+          path: ${{ runner.temp }}/upstream-watch
+
+      - name: Detect PR candidates
+        id: candidates
+        env:
+          MANIFEST: ${{ runner.temp }}/upstream-watch/manifest.json
+        run: |
+          if jq -e '.outcomes[]? | select(.analysis.decision == "pull_request" and .patch != null)' "$MANIFEST" >/dev/null; then
+            echo "has_pr=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_pr=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Nix for candidate validation
+        if: steps.candidates.outputs.has_pr == 'true'
+        uses: DeterminateSystems/nix-installer-action@v20
+
+      - name: Prefetch private flake inputs
+        if: steps.candidates.outputs.has_pr == 'true'
+        env:
+          NIX_SECRETS_DEPLOY_KEY: ${{ secrets.NIX_SECRETS_DEPLOY_KEY }}
+        run: |
+          if [[ -z "$NIX_SECRETS_DEPLOY_KEY" ]]; then
+            echo "NIX_SECRETS_DEPLOY_KEY is not configured; candidate validation will fall back to an issue."
+            exit 0
+          fi
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$NIX_SECRETS_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          trap 'rm -f ~/.ssh/id_ed25519' EXIT
+          if ! nix flake archive --no-update-lock-file >/dev/null; then
+            echo "Could not prefetch every flake input; candidate validation will fall back to an issue."
+          fi
+
+      - name: Publish decisions and advance cursor
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          UPSTREAM_WATCH_OUTPUT: ${{ runner.temp }}/upstream-watch
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: node automation/upstream-watch/scripts/publish.mjs

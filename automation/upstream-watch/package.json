@@ -1,0 +1,19 @@
+{
+	"name": "upstream-watch",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@11.21.0",
+	"scripts": {
+		"check:types": "tsc --noEmit",
+		"test": "node --test scripts/*.test.mjs"
+	},
+	"dependencies": {
+		"@flue/runtime": "^2.0.3",
+		"valibot": "^1.4.2"
+	},
+	"devDependencies": {
+		"@flue/cli": "^2.0.3",
+		"@types/node": "^22.10.10",
+		"typescript": "^7.0.2"
+	}
+}
