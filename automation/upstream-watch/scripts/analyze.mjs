@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -21,7 +21,7 @@ const stateRemote = process.env.GITHUB_REPOSITORY
 	: 'origin';
 
 await rm(outputDir, { recursive: true, force: true });
-await mkdir(outputDir, { recursive: true });
+await mkdir(join(outputDir, 'results'), { recursive: true });
 
 run('git', ['fetch', '--no-tags', 'https://github.com/ryan4yin/nix-config.git', `+refs/heads/main:${upstreamRef}`], { cwd: repositoryDir });
 const head = run('git', ['rev-parse', upstreamRef], { cwd: repositoryDir });
@@ -73,12 +73,19 @@ const commits = run('git', ['rev-list', '--reverse', `${state.lastSeenSha}..${he
 	.split('\n')
 	.filter(Boolean);
 
+if (!commits.length) {
+	await writeManifest(manifest);
+	console.log('No new upstream commits.');
+	process.exit(0);
+}
+
 const worktree = join(outputDir, 'worktree');
 run('git', ['worktree', 'add', '--detach', worktree, 'HEAD'], { cwd: repositoryDir });
 
 try {
 	for (const sha of commits) {
 		const subject = run('git', ['show', '-s', '--format=%s', sha], { cwd: repositoryDir });
+		const resultPath = join(outputDir, 'results', `${sha}.json`);
 		const modelEnv = { ...process.env };
 		delete modelEnv.GH_TOKEN;
 		delete modelEnv.GITHUB_TOKEN;
@@ -100,6 +107,8 @@ try {
 				env: {
 					...modelEnv,
 					UPSTREAM_WATCH_CWD: worktree,
+					UPSTREAM_WATCH_RESULT_PATH: resultPath,
+					UPSTREAM_WATCH_TASK: message,
 				},
 				stdio: ['ignore', 'pipe', 'inherit'],
 			},
@@ -108,7 +117,7 @@ try {
 
 		const envelope = JSON.parse(flue.stdout);
 		if (envelope.outcome !== 'completed') throw new Error(`Flue did not complete for ${sha}`);
-		const analysis = parseAnalysis(JSON.parse(envelope.message));
+		const analysis = parseAnalysis(JSON.parse(await readFile(resultPath, 'utf8')));
 
 		manifest.outcomes.push({
 			sha,
