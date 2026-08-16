@@ -1,33 +1,7 @@
 'use agent';
 
-import { writeFile } from 'node:fs/promises';
-import { defineTool, useAgentFinish, useModel, useSandbox, useTool } from '@flue/runtime';
+import { useModel, useSandbox } from '@flue/runtime';
 import { local } from '@flue/runtime/node';
-import * as v from 'valibot';
-
-const AnalysisResult = v.object({
-	decision: v.picklist(['irrelevant', 'issue']),
-	summary: v.pipe(v.string(), v.minLength(1), v.maxLength(1200)),
-	localFiles: v.pipe(v.array(v.string()), v.maxLength(12)),
-	confidence: v.picklist(['low', 'medium', 'high']),
-	uncertainty: v.optional(v.pipe(v.string(), v.maxLength(800))),
-});
-
-const submitAnalysis = defineTool({
-	name: 'submit_analysis',
-	description: 'Submit the final upstream relevance decision after inspecting the commit and local repository.',
-	input: AnalysisResult,
-	output: v.object({ accepted: v.literal(true) }),
-	async run({ data }) {
-		const resultPath = process.env.UPSTREAM_WATCH_RESULT_PATH;
-		if (!resultPath) {
-			throw new Error('UPSTREAM_WATCH_RESULT_PATH is required');
-		}
-
-		await writeFile(resultPath, `${JSON.stringify(data, null, 2)}\n`, { mode: 0o600 });
-		return { output: { accepted: true as const } };
-	},
-});
 
 export function UpstreamWatch() {
 	const cwd = process.env.UPSTREAM_WATCH_CWD;
@@ -37,19 +11,6 @@ export function UpstreamWatch() {
 
 	useModel('deepseek/deepseek-v4-flash');
 	useSandbox(local({ cwd }));
-	useTool(submitAnalysis);
-	useAgentFinish(({ response, append }) => {
-		const submitted = response.toolCalls.some(
-			(call) => call.tool === 'submit_analysis' && !call.isError,
-		);
-		if (!submitted) {
-			append({
-				kind: 'signal',
-				type: 'result_required',
-				body: 'Call submit_analysis exactly once with your final decision. Do not finish with prose only.',
-			});
-		}
-	});
 
 	return `# Role
 
@@ -84,7 +45,11 @@ Inspect only enough upstream and local code to establish relevance and the small
 
 # Output
 
-Call submit_analysis exactly once. Keep the summary concise and factual. Do not finish with prose instead of the tool call.`;
+Reply with exactly one JSON object and no Markdown or prose. It must match this schema:
+
+{"decision":"irrelevant"|"issue","summary":"non-empty string up to 1200 characters","localFiles":["up to 12 local paths"],"confidence":"low"|"medium"|"high","uncertainty":"optional string up to 800 characters"}
+
+Keep the summary concise and factual.`;
 }
 
 UpstreamWatch.agentName = 'upstream-watch';

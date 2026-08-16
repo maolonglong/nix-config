@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -21,7 +21,7 @@ const stateRemote = process.env.GITHUB_REPOSITORY
 	: 'origin';
 
 await rm(outputDir, { recursive: true, force: true });
-await mkdir(join(outputDir, 'results'), { recursive: true });
+await mkdir(outputDir, { recursive: true });
 
 run('git', ['fetch', '--no-tags', 'https://github.com/ryan4yin/nix-config.git', `+refs/heads/main:${upstreamRef}`], { cwd: repositoryDir });
 const head = run('git', ['rev-parse', upstreamRef], { cwd: repositoryDir });
@@ -73,15 +73,12 @@ const commits = run('git', ['rev-list', '--reverse', `${state.lastSeenSha}..${he
 	.split('\n')
 	.filter(Boolean);
 
-for (const sha of commits) {
-	const subject = run('git', ['show', '-s', '--format=%s', sha], { cwd: repositoryDir });
-	const worktree = join(outputDir, 'worktrees', sha);
-	const resultPath = join(outputDir, 'results', `${sha}.json`);
+const worktree = join(outputDir, 'worktree');
+run('git', ['worktree', 'add', '--detach', worktree, 'HEAD'], { cwd: repositoryDir });
 
-	await mkdir(dirname(worktree), { recursive: true });
-	run('git', ['worktree', 'add', '--detach', worktree, 'HEAD'], { cwd: repositoryDir });
-
-	try {
+try {
+	for (const sha of commits) {
+		const subject = run('git', ['show', '-s', '--format=%s', sha], { cwd: repositoryDir });
 		const modelEnv = { ...process.env };
 		delete modelEnv.GH_TOKEN;
 		delete modelEnv.GITHUB_TOKEN;
@@ -103,7 +100,6 @@ for (const sha of commits) {
 				env: {
 					...modelEnv,
 					UPSTREAM_WATCH_CWD: worktree,
-					UPSTREAM_WATCH_RESULT_PATH: resultPath,
 				},
 				stdio: ['ignore', 'pipe', 'inherit'],
 			},
@@ -112,16 +108,16 @@ for (const sha of commits) {
 
 		const envelope = JSON.parse(flue.stdout);
 		if (envelope.outcome !== 'completed') throw new Error(`Flue did not complete for ${sha}`);
-		const analysis = parseAnalysis(JSON.parse(await readFile(resultPath, 'utf8')));
+		const analysis = parseAnalysis(JSON.parse(envelope.message));
 
 		manifest.outcomes.push({
 			sha,
 			subject,
 			analysis,
 		});
-	} finally {
-		tryRun('git', ['worktree', 'remove', '--force', worktree], { cwd: repositoryDir });
 	}
+} finally {
+	tryRun('git', ['worktree', 'remove', '--force', worktree], { cwd: repositoryDir });
 }
 
 await writeManifest(manifest);

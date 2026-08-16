@@ -21,8 +21,8 @@ pnpm test
 
 The daily workflow runs `scripts/analyze.mjs` in a read-only GitHub job and
 `scripts/publish.mjs` in a separate job that can create issues and update the
-cursor branch. The agent never creates patches or pull requests. Manual runs
-are dry-run by default.
+cursor branch. The agent returns a validated JSON decision; it never creates
+patches, pull requests, or GitHub issues. Manual runs are dry-run by default.
 
 ## Required repository settings
 

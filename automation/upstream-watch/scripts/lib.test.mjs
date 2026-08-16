@@ -19,6 +19,8 @@ test('parseAnalysis rejects malformed output', () => {
 	assert.throws(() => parseAnalysis({ ...validAnalysis, confidence: 'certain' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: 'home/base/packages.nix' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, decision: 'pull_request' }));
+	assert.throws(() => parseAnalysis({ ...validAnalysis, summary: '' }));
+	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: Array(13).fill('file.nix') }));
 });
 
 test('gitHubAuthArgs adds ephemeral HTTPS authentication only when configured', () => {

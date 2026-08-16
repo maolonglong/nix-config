@@ -5,7 +5,6 @@ This is a [Flue](https://flueframework.com) project: agents are TypeScript funct
 ## Layout
 
 - `src/agents/` — agent modules. A module whose first line is the `'use agent'` directive exports agents: every exported capitalized function is one, and the function name is its durable identity.
-- `src/db.ts` — the persistence adapter for durable conversations.
 
 ## Commands
 
