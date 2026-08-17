@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-The flake root holds `flake.nix`, which wires inputs and exports `darwinConfigurations` for each macOS host. Host-specific overrides live under `hosts/<hostname>/` (`default.nix` for system, `home.nix` for the user). Shared system-level modules live in `modules/darwin/`, and shared user-level modules live in `home/base/` (cross-cutting) and `home/darwin/` (macOS-only). Secrets encrypted by agenix are wired in `modules/darwin/secrets.nix`; keep new sensitive values out of git and reference them via `.age` files in the `mysecrets` input instead.
+The flake root holds `flake.nix`, which wires inputs and exports `darwinConfigurations` for each macOS host. Host-specific overrides live under `hosts/<hostname>/` (`default.nix` for system, `home.nix` for the user). Shared system-level modules live in `modules/darwin/`, and shared user-level modules live in `home/base/` (cross-cutting) and `home/darwin/` (macOS-only). The upstream-watch automation lives under `automation/upstream-watch/`; follow its nested `AGENTS.md` when changing it. Secrets encrypted by agenix are wired in `modules/darwin/secrets.nix`; keep new sensitive values out of git and reference them via `.age` files in the `mysecrets` input instead.
 
 ## Build, Test, and Development Commands
 
@@ -19,7 +19,7 @@ Write Nix using 2-space indentation and align attribute sets for readability. Fo
 
 ## Testing Guidelines
 
-Run `just c` after every change. For host-specific changes, run `just eval <host>` first, then `just b <host>` when a full build is warranted. When adding new modules, include lightweight assertions using `lib.asserts` so evaluation fails fast if prerequisites are missing.
+Run `just c` after Nix or repository-level changes. For host-specific changes, run `just eval <host>` first, then `just b <host>` when a full build is warranted. For files under `automation/upstream-watch/`, also run the checks declared in its nested `AGENTS.md`.
 
 ## Agent Workflow for Nix Changes
 
