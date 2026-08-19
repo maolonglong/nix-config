@@ -17,6 +17,7 @@ in {
     nerd-fonts.symbols-only
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
+    nerd-fonts.comic-shanns-mono
 
     meslo-lgs-nf
     noto-fonts-cjk-sans
