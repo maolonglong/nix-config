@@ -108,7 +108,6 @@ try {
 					...modelEnv,
 					UPSTREAM_WATCH_CWD: worktree,
 					UPSTREAM_WATCH_RESULT_PATH: resultPath,
-					UPSTREAM_WATCH_TASK: message,
 				},
 				stdio: ['ignore', 'pipe', 'inherit'],
 			},
