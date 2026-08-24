@@ -4,6 +4,8 @@
     scc
   ];
 
+  services.pueue.enable = true;
+
   # Node.js
   programs.mise = {
     enable = true;
