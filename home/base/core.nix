@@ -1,7 +1,6 @@
 {
   inputs,
   pkgs,
-  pkgs-unstable,
   ...
 }: let
   inherit (inputs) mynur;
@@ -28,10 +27,8 @@ in {
       duf
       procs
       wrk
-    ]
-    ++ (with pkgs-unstable; [
       ast-grep
-    ])
+    ]
     ++ (with mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}; [
       shell-safe-rm
     ]);
@@ -68,11 +65,11 @@ in {
 
     fzf = rec {
       enable = true;
-      # Home Manager loads fzf at order 910 and Atuin at the default order 1000,
-      # so Atuin initializes later and owns Ctrl-R while fzf keeps its other widgets.
       enableZshIntegration = true;
       defaultCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
-      fileWidgetCommand = defaultCommand;
+      fileWidget.command = defaultCommand;
+      # Let Atuin own Ctrl-R while fzf keeps its other widgets.
+      historyWidget.command = "";
     };
 
     less.enable = true;

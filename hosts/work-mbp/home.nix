@@ -1,6 +1,6 @@
 {
   myvars,
-  pkgs-unstable,
+  pkgs,
   ...
 }: let
   homeDir = "/Users/${myvars.username}";
@@ -9,7 +9,7 @@ in {
   programs.git.enable = false;
 
   home.packages = [
-    pkgs-unstable.go_1_25
+    pkgs.go_1_25
   ];
 
   programs.mise.globalConfig = {

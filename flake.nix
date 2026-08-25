@@ -2,16 +2,15 @@
   description = "My nix-darwin configuration";
 
   inputs = {
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable-small";
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-26.05";
+      url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
@@ -51,7 +50,6 @@
   outputs = inputs @ {
     self,
     nixpkgs-darwin,
-    nixpkgs-unstable,
     nix-darwin,
     home-manager,
     nix-index-database,
@@ -72,12 +70,8 @@
       myvars = {
         inherit system username userfullname useremail;
       };
-      pkgs-unstable = import nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
       specialArgs = {
-        inherit inputs myvars pkgs-unstable;
+        inherit inputs myvars;
       };
     in
       nix-darwin.lib.darwinSystem {

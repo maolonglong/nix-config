@@ -26,7 +26,7 @@ Run `just c` after Nix or repository-level changes. For host-specific changes, r
 - Home Manager is integrated as a nix-darwin module; this flake does not export standalone `homeConfigurations`.
 - Never assume an option exists from model memory. Query Nix documentation, then verify it against the inputs pinned by `flake.lock`.
 - When online documentation and the pinned version disagree, treat the local flake input source as authoritative.
-- The nix-darwin package set comes from `nixpkgs-darwin`; `pkgs-unstable` is passed explicitly through `specialArgs`.
+- The nix-darwin package set comes from the `nixpkgs-darwin` unstable input; modules use the standard `pkgs` argument.
 - Do not update `flake.lock` unless explicitly requested.
 - Do not run `darwin-rebuild switch`, `home-manager switch`, or activation commands unless explicitly requested.
 - Fix the first root evaluation error before making unrelated changes.
