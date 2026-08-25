@@ -20,6 +20,7 @@ in {
       cowsay
       gnupg
       gnumake
+      glow
       fd
       (ripgrep.override {withPCRE2 = true;})
       just
