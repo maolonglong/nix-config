@@ -4,6 +4,7 @@
     ./darwin/ghostty.nix
     ./darwin/homebrew.nix
     ./base/core.nix
+    ./base/xdg.nix
     ./base/git.nix
     ./base/security.nix
     ./base/zsh.nix
@@ -20,11 +21,6 @@
     inherit (myvars) username;
     homeDirectory = "/Users/${myvars.username}";
     stateVersion = "26.05";
-  };
-
-  xdg = {
-    enable = true;
-    localBinInPath = true;
   };
 
   programs.home-manager.enable = true;
