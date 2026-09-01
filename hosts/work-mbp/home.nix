@@ -26,6 +26,7 @@ in {
 
   home.sessionPath = [
     "${homeDir}/go/bin"
+    "${homeDir}/.bytebm/bin"
   ];
 
   home.sessionVariables = rec {
