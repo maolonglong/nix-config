@@ -30,7 +30,8 @@
       shell-integration-features = "sudo,no-cursor,ssh-terminfo,ssh-env";
       theme = "Catppuccin Mocha";
       unfocused-split-opacity = 0.85;
-      window-decoration = true;
+      # hide title bar/header bar (Linux only; on macOS it would remove the traffic lights too)
+      window-decoration = pkgs.stdenv.hostPlatform.isDarwin;
       window-padding-balance = true;
       window-padding-x = 8;
       window-padding-y = 6;
