@@ -1,35 +1,32 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Project Map
 
-The flake root holds `flake.nix`, which wires inputs and exports `darwinConfigurations` for each macOS host. Host-specific overrides live under `hosts/<hostname>/` (`default.nix` for system, `home.nix` for the user). Shared system-level modules live in `modules/darwin/`, and shared user-level modules live in `home/base/` (cross-cutting) and `home/darwin/` (macOS-only). The upstream-watch automation lives under `automation/upstream-watch/`; follow its nested `AGENTS.md` when changing it. Secrets encrypted by agenix are wired in `modules/darwin/secrets.nix`; keep new sensitive values out of git and reference them via `.age` files in the `mysecrets` input instead.
+- `flake.nix` exports `darwinConfigurations`; Home Manager is integrated into nix-darwin, with no standalone `homeConfigurations`.
+- `hosts/<hostname>/`: `default.nix` for system overrides, `home.nix` for user overrides.
+- Shared modules: `modules/darwin/` for system settings, `home/base/` for cross-platform user settings, `home/darwin/` for macOS user settings.
+- For changes to `automation/upstream-watch/` or `.github/workflows/upstream-watch.yml`, follow `automation/upstream-watch/AGENTS.md`.
 
-## Build, Test, and Development Commands
+## Commands and Verification
 
-- `just` — run `just --list` to discover recipes; aliases `c` and `b` wrap common tasks.
-- `just c` / `nix flake check --show-trace` — run flake checks, including formatting, typos, Taplo, and gitleaks.
-- `just eval <host>` — evaluate the selected nix-darwin configuration without building or activating it (defaults to `work-mbp`).
-- `just b <host>` — build the selected macOS host via `darwin-rebuild` (defaults to `work-mbp`).
-- `darwin-rebuild switch --flake .#<host>` — activate the configuration on the current machine.
-- `nix develop` — enter the dev shell with `alejandra`, `nil`, `taplo`, and `typos`, plus pre-commit hooks installed via `shellHook`.
+- `just eval <host>` evaluates a host without building or activating it; defaults to `work-mbp`.
+- `just c` runs `nix flake check --show-trace`: host evaluation checks and pre-commit hooks for Alejandra, typos, Taplo, and gitleaks.
+- `just b <host>` builds without activation via `darwin-rebuild`; macOS only, defaults to `work-mbp`.
+- `nix develop` provides Alejandra, nil, Taplo, typos, and installs pre-commit hooks.
 
-## Coding Style & Naming Conventions
+The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A default `nix flake check` on Linux is not evidence that the Darwin checks ran. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
 
-Write Nix using 2-space indentation and align attribute sets for readability. Format code with `alejandra` or `nix fmt` before committing; the dev shell and pre-commit hook enforce this. Name host directories as `<hostname>/` with `default.nix` and `home.nix` to mirror `flake.nix` entries, and keep module names kebab-cased (e.g., `modules/darwin/homebrew.nix`). Prefer explicit `imports` lists over auto-discovery so the module graph stays easy to follow.
+- Host-specific Nix changes: evaluate the affected host. Shared Nix or flake changes: evaluate both `work-mbp` and `personal-mba`. Run `just c` on a supported environment; build affected hosts when evaluation alone cannot validate the change.
+- Automation changes: use the checks in its nested guidance; unrelated Nix checks are not required.
+- Documentation-only changes: check the diff and any changed paths or commands; no Nix evaluation or build is required.
 
-## Testing Guidelines
+## Nix Conventions and Boundaries
 
-Run `just c` after Nix or repository-level changes. For host-specific changes, run `just eval <host>` first, then `just b <host>` when a full build is warranted. For files under `automation/upstream-watch/`, also run the checks declared in its nested `AGENTS.md`.
-
-## Agent Workflow for Nix Changes
-
-- Home Manager is integrated as a nix-darwin module; this flake does not export standalone `homeConfigurations`.
-- Never assume an option exists from model memory. Query Nix documentation, then verify it against the inputs pinned by `flake.lock`.
-- When online documentation and the pinned version disagree, treat the local flake input source as authoritative.
-- The nix-darwin package set comes from the `nixpkgs-darwin` unstable input; modules use the standard `pkgs` argument.
+- Format Nix with Alejandra (`alejandra` or `nix fmt`); use kebab-case module names and explicit `imports` lists rather than auto-discovery.
+- When adding or changing options, verify their contracts against the input sources pinned by `flake.lock`. Consult online documentation as needed; pinned sources take precedence.
+- Use the standard `pkgs` argument, supplied by the `nixpkgs-darwin` unstable input.
 - Do not update `flake.lock` unless explicitly requested.
 - Do not run `darwin-rebuild switch`, `home-manager switch`, or activation commands unless explicitly requested.
-- Fix the first root evaluation error before making unrelated changes.
 
 ## Commit & Pull Request Guidelines
 
@@ -39,4 +36,4 @@ Run `just c` after Nix or repository-level changes. For host-specific changes, r
 
 ## Security & Secrets
 
-Never commit raw credentials; use agenix to create `.age` files in the `mysecrets` repository and reference them from `modules/darwin/secrets.nix`. Confirm the relevant key resides in your age keyring before pushing. When updating secrets, note the change in the PR and coordinate key distribution with affected users.
+Never commit raw credentials. Store secrets as agenix `.age` files in the separate `nix-secrets` repository (`mysecrets` input) and wire them through `modules/darwin/secrets.nix`. When changing encrypted secrets, confirm the required keys are available and document recipient or key-distribution follow-up in the PR.
