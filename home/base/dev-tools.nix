@@ -20,7 +20,7 @@
         "npm:agent-browser" = "latest";
         "npm:opencode-ai" = "latest";
         "npm:@moonshot-ai/kimi-code" = "latest";
-        "npm:pnpm" = "latest";
+        pnpm = "latest";
       };
     };
   };
