@@ -74,6 +74,8 @@ in {
       "gnu-sed"
       "gnu-tar"
 
+      "pango" # native libs for WeasyPrint (kami PDF rendering)
+
       "dmtrKovalenko/fff/fff-mcp"
       "flyctl"
       "rtk"
