@@ -8,11 +8,12 @@
 		"test": "node --test scripts/*.test.mjs"
 	},
 	"dependencies": {
-		"@flue/runtime": "^2.0.3",
+		"@earendil-works/pi-ai": "0.83.0",
+		"@flue/runtime": "^2.1.1",
 		"valibot": "^1.4.2"
 	},
 	"devDependencies": {
-		"@flue/cli": "^2.0.3",
+		"@flue/cli": "^2.1.1",
 		"@types/node": "^22.10.10",
 		"typescript": "^7.0.2"
 	}

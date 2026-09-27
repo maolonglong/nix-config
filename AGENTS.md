@@ -37,3 +37,5 @@ The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A 
 ## Security & Secrets
 
 Never commit raw credentials. Store secrets as agenix `.age` files in the separate `nix-secrets` repository (`mysecrets` input) and wire them through `modules/darwin/secrets.nix`. When changing encrypted secrets, confirm the required keys are available and document recipient or key-distribution follow-up in the PR.
+
+Agents must not read or output decrypted secret files, even when their permissions allow access. Inspect Nix declarations and file metadata instead of following decrypted paths such as `config.age.secrets.*.path` or Nix `!include` targets.

@@ -4,6 +4,7 @@ import {
 	gitHubAuthArgs,
 	inlineCode,
 	markerFor,
+	parseManifest,
 	run,
 	sanitizeText,
 	sourceUrl,
@@ -18,10 +19,14 @@ const repository = process.env.GITHUB_REPOSITORY;
 const dryRun = process.env.DRY_RUN === 'true';
 if (!repository) throw new Error('GITHUB_REPOSITORY is required');
 
-const manifest = JSON.parse(await readFile(join(outputDir, 'manifest.json'), 'utf8'));
+const manifest = parseManifest(JSON.parse(await readFile(join(outputDir, 'manifest.json'), 'utf8')));
 
 if (dryRun) {
 	console.log(JSON.stringify(manifest, null, 2));
+	for (const outcome of manifest.outcomes.filter(({ analysis }) => analysis.decision === 'issue')) {
+		console.log(issueTitle(outcome));
+		console.log(issueBody(outcome, markerFor(outcome.sha)));
+	}
 	console.log('Dry run: no issue or cursor was created.');
 	process.exit(0);
 }
@@ -48,7 +53,7 @@ if (manifest.diverged) {
 
 for (const outcome of manifest.outcomes) {
 	const marker = markerFor(outcome.sha);
-	if (outcome.analysis.decision === 'irrelevant' || hasPublished(marker)) continue;
+	if (outcome.analysis.decision !== 'issue' || hasPublished(marker)) continue;
 	await createIssue(issueTitle(outcome), issueBody(outcome, marker));
 }
 
@@ -91,6 +96,14 @@ function issueBody(outcome, marker) {
 ## Analysis
 
 ${sanitizeText(outcome.analysis.summary)}
+
+## Local impact
+
+${sanitizeText(outcome.analysis.impact)}
+
+## Suggested action
+
+${sanitizeText(outcome.analysis.action)}
 
 ## Local evidence
 

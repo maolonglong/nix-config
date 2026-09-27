@@ -1,16 +1,18 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { gitHubAuthArgs, markerFor, parseAnalysis, sanitizeText, sourceUrl } from './lib.mjs';
+import { gitHubAuthArgs, markerFor, parseAnalysis, parseManifest, selectFeedback, sanitizeText, sourceUrl } from './lib.mjs';
 
 const validAnalysis = {
 	decision: 'issue',
 	summary: 'Relevant package configuration changed.',
 	localFiles: ['home/base/packages.nix'],
-	confidence: 'medium',
+	confidence: 'high',
+	impact: 'The enabled history widgets compete for Ctrl-R.',
+	action: 'Disable the fzf history widget while keeping Atuin enabled.',
 };
 
 test('parseAnalysis accepts each decision', () => {
-	for (const decision of ['irrelevant', 'issue']) {
+	for (const decision of ['irrelevant', 'defer', 'issue']) {
 		assert.equal(parseAnalysis({ ...validAnalysis, decision }).decision, decision);
 	}
 });
@@ -21,6 +23,41 @@ test('parseAnalysis rejects malformed output', () => {
 	assert.throws(() => parseAnalysis({ ...validAnalysis, decision: 'pull_request' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, summary: '' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: Array(13).fill('file.nix') }));
+});
+
+test('only supported actionable results can become issues', () => {
+	for (const change of [
+		{ impact: undefined }, { action: '' }, { localFiles: [] },
+		{ confidence: 'low' }, { duplicateOf: 9 },
+		{ localFiles: ['../private/secret'] }, { localFiles: ['/etc/passwd'] },
+	]) {
+		assert.throws(() => parseAnalysis({ ...validAnalysis, ...change }));
+	}
+	assert.equal(parseAnalysis({ ...validAnalysis, decision: 'defer', confidence: 'low' }).decision, 'defer');
+	assert.equal(parseAnalysis({ ...validAnalysis, decision: 'irrelevant', duplicateOf: 9 }).duplicateOf, 9);
+});
+
+test('feedback includes closed watch issues but excludes PRs and unrelated issues', () => {
+	const issue = { number: 9, title: 'Privacy policy', body: `Old analysis\n${markerFor('a'.repeat(40))}`, state: 'closed', state_reason: 'not_planned' };
+	assert.deepEqual(selectFeedback([
+		issue,
+		{ ...issue, number: 10, pull_request: {} },
+		{ ...issue, number: 11, body: 'Unrelated' },
+	]), [{ number: 9, title: issue.title, body: issue.body, state: 'closed', stateReason: 'not_planned' }]);
+});
+
+test('publisher rejects malformed or inconsistent manifests before side effects', () => {
+	const manifest = {
+		repository: 'ryan4yin/nix-config', previousSha: 'a'.repeat(40), head: 'b'.repeat(40),
+		baseline: false, diverged: false,
+		outcomes: [{ sha: 'b'.repeat(40), subject: 'Fix history', analysis: validAnalysis }],
+	};
+	assert.deepEqual(parseManifest(manifest), manifest);
+	for (const change of [
+		{ repository: 'other/repo' }, { head: '--help' }, { baseline: true },
+		{ diverged: true }, { outcomes: [...manifest.outcomes, ...manifest.outcomes] },
+		{ outcomes: [{ ...manifest.outcomes[0], analysis: { ...validAnalysis, action: undefined } }] },
+	]) assert.throws(() => parseManifest({ ...manifest, ...change }));
 });
 
 test('gitHubAuthArgs adds ephemeral HTTPS authentication only when configured', () => {

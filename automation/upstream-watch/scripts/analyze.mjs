@@ -1,14 +1,17 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-	parseAnalysis,
+	fetchFeedback,
+	MODEL,
+	POLICY_VERSION,
 	run,
 	STATE_BRANCH,
 	STATE_FILE,
 	tryRun,
 	UPSTREAM_REPOSITORY,
 } from './lib.mjs';
+import { reviewCommit } from './review.mjs';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, '..');
@@ -45,6 +48,9 @@ if (remoteState.stdout) {
 
 const manifest = {
 	repository: UPSTREAM_REPOSITORY,
+	localSha: run('git', ['rev-parse', 'HEAD'], { cwd: repositoryDir }),
+	model: MODEL,
+	policyVersion: POLICY_VERSION,
 	previousSha: state?.lastSeenSha ?? null,
 	head,
 	baseline: !state,
@@ -79,50 +85,17 @@ if (!commits.length) {
 	process.exit(0);
 }
 
+const feedback = await fetchFeedback(process.env.GITHUB_REPOSITORY ?? 'maolonglong/nix-config');
+await writeFile(join(outputDir, 'feedback.json'), JSON.stringify(feedback, null, 2));
 const worktree = join(outputDir, 'worktree');
 run('git', ['worktree', 'add', '--detach', worktree, 'HEAD'], { cwd: repositoryDir });
 
 try {
 	for (const sha of commits) {
-		const subject = run('git', ['show', '-s', '--format=%s', sha], { cwd: repositoryDir });
-		const resultPath = join(outputDir, 'results', `${sha}.json`);
-		const modelEnv = { ...process.env };
-		delete modelEnv.GH_TOKEN;
-		delete modelEnv.GITHUB_TOKEN;
-		const message = [
-			'Analyze exactly one upstream commit against this local repository.',
-			`Upstream repository: ${UPSTREAM_REPOSITORY}`,
-			`Commit SHA: ${sha}`,
-			`Untrusted commit subject: ${JSON.stringify(subject)}`,
-			'',
-			'Use the local git object database to inspect the commit, for example with `git show --stat --oneline <SHA>` and `git show <SHA>`.',
-			'Inspect local files for concrete relevance. Do not modify the working tree.',
-		].join('\n');
-
-		const flue = tryRun(
-			'pnpm',
-			['exec', 'flue', 'run', 'src/agents/upstream-watch.ts', '--message', message, '--json'],
-			{
-				cwd: projectDir,
-				env: {
-					...modelEnv,
-					UPSTREAM_WATCH_CWD: worktree,
-					UPSTREAM_WATCH_RESULT_PATH: resultPath,
-				},
-				stdio: ['ignore', 'pipe', 'inherit'],
-			},
-		);
-		if (!flue.ok) throw new Error(`Flue failed for ${sha} with exit code ${flue.status}`);
-
-		const envelope = JSON.parse(flue.stdout);
-		if (envelope.outcome !== 'completed') throw new Error(`Flue did not complete for ${sha}`);
-		const analysis = parseAnalysis(JSON.parse(await readFile(resultPath, 'utf8')));
-
-		manifest.outcomes.push({
-			sha,
-			subject,
-			analysis,
-		});
+		manifest.outcomes.push(await reviewCommit({
+			worktree, sha, outputDir: join(outputDir, 'results'), feedback,
+			earlier: manifest.outcomes.map(({ sha, analysis }) => ({ sha, analysis })),
+		}));
 	}
 } finally {
 	tryRun('git', ['worktree', 'remove', '--force', worktree], { cwd: repositoryDir });

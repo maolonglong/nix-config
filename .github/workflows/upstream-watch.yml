@@ -17,6 +17,7 @@ concurrency:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -47,16 +48,21 @@ jobs:
         run: node scripts/analyze.mjs
 
       - name: Upload analysis
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: upstream-watch-analysis
-          path: ${{ runner.temp }}/upstream-watch
-          if-no-files-found: error
-          retention-days: 1
+          path: |
+            ${{ runner.temp }}/upstream-watch/manifest.json
+            ${{ runner.temp }}/upstream-watch/feedback.json
+            ${{ runner.temp }}/upstream-watch/results
+          if-no-files-found: warn
+          retention-days: 14
 
   publish:
     needs: analyze
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
       issues: write

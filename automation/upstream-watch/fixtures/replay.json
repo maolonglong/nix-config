@@ -1,0 +1,60 @@
+[
+	{
+		"name": "atuin-before-fix",
+		"localSha": "1b85badb454aedcb1ab4a3a6a8f508ed3e88100b",
+		"hiddenLocalSha": "2b1a3de6d317565eacec82382661779a24d157ce",
+		"upstreamSha": "c33b68c7bb9a349749407eb97eea03bab4b9f889",
+		"expected": ["issue"],
+		"evidenceFile": "home/base/core.nix"
+	},
+	{
+		"name": "atuin-after-fix",
+		"localSha": "2b1a3de6d317565eacec82382661779a24d157ce",
+		"upstreamSha": "c33b68c7bb9a349749407eb97eea03bab4b9f889",
+		"expected": ["irrelevant"]
+	},
+	{
+		"name": "ghostty-already-equivalent",
+		"localSha": "7fbd5b660d79e8f211420d678c6d01026fda608a",
+		"upstreamSha": "e1a9424350d007bf5bb1782b58effb3ecafe0eaf",
+		"expected": ["irrelevant"]
+	},
+	{
+		"name": "upstream-agent-todo",
+		"localSha": "70c7eeab6138f64f4ba8f3a0b0819c15f4af27c1",
+		"upstreamSha": "8d108ee0355627a50518b204c19d7f85fc5358ef",
+		"expected": ["irrelevant"]
+	},
+	{
+		"name": "personal-shell-policy",
+		"localSha": "70c7eeab6138f64f4ba8f3a0b0819c15f4af27c1",
+		"upstreamSha": "3412dfefec0916ec941eec8a5962fd62c1fac365",
+		"expected": ["irrelevant"]
+	},
+	{
+		"name": "new-agent-parity",
+		"localSha": "2f271456963ae07ba09251db88cc478f0567aac8",
+		"upstreamSha": "23258a06d459c4b7f6ecc091f48a4fdff6bdb0a2",
+		"expected": ["irrelevant"]
+	},
+	{
+		"name": "declined-privacy-followup",
+		"localSha": "a33a0b3c31f17abe492d243d5d2a54d6276b2df2",
+		"upstreamSha": "d47710ebe2b4bd8b61d8446a9ed00fea9ceb46d3",
+		"feedbackIssues": [9],
+		"duplicateOf": 9,
+		"expected": ["irrelevant"]
+	},
+	{
+		"name": "catppuccin-disabled-integration",
+		"localSha": "a33a0b3c31f17abe492d243d5d2a54d6276b2df2",
+		"upstreamSha": "4bd463a7847074ffd75dc2c1261c5101507fdd19",
+		"expected": ["irrelevant", "defer"]
+	},
+	{
+		"name": "personal-safety-policy",
+		"localSha": "a33a0b3c31f17abe492d243d5d2a54d6276b2df2",
+		"upstreamSha": "27b99fa45f7e8fb5982feee473cf091afc84a031",
+		"expected": ["irrelevant"]
+	}
+]
