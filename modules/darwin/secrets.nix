@@ -1,5 +1,6 @@
 {
   inputs,
+  myvars,
   pkgs,
   ...
 }: let
@@ -20,7 +21,8 @@ in {
   age.secrets = {
     nix-access-tokens = {
       file = "${mysecrets}/nix-access-tokens.age";
-      mode = "444";
+      owner = myvars.username;
+      mode = "0400";
     };
   };
 }

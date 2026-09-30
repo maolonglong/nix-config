@@ -132,11 +132,26 @@
       };
     };
 
-    evalDarwinConfiguration = name:
-      pkgs.writeText "eval-${name}" (
-        builtins.unsafeDiscardStringContext
-        self.darwinConfigurations.${name}.config.system.build.toplevel.drvPath
-      );
+    # Host expectations are spelled out per host instead of derived from
+    # myvars, so drift in hosts/ or mkDarwin fails `nix flake check`.
+    evalDarwinConfiguration = name: {
+      hostname,
+      managesGitAndSsh,
+    }: let
+      config = self.darwinConfigurations.${name}.config;
+      user = config.system.primaryUser;
+      home = config.home-manager.users.${user};
+      check = nixpkgs-darwin.lib.assertMsg;
+    in
+      assert check (home.home.username == user) "${name}: Home Manager user differs from primary user";
+      assert check (home.home.homeDirectory == config.users.users.${user}.home) "${name}: Home Manager and system home directories differ";
+      assert check (config.networking.hostName == hostname) "${name}: unexpected hostname";
+      assert check (home.programs.git.enable == managesGitAndSsh) "${name}: unexpected Home Manager Git management";
+      assert check (home.programs.ssh.enable == managesGitAndSsh) "${name}: unexpected Home Manager SSH management";
+        pkgs.writeText "eval-${name}" (
+          builtins.unsafeDiscardStringContext
+          config.system.build.toplevel.drvPath
+        );
   in {
     darwinConfigurations = {
       personal-mba = mkDarwin {
@@ -158,8 +173,14 @@
 
     checks.${system} = {
       pre-commit-check = preCommitCheck;
-      personal-mba-eval = evalDarwinConfiguration "personal-mba";
-      work-mbp-eval = evalDarwinConfiguration "work-mbp";
+      personal-mba-eval = evalDarwinConfiguration "personal-mba" {
+        hostname = "chensl-mba";
+        managesGitAndSsh = true;
+      };
+      work-mbp-eval = evalDarwinConfiguration "work-mbp" {
+        hostname = "QNR3WWC3PW";
+        managesGitAndSsh = false;
+      };
     };
 
     formatter.${system} = pkgs.alejandra;
