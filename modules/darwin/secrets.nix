@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   myvars,
   pkgs,
@@ -25,4 +26,8 @@ in {
       mode = "0400";
     };
   };
+
+  nix.extraOptions = ''
+    !include ${config.age.secrets.nix-access-tokens.path}
+  '';
 }

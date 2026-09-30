@@ -1,9 +1,5 @@
-{
-  config,
-  myvars,
-  ...
-}: let
-  homeDir = config.users.users.${myvars.username}.home;
+{config, ...}: let
+  homeDir = config.users.users.${config.system.primaryUser}.home;
 in {
   security.pam.services.sudo_local = {
     touchIdAuth = true;
@@ -20,8 +16,4 @@ in {
     StandardErrorPath = "${homeDir}/Library/Logs/gnupg-agent.stderr.log";
     StandardOutPath = "${homeDir}/Library/Logs/gnupg-agent.stdout.log";
   };
-
-  nix.extraOptions = ''
-    !include ${config.age.secrets.nix-access-tokens.path}
-  '';
 }

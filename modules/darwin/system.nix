@@ -9,13 +9,46 @@
     defaults = {
       menuExtraClock.Show24Hour = true;
 
+      dock = {
+        "mru-spaces" = true;
+        "autohide-time-modifier" = 0.2;
+        "autohide-delay" = 0.0;
+      };
+
       finder = {
         _FXShowPosixPathInTitle = true;
+        _FXSortFoldersFirst = true;
         AppleShowAllExtensions = true;
+        AppleShowAllFiles = true;
+        FXDefaultSearchScope = "SCcf"; # search the current folder
         FXEnableExtensionChangeWarning = false;
         QuitMenuItem = true;
+        ShowExternalHardDrivesOnDesktop = true;
+        ShowHardDrivesOnDesktop = true;
+        ShowMountedServersOnDesktop = true;
         ShowPathbar = true;
+        ShowRemovableMediaOnDesktop = true;
         ShowStatusBar = true;
+      };
+
+      screencapture = {
+        location = "~/Desktop";
+        type = "png";
+      };
+
+      screensaver = {
+        askForPassword = true;
+        askForPasswordDelay = 0;
+      };
+
+      spaces."spans-displays" = false;
+
+      WindowManager = {
+        EnableStandardClickToShowDesktop = false;
+        StandardHideDesktopIcons = false;
+        HideDesktop = false;
+        StageManagerHideWidgets = false;
+        StandardHideWidgets = false;
       };
 
       trackpad = {
@@ -28,6 +61,7 @@
         "com.apple.swipescrolldirection" = true;
         "com.apple.sound.beep.feedback" = 0;
         ApplePressAndHoldEnabled = false;
+        AppleSpacesSwitchOnActivate = true;
         InitialKeyRepeat = 15;
         KeyRepeat = 2;
         NSAutomaticCapitalizationEnabled = false;
@@ -39,42 +73,12 @@
         NSNavPanelExpandedStateForSaveMode2 = true;
       };
 
+      # Keys without a typed nix-darwin option.
       CustomUserPreferences = {
-        ".GlobalPreferences".AppleSpacesSwitchOnActivate = true;
         NSGlobalDomain.WebKitDeveloperExtras = true;
-        "com.apple.finder" = {
-          AppleShowAllFiles = true;
-          ShowExternalHardDrivesOnDesktop = true;
-          ShowHardDrivesOnDesktop = true;
-          ShowMountedServersOnDesktop = true;
-          ShowRemovableMediaOnDesktop = true;
-          _FXSortFoldersFirst = true;
-          FXDefaultSearchScope = "SCcf";
-        };
-        "com.apple.dock" = {
-          "mru-spaces" = true;
-          "autohide-time-modifier" = 0.2;
-          "autohide-delay" = 0;
-        };
         "com.apple.desktopservices" = {
           DSDontWriteNetworkStores = true;
           DSDontWriteUSBStores = true;
-        };
-        "com.apple.spaces"."spans-displays" = false;
-        "com.apple.WindowManager" = {
-          EnableStandardClickToShowDesktop = 0;
-          StandardHideDesktopIcons = 0;
-          HideDesktop = 0;
-          StageManagerHideWidgets = 0;
-          StandardHideWidgets = 0;
-        };
-        "com.apple.screensaver" = {
-          askForPassword = 1;
-          askForPasswordDelay = 0;
-        };
-        "com.apple.screencapture" = {
-          location = "~/Desktop";
-          type = "png";
         };
         "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
         "com.apple.ImageCapture".disableHotPlug = true;
@@ -85,15 +89,9 @@
         SHOWFULLNAME = true;
       };
     };
-
-    keyboard = {
-      enableKeyMapping = false;
-      remapCapsLockToControl = false;
-      remapCapsLockToEscape = false;
-      swapLeftCommandAndLeftAlt = false;
-      userKeyMapping = [];
-    };
   };
 
   time.timeZone = "Asia/Shanghai";
+
+  environment.variables.EDITOR = "vim";
 }
