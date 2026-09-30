@@ -9,8 +9,9 @@ default:
 check:
   nix flake check --show-trace
 
+# Evaluates the host and runs its invariant assertions without building.
 eval host="work-mbp":
-  nix eval .#darwinConfigurations.{{host}}.config.system.build.toplevel.drvPath --show-trace
+  nix eval .#checks.aarch64-darwin.{{host}}-eval.drvPath --show-trace
 
 [macos]
 build host="work-mbp":

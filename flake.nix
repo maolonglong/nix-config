@@ -132,16 +132,22 @@
       };
     };
 
-    evalDarwinConfiguration = name: username: hostname: let
+    # Host expectations are spelled out per host instead of derived from
+    # myvars, so drift in hosts/ or mkDarwin fails `nix flake check`.
+    evalDarwinConfiguration = name: {
+      hostname,
+      managesGitAndSsh,
+    }: let
       config = self.darwinConfigurations.${name}.config;
-      home = config.home-manager.users.${username};
+      user = config.system.primaryUser;
+      home = config.home-manager.users.${user};
       check = nixpkgs-darwin.lib.assertMsg;
     in
-      assert check (config.system.primaryUser == username) "${name}: unexpected primary user";
-      assert check (config.users.users.${username}.home == "/Users/${username}") "${name}: unexpected system home";
-      assert check (home.home.username == username && home.home.homeDirectory == "/Users/${username}") "${name}: unexpected Home Manager identity";
+      assert check (home.home.username == user) "${name}: Home Manager user differs from primary user";
+      assert check (home.home.homeDirectory == config.users.users.${user}.home) "${name}: Home Manager and system home directories differ";
       assert check (config.networking.hostName == hostname) "${name}: unexpected hostname";
-      assert check (name != "work-mbp" || (!home.programs.git.enable && !home.programs.ssh.enable)) "work-mbp: Home Manager must not manage Git or SSH";
+      assert check (home.programs.git.enable == managesGitAndSsh) "${name}: unexpected Home Manager Git management";
+      assert check (home.programs.ssh.enable == managesGitAndSsh) "${name}: unexpected Home Manager SSH management";
         pkgs.writeText "eval-${name}" (
           builtins.unsafeDiscardStringContext
           config.system.build.toplevel.drvPath
@@ -167,8 +173,14 @@
 
     checks.${system} = {
       pre-commit-check = preCommitCheck;
-      personal-mba-eval = evalDarwinConfiguration "personal-mba" "chensl" "chensl-mba";
-      work-mbp-eval = evalDarwinConfiguration "work-mbp" "bytedance" "QNR3WWC3PW";
+      personal-mba-eval = evalDarwinConfiguration "personal-mba" {
+        hostname = "chensl-mba";
+        managesGitAndSsh = true;
+      };
+      work-mbp-eval = evalDarwinConfiguration "work-mbp" {
+        hostname = "QNR3WWC3PW";
+        managesGitAndSsh = false;
+      };
     };
 
     formatter.${system} = pkgs.alejandra;
