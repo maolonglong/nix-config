@@ -5,7 +5,7 @@
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
-      url = "github:lnl7/nix-darwin";
+      url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
@@ -26,8 +26,8 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
-    pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
@@ -53,7 +53,7 @@
     nix-darwin,
     home-manager,
     nix-index-database,
-    pre-commit-hooks,
+    git-hooks,
     catppuccin,
     ...
   }: let
@@ -111,7 +111,7 @@
           ++ hostModules;
       };
 
-    preCommitCheck = pre-commit-hooks.lib.${system}.run {
+    preCommitCheck = git-hooks.lib.${system}.run {
       src = ./.;
       hooks = {
         alejandra.enable = true;
