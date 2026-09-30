@@ -1,13 +1,13 @@
 {
-  myvars,
+  config,
   pkgs,
   ...
-}: let
-  homeDir = "/Users/${myvars.username}";
-in {
+}: {
   programs.ssh.enable = false;
   programs.git.enable = false;
 
+  # Not `programs.go`: it would manage ~/Library/Application Support/go/env,
+  # which holds this machine's company Go settings.
   home.packages = [
     pkgs.go_1_25
   ];
@@ -25,13 +25,11 @@ in {
   };
 
   home.sessionPath = [
-    "${homeDir}/go/bin"
-    "${homeDir}/.bytebm/bin"
+    "${config.home.homeDirectory}/.bytebm/bin"
   ];
 
   home.sessionVariables = rec {
-    GO111MODULE = "on";
-    GOPATH = "${homeDir}/go";
+    GOPATH = "${config.home.homeDirectory}/go";
     GOBIN = "${GOPATH}/bin";
   };
 }

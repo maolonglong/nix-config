@@ -1,27 +1,25 @@
-{myvars, ...}: {
+{
   imports = [
-    ./darwin/cloud.nix
-    ./darwin/ghostty.nix
-    ./darwin/homebrew.nix
-    ./base/core.nix
-    ./base/xdg.nix
-    ./base/git.nix
-    ./base/security.nix
-    ./base/zsh.nix
-    ./base/starship.nix
-    ./base/zellij.nix
-    ./base/tmux
-    ./base/editors/vim.nix
-    ./base/dev-tools.nix
-    ./base/lazygit.nix
-    ./base/media.nix
+    ./packages.nix
+    ./cli.nix
+    ./dev-tools.nix
+    ./ghostty.nix
+    ./git.nix
+    ./homebrew.nix
+    ./lazygit.nix
+    ./path.nix
+    ./security.nix
+    ./starship.nix
+    ./tmux
+    ./vim.nix
+    ./xdg.nix
+    ./zellij.nix
+    ./zsh.nix
   ];
 
-  home = {
-    inherit (myvars) username;
-    homeDirectory = "/Users/${myvars.username}";
-    stateVersion = "26.05";
-  };
+  # `home.username` and `home.homeDirectory` come from `users.users` through
+  # the Home Manager nix-darwin module; see modules/darwin/users.nix.
+  home.stateVersion = "26.05";
 
   programs.home-manager.enable = true;
 }

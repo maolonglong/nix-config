@@ -1,9 +1,8 @@
-{pkgs, ...}: {
+{
   catppuccin.lazygit.enable = true;
 
   programs.lazygit = {
     enable = true;
-    package = pkgs.lazygit;
     settings = {
       gui = {
         language = "en";
@@ -24,17 +23,4 @@
       };
     };
   };
-
-  programs.zsh.initContent = ''
-    lg() {
-      export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
-
-      lazygit "$@"
-
-      if [ -f $LAZYGIT_NEW_DIR_FILE ]; then
-        cd "$(cat $LAZYGIT_NEW_DIR_FILE)"
-        rm -f $LAZYGIT_NEW_DIR_FILE >/dev/null
-      fi
-    }
-  '';
 }

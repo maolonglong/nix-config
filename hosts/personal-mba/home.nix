@@ -1,10 +1,4 @@
-{
-  lib,
-  myvars,
-  ...
-}: let
-  homeDir = "/Users/${myvars.username}";
-in {
+{lib, ...}: {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -30,27 +24,16 @@ in {
 
   programs.go = {
     enable = true;
-    env = rec {
-      GOPATH = "${homeDir}/go";
-      GOBIN = "${GOPATH}/bin";
-      GOPRIVATE = lib.concatStringsSep "," [
-        "github.com/maolonglong"
-        "go.chensl.me"
-      ];
-    };
-  };
-
-  home.sessionPath = [
-    "${homeDir}/go/bin"
-  ];
-
-  home.sessionVariables = {
-    GO111MODULE = "on";
-    GOPROXY = lib.concatStringsSep "|" [
-      "https://goproxy.cn"
-      "https://goproxy.io"
-      "https://proxy.golang.org"
-      "direct"
+    env.GOPRIVATE = [
+      "github.com/maolonglong"
+      "go.chensl.me"
     ];
   };
+
+  home.sessionVariables.GOPROXY = lib.concatStringsSep "|" [
+    "https://goproxy.cn"
+    "https://goproxy.io"
+    "https://proxy.golang.org"
+    "direct"
+  ];
 }

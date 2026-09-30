@@ -1,15 +1,9 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    commitizen
-    scc
-  ];
-
+{
   services.pueue.enable = true;
 
-  # Node.js
+  # Language runtimes and agent CLIs, installed on demand by mise.
   programs.mise = {
     enable = true;
-    enableZshIntegration = true;
     globalConfig = {
       tools = {
         bun = "latest";

@@ -1,10 +1,7 @@
-{pkgs, ...}: {
+{
   programs.ghostty = {
     enable = true;
-    package =
-      if pkgs.stdenv.hostPlatform.isDarwin
-      then null # installed via Homebrew cask on darwin
-      else pkgs.ghostty;
+    package = null; # installed via Homebrew cask
     settings = {
       adjust-cell-height = 3;
       adjust-cell-width = -1;
@@ -30,8 +27,6 @@
       shell-integration-features = "sudo,no-cursor,ssh-terminfo,ssh-env";
       theme = "Catppuccin Mocha";
       unfocused-split-opacity = 0.85;
-      # hide title bar/header bar (Linux only; on macOS it would remove the traffic lights too)
-      window-decoration = pkgs.stdenv.hostPlatform.isDarwin;
       window-padding-balance = true;
       window-padding-x = 8;
       window-padding-y = 6;

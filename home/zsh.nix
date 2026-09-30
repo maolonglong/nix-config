@@ -1,8 +1,13 @@
 {
-  pkgs,
   config,
+  inputs,
+  pkgs,
   ...
 }: {
+  home.packages = [
+    inputs.mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.shell-safe-rm
+  ];
+
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
@@ -27,18 +32,6 @@
       theme = "";
     };
 
-    plugins = [
-      {
-        name = "nix-zsh-completions";
-        src = pkgs.fetchFromGitHub {
-          owner = "nix-community";
-          repo = "nix-zsh-completions";
-          rev = "0.5.1";
-          sha256 = "sha256-bgbMc4HqigqgdkvUe/CWbUclwxpl17ESLzCIP8Sz+F8=";
-        };
-      }
-    ];
-
     envExtra = ''
       [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
     '';
@@ -47,9 +40,6 @@
       unalias gog
       unalias gops
       unalias gsu
-
-      export GPG_TTY=$(tty)
-      [ "$(command -v mutagen)" ] && mutagen daemon start
     '';
 
     shellAliases = {

@@ -8,8 +8,4 @@
       [ "$(command -v brew)" ] && fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
     '';
   };
-
-  home.sessionPath = [
-    "/opt/homebrew/bin"
-  ];
 }

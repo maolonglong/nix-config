@@ -4,10 +4,7 @@
   pkgs,
   ...
 }: {
-  home.packages = with pkgs; [
-    git-lfs
-    git-extras
-  ];
+  home.packages = [pkgs.git-extras];
 
   programs.git = {
     enable = lib.mkDefault true;
