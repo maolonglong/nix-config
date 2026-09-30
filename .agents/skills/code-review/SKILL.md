@@ -28,23 +28,24 @@ Done when every changed file is mapped to an area and every finding carries a pr
 
 ## Two hosts, one base
 
-- Users differ (`chensl` vs `bytedance`). Derive paths from `myvars.username` or the host's `homeDir`; a literal path went stale in `da99b296`.
+- Users differ (`chensl` vs `bytedance`). Derive paths from `myvars.username` or `config.home.homeDirectory`; a literal path went stale in `da99b296`. `home.username` and `home.homeDirectory` come from `users.users` via Home Manager, so do not set them in `home/`.
 - `work-mbp` disables `programs.git` and `programs.ssh`, so a shared change to either lands only on `personal-mba`. Confirm that is intended.
 - Per-host expectations (hostname, git/ssh management, user and home agreement) are asserted in the `flake.nix` checks and run by `just eval`. A diff that edits an expectation and its host module together needs a reason; one that edits only the assertion is suspect.
-- Internal registry, tools, and paths stay in `hosts/work-mbp`; nothing internal enters `home/base`.
+- Internal registry, tools, and paths stay in `hosts/work-mbp`; nothing internal enters `home/`.
 - After touching `programs.mise.globalConfig`, evaluate the merged result: `nix eval .#darwinConfigurations.work-mbp.config.home-manager.users.bytedance.programs.mise.globalConfig.tools --json`.
 
 ## Runtime-only behavior
 
-- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check. `fpath` additions need an order below 570, where HM runs `compinit` (`home/darwin/homebrew.nix` uses 550).
-- `unalias gog gops gsu` in `home/base/zsh.nix` errors on every shell start once `oh-my-zsh.plugins` stops defining them. Re-check the list when plugins change.
+- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check. `fpath` additions need an order below 570, where HM runs `compinit` (`home/homebrew.nix` uses 550).
+- `unalias gog gops gsu` in `home/zsh.nix` errors on every shell start once `oh-my-zsh.plugins` stops defining them. Re-check the list when plugins change.
+- Home Manager wraps `vim` with `-u <generated vimrc>`, so `~/.vimrc` is never read; Vim settings belong in `programs.vim.extraConfig`.
 - Free-form strings pass eval however wrong: Ghostty keys and fonts (`621ecff7`), Starship settings. A named font must come from `modules/darwin/fonts.nix` or a system font.
 - macOS defaults can have inverted meaning (`fa702000`, `spans-displays`). Check the semantics of each changed default against Apple's `defaults` behavior.
 - `AddressFamily inet` on `github.com` in `hosts/personal-mba/home.nix` keeps VPN fake-IP6 from stalling git (`0518101e`).
 
 ## Fetched and derived inputs
 
-- `fetchFromGitHub` pins (tmux, vimrc, nix-zsh-completions): `rev` and `hash` change together, and only a build proves the hash. After a tmux `rev` bump, the build shows whether `.tmux.conf.local.patch` still applies.
+- `fetchFromGitHub` pins (tmux, vimrc): `rev` and `hash` change together, and only a build proves the hash. After a tmux `rev` bump, the build shows whether `.tmux.conf.local.patch` still applies.
 - `readFile` or `fromTOML` on another package's output breaks when its layout changes (`383ee4b0`, `bbd5aee1`). Confirm the file exists in the pinned package and parses.
 - mise keys are backend identifiers Nix never validates (`2f271456`: `npm:pnpm` became `pnpm`). `latest` drifts and broke bun once (`e2f87dac`). Confirm identifiers with `mise registry`.
 

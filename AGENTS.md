@@ -3,8 +3,8 @@
 ## Project Map
 
 - `flake.nix` exports `darwinConfigurations`; Home Manager is integrated into nix-darwin, with no standalone `homeConfigurations`.
-- `hosts/<hostname>/`: `default.nix` for system overrides, `home.nix` for user overrides.
-- Shared modules: `modules/darwin/` for system settings, `home/base/` for cross-platform user settings, `home/darwin/` for macOS user settings.
+- `hosts/<name>/`: `vars.nix` for identity (`username`, `userfullname`, `useremail`), `default.nix` for system overrides, `home.nix` for user overrides. `mkDarwin` in `flake.nix` takes only the host name.
+- Shared modules: `modules/darwin/` for system settings, `home/` for user settings (this flake is Darwin-only, so there is no platform split).
 - For changes to `automation/upstream-watch/` or `.github/workflows/upstream-watch.yml`, follow `automation/upstream-watch/AGENTS.md`.
 
 ## Commands and Verification
@@ -12,6 +12,7 @@
 - `just eval <host>` evaluates a host without building or activating it; defaults to `work-mbp`.
 - `just c` runs `nix flake check --show-trace`: host evaluation checks and pre-commit hooks for Alejandra, typos, Taplo, and gitleaks.
 - `just b <host>` builds without activation via `darwin-rebuild`; macOS only, defaults to `work-mbp`.
+- `just diff <host>` builds, then lists package changes against the running system; `just fmt` formats with Alejandra.
 - `nix develop` provides Alejandra, nil, Taplo, typos, and installs pre-commit hooks.
 
 The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A default `nix flake check` on Linux is not evidence that the Darwin checks ran. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
