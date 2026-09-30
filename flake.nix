@@ -132,11 +132,20 @@
       };
     };
 
-    evalDarwinConfiguration = name:
-      pkgs.writeText "eval-${name}" (
-        builtins.unsafeDiscardStringContext
-        self.darwinConfigurations.${name}.config.system.build.toplevel.drvPath
-      );
+    evalDarwinConfiguration = name: username: hostname: let
+      config = self.darwinConfigurations.${name}.config;
+      home = config.home-manager.users.${username};
+      check = nixpkgs-darwin.lib.assertMsg;
+    in
+      assert check (config.system.primaryUser == username) "${name}: unexpected primary user";
+      assert check (config.users.users.${username}.home == "/Users/${username}") "${name}: unexpected system home";
+      assert check (home.home.username == username && home.home.homeDirectory == "/Users/${username}") "${name}: unexpected Home Manager identity";
+      assert check (config.networking.hostName == hostname) "${name}: unexpected hostname";
+      assert check (name != "work-mbp" || (!home.programs.git.enable && !home.programs.ssh.enable)) "work-mbp: Home Manager must not manage Git or SSH";
+        pkgs.writeText "eval-${name}" (
+          builtins.unsafeDiscardStringContext
+          config.system.build.toplevel.drvPath
+        );
   in {
     darwinConfigurations = {
       personal-mba = mkDarwin {
@@ -158,8 +167,8 @@
 
     checks.${system} = {
       pre-commit-check = preCommitCheck;
-      personal-mba-eval = evalDarwinConfiguration "personal-mba";
-      work-mbp-eval = evalDarwinConfiguration "work-mbp";
+      personal-mba-eval = evalDarwinConfiguration "personal-mba" "chensl" "chensl-mba";
+      work-mbp-eval = evalDarwinConfiguration "work-mbp" "bytedance" "QNR3WWC3PW";
     };
 
     formatter.${system} = pkgs.alejandra;
