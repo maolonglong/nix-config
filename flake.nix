@@ -60,55 +60,44 @@
     system = "aarch64-darwin";
     pkgs = nixpkgs-darwin.legacyPackages.${system};
 
-    mkDarwin = {
-      username,
-      userfullname,
-      useremail,
-      hostModules,
-      homeModules,
-    }: let
-      myvars = {
-        inherit system username userfullname useremail;
-      };
-      specialArgs = {
-        inherit inputs myvars;
-      };
+    # A host is `hosts/<name>/`: `vars.nix` (identity), `default.nix` (system
+    # overrides) and `home.nix` (Home Manager overrides).
+    mkDarwin = name: let
+      myvars = import ./hosts/${name}/vars.nix;
+      specialArgs = {inherit inputs myvars;};
     in
       nix-darwin.lib.darwinSystem {
-        inherit system specialArgs;
-        modules =
-          [
-            {
-              nixpkgs.pkgs = import nixpkgs-darwin {
-                inherit system;
-                config.allowUnfree = true;
-              };
-            }
+        inherit specialArgs;
+        modules = [
+          {
+            nixpkgs = {
+              hostPlatform = system;
+              config.allowUnfree = true;
+            };
+          }
 
-            ./modules/darwin
-            nix-index-database.darwinModules.nix-index
+          ./modules/darwin
+          nix-index-database.darwinModules.nix-index
 
-            home-manager.darwinModules.home-manager
-            {
-              home-manager = {
-                verbose = true;
-                backupFileExtension = "hm_bak~";
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                extraSpecialArgs = specialArgs;
-                users.${username}.imports =
-                  [
-                    catppuccin.homeModules.catppuccin
-                    {
-                      catppuccin.flavor = "mocha";
-                    }
-                    ./home
-                  ]
-                  ++ homeModules;
-              };
-            }
-          ]
-          ++ hostModules;
+          home-manager.darwinModules.home-manager
+          {
+            home-manager = {
+              verbose = true;
+              backupFileExtension = "hm_bak~";
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = specialArgs;
+              users.${myvars.username}.imports = [
+                catppuccin.homeModules.catppuccin
+                {catppuccin.flavor = "mocha";}
+                ./home
+                ./hosts/${name}/home.nix
+              ];
+            };
+          }
+
+          ./hosts/${name}
+        ];
       };
 
     preCommitCheck = git-hooks.lib.${system}.run {
@@ -132,8 +121,20 @@
       };
     };
 
-    # Host expectations are spelled out per host instead of derived from
-    # myvars, so drift in hosts/ or mkDarwin fails `nix flake check`.
+    # Facts each host must keep. They are spelled out here instead of derived
+    # from hosts/, so drift in hosts/ or mkDarwin fails `nix flake check`. This
+    # attrset also names the hosts, so none can exist without expectations.
+    hostExpectations = {
+      personal-mba = {
+        hostname = "chensl-mba";
+        managesGitAndSsh = true;
+      };
+      work-mbp = {
+        hostname = "QNR3WWC3PW";
+        managesGitAndSsh = false;
+      };
+    };
+
     evalDarwinConfiguration = name: {
       hostname,
       managesGitAndSsh,
@@ -153,35 +154,15 @@
           config.system.build.toplevel.drvPath
         );
   in {
-    darwinConfigurations = {
-      personal-mba = mkDarwin {
-        username = "chensl";
-        userfullname = "Shaolong Chen";
-        useremail = "shaolong.chen@outlook.it";
-        hostModules = [./hosts/personal-mba];
-        homeModules = [./hosts/personal-mba/home.nix];
-      };
+    darwinConfigurations = nixpkgs-darwin.lib.genAttrs (builtins.attrNames hostExpectations) mkDarwin;
 
-      work-mbp = mkDarwin {
-        username = "bytedance";
-        userfullname = "Shaolong Chen";
-        useremail = "chenshaolong.1016@bytedance.com";
-        hostModules = [./hosts/work-mbp];
-        homeModules = [./hosts/work-mbp/home.nix];
-      };
-    };
-
-    checks.${system} = {
-      pre-commit-check = preCommitCheck;
-      personal-mba-eval = evalDarwinConfiguration "personal-mba" {
-        hostname = "chensl-mba";
-        managesGitAndSsh = true;
-      };
-      work-mbp-eval = evalDarwinConfiguration "work-mbp" {
-        hostname = "QNR3WWC3PW";
-        managesGitAndSsh = false;
-      };
-    };
+    checks.${system} =
+      {pre-commit-check = preCommitCheck;}
+      // nixpkgs-darwin.lib.mapAttrs' (name: expect: {
+        name = "${name}-eval";
+        value = evalDarwinConfiguration name expect;
+      })
+      hostExpectations;
 
     formatter.${system} = pkgs.alejandra;
 
