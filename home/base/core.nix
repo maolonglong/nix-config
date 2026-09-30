@@ -69,7 +69,9 @@ in {
       enableZshIntegration = true;
       defaultCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
       fileWidget.command = defaultCommand;
-      # Let Atuin own Ctrl-R while fzf keeps its other widgets.
+      # Let Atuin own Ctrl-R while fzf keeps its other widgets. An empty command
+      # makes fzf (>= 0.66) skip its Ctrl-R binding; Home Manager also sources
+      # Atuin after fzf, and warns at eval time if both still claim Ctrl-R.
       historyWidget.command = "";
     };
 
