@@ -31,7 +31,7 @@ Done when every changed file is mapped to an area and every finding carries a pr
 - Users differ (`chensl` vs `bytedance`). Derive paths from `myvars.username` or `config.home.homeDirectory`; a literal path went stale in `da99b296`. `home.username` and `home.homeDirectory` come from `users.users` via Home Manager, so do not set them in `home/`.
 - `work-mbp` disables `programs.git` and `programs.ssh`, so a shared change to either lands only on `personal-mba`. Confirm that is intended.
 - Per-host expectations (hostname, git/ssh management, user and home agreement) are asserted in the `flake.nix` checks and run by `just eval`. A diff that edits an expectation and its host module together needs a reason; one that edits only the assertion is suspect.
-- Internal registry, tools, and paths stay in `hosts/work-mbp`; nothing internal enters `home/`.
+- Placement follows `docs/hosts.md`; anything internal to the company in `home/` is a finding.
 - After touching `programs.mise.globalConfig`, evaluate the merged result: `nix eval .#darwinConfigurations.work-mbp.config.home-manager.users.bytedance.programs.mise.globalConfig.tools --json`.
 
 ## Runtime-only behavior

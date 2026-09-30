@@ -5,6 +5,7 @@
 - `flake.nix` exports `darwinConfigurations`; Home Manager is integrated into nix-darwin, with no standalone `homeConfigurations`.
 - `hosts/<name>/`: `vars.nix` for identity (`username`, `userfullname`, `useremail`), `default.nix` for system overrides, `home.nix` for user overrides. `mkDarwin` in `flake.nix` takes only the host name.
 - Shared modules: `modules/darwin/` for system settings, `home/` for user settings (this flake is Darwin-only, so there is no platform split).
+- Hosts: `docs/hosts.md` lists how `personal-mba` and `work-mbp` differ and where a setting belongs. Read it before adding a setting only one machine needs, or moving one between `home/` and `hosts/`.
 - For changes to `automation/upstream-watch/` or `.github/workflows/upstream-watch.yml`, follow `automation/upstream-watch/AGENTS.md`.
 
 ## Commands and Verification
