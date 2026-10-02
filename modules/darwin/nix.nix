@@ -1,10 +1,9 @@
-{myvars, ...}: {
+{
   nix.settings = {
     experimental-features = [
       "nix-command"
       "flakes"
     ];
-    trusted-users = [myvars.username];
     # Mirrors in China come first; cache.nixos.org is appended by nix-darwin.
     substituters = [
       "https://mirrors.ustc.edu.cn/nix-channels/store"
