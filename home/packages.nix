@@ -20,6 +20,7 @@
 
     # Containers and remote work
     mutagen
+    mosh
     docker-client
     docker-credential-helpers
     cloudflared
