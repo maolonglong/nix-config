@@ -62,6 +62,10 @@
         "com.apple.sound.beep.feedback" = 0;
         ApplePressAndHoldEnabled = false;
         AppleSpacesSwitchOnActivate = true;
+        # Region-derived units. Typed options; locale alone does not always rewrite them.
+        AppleMeasurementUnits = "Inches";
+        AppleMetricUnits = 0;
+        AppleTemperatureUnit = "Fahrenheit";
         InitialKeyRepeat = 15;
         KeyRepeat = 2;
         NSAutomaticCapitalizationEnabled = false;
@@ -75,7 +79,14 @@
 
       # Keys without a typed nix-darwin option.
       CustomUserPreferences = {
-        NSGlobalDomain.WebKitDeveloperExtras = true;
+        NSGlobalDomain = {
+          WebKitDeveloperExtras = true;
+          # Preferred languages. Use zh-Hans, not zh-Hans-CN: the region suffix shows China.
+          AppleLanguages = ["en-US" "zh-Hans"];
+          # Region: United States. Locale IDs use an underscore, unlike AppleLanguages.
+          AppleLocale = "en_US";
+          AKLastLocale = "en_US";
+        };
         "com.apple.desktopservices" = {
           DSDontWriteNetworkStores = true;
           DSDontWriteUSBStores = true;
@@ -91,7 +102,8 @@
     };
   };
 
-  time.timeZone = "Asia/Shanghai";
+  # systemsetup -settimezone only. It does not clear location-based automatic time zone.
+  time.timeZone = "America/New_York";
 
   environment.variables.EDITOR = "vim";
 }
