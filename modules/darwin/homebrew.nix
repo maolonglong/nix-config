@@ -33,6 +33,7 @@ in {
 
     taps = [
       "dmtrKovalenko/fff"
+      "rjyo/moshi"
     ];
 
     brews = [
@@ -48,6 +49,7 @@ in {
       "pango" # native libs for WeasyPrint (kami PDF rendering)
 
       "dmtrKovalenko/fff/fff-mcp"
+      "rjyo/moshi/moshi-hook"
       "flyctl"
       "rtk"
       "mole"
