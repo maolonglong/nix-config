@@ -13,8 +13,6 @@
         "npm:@openai/codex" = "latest";
         "npm:@agentclientprotocol/codex-acp" = "latest";
         "npm:agent-browser" = "latest";
-        "npm:opencode-ai" = "latest";
-        "npm:@moonshot-ai/kimi-code" = "latest";
         pnpm = "latest";
       };
     };
