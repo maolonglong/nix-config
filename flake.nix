@@ -130,7 +130,7 @@
         managesGitAndSsh = true;
       };
       work-mbp = {
-        hostname = "QNR3WWC3PW";
+        hostname = "CRWQCPJC7G";
         managesGitAndSsh = false;
       };
     };

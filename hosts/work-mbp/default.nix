@@ -1,5 +1,5 @@
 let
-  hostname = "QNR3WWC3PW";
+  hostname = "CRWQCPJC7G";
 in {
   networking.hostName = hostname;
 }
