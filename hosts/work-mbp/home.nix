@@ -16,7 +16,6 @@
     env.NPM_CONFIG_REGISTRY = "http://bnpm.byted.org";
     tools = {
       "npm:@vecode-fe/codebase-cli" = "latest";
-      "npm:@bytedance-dev/bytedcli" = "latest";
       "npm:@edenx/proxy" = "latest";
       "npm:@ies/eden-monorepo" = "latest";
       "npm:@larksuite/cli" = "latest";
