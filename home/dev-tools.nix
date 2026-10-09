@@ -11,7 +11,6 @@
     enableFishIntegration = false;
     enableNushellIntegration = false;
     globalConfig = {
-      settings.minimum_release_age = "0s";
       tools = {
         bun = "latest";
         node = "24";
