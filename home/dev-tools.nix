@@ -5,6 +5,11 @@
   programs.mise = {
     enable = true;
     package = null;
+    # Brew-installed; tools resolve via the shims on PATH (home/path.nix).
+    enableBashIntegration = false;
+    enableZshIntegration = false;
+    enableFishIntegration = false;
+    enableNushellIntegration = false;
     globalConfig = {
       settings.minimum_release_age = "0s";
       tools = {
