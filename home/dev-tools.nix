@@ -4,6 +4,7 @@
   # Language runtimes and agent CLIs, installed on demand by mise.
   programs.mise = {
     enable = true;
+    package = null;
     globalConfig = {
       settings.minimum_release_age = "0s";
       tools = {

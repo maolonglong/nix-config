@@ -52,6 +52,7 @@ in {
       "rjyo/moshi/moshi-hook"
       "flyctl"
       "rtk"
+      "mise"
       "mole"
     ];
 
