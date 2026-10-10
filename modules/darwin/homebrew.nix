@@ -67,7 +67,6 @@ in {
       "localsend"
       "logseq"
       "monitorcontrol"
-      "only-switch"
       "orbstack"
       "postman"
       "raycast"
