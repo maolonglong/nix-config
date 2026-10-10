@@ -18,9 +18,8 @@
       hitoolbox.AppleFnUsageType = "Do Nothing";
 
       dock = {
-        "mru-spaces" = true;
-        "autohide-time-modifier" = 0.2;
-        "autohide-delay" = 0.0;
+        autohide = false;
+        "mru-spaces" = false;
       };
 
       finder = {
@@ -68,6 +67,7 @@
       NSGlobalDomain = {
         "com.apple.swipescrolldirection" = true;
         "com.apple.sound.beep.feedback" = 0;
+        AppleKeyboardUIMode = 2;
         ApplePressAndHoldEnabled = false;
         AppleSpacesSwitchOnActivate = true;
         AppleWindowTabbingMode = "always";
