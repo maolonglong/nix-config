@@ -1,13 +1,21 @@
 {
   inputs,
+  lib,
   myvars,
   ...
 }: {
   system = {
     configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
+    # Write as the daemon user to preserve ownership before setting the fixed time zone.
+    activationScripts.time.text = lib.mkBefore ''
+      sudo --user=_timed -- /usr/bin/defaults write /private/var/db/timed/Library/Preferences/com.apple.timed TMAutomaticTimeZoneEnabled -bool false
+      test "$(sudo --user=_timed -- /usr/bin/defaults read /private/var/db/timed/Library/Preferences/com.apple.timed TMAutomaticTimeZoneEnabled)" = 0
+    '';
+
     defaults = {
       menuExtraClock.Show24Hour = true;
+      hitoolbox.AppleFnUsageType = "Do Nothing";
 
       dock = {
         "mru-spaces" = true;
@@ -62,6 +70,7 @@
         "com.apple.sound.beep.feedback" = 0;
         ApplePressAndHoldEnabled = false;
         AppleSpacesSwitchOnActivate = true;
+        AppleWindowTabbingMode = "always";
         # Region-derived units. Typed options; locale alone does not always rewrite them.
         AppleMeasurementUnits = "Inches";
         AppleMetricUnits = 0;
@@ -102,7 +111,6 @@
     };
   };
 
-  # systemsetup -settimezone only. It does not clear location-based automatic time zone.
   time.timeZone = "America/New_York";
 
   environment.variables.EDITOR = "vim";
