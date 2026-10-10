@@ -50,6 +50,7 @@ in {
 
       "dmtrKovalenko/fff/fff-mcp"
       "rjyo/moshi/moshi-hook"
+      "mosh"
       "flyctl"
       "rtk"
       "mise"
