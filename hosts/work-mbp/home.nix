@@ -9,7 +9,7 @@
   # Not `programs.go`: it would manage ~/Library/Application Support/go/env,
   # which holds this machine's company Go settings.
   home.packages = [
-    pkgs.go_1_25
+    pkgs.go_1_27
   ];
 
   programs.mise.globalConfig = {
