@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     # Everyday CLI
+    gh
     tldr
     cowsay
     glow
