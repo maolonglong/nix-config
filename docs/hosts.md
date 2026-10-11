@@ -9,9 +9,9 @@ shell, editor and terminal setup. Everything that differs lives in
 | --- | --- | --- |
 | User | `chensl` | `bytedance` |
 | Hostname | `chensl-mba`, also used as computer name and SMB name | `CRWQCPJC7G`, hostname only |
-| Git and SSH | Managed by Home Manager: signing key, and GitHub over `ssh.github.com:443` | Not managed; the company setup owns them |
-| Go | `programs.go` with `GOPRIVATE` and China `GOPROXY` mirrors | `go_1_25` as a plain package, `GOPATH` and `GOBIN` exported; `~/Library/Application Support/go/env` is left to the company |
-| mise | Shared tools only | Adds `NPM_CONFIG_REGISTRY=http://bnpm.byted.org` and six extra npm CLIs |
+| Git and SSH | Managed by Home Manager. The signing key is stored; commits are not signed unless invoked with `-S`. GitHub goes over `ssh.github.com:443` | Not managed; the company setup owns them |
+| Go | `programs.go` with `GOPRIVATE` and China `GOPROXY` mirrors | `go_1_27` as a plain package, `GOPATH` and `GOBIN` exported; `~/Library/Application Support/go/env` is left to the company |
+| mise | Shared tools only | Adds `NPM_CONFIG_REGISTRY` and extra npm CLIs |
 | `PATH` | Shared entries | Also `~/.bytebm/bin` |
 
 Hostname and the Git/SSH split are asserted per host in `flake.nix`, so

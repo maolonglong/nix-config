@@ -7,10 +7,18 @@
   system = {
     configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
-    # Write as the daemon user to preserve ownership before setting the fixed time zone.
+    # The activation script runs under `set -e` and `pipefail`, so a failing
+    # read must sit in a conditional: a bare command substitution aborts
+    # activation before the built-in `systemsetup -settimezone`.
+    # `_timed` owns this plist; writing as root replaces it with a root-owned file.
     activationScripts.time.text = lib.mkBefore ''
-      sudo --user=_timed -- /usr/bin/defaults write /private/var/db/timed/Library/Preferences/com.apple.timed TMAutomaticTimeZoneEnabled -bool false
-      test "$(sudo --user=_timed -- /usr/bin/defaults read /private/var/db/timed/Library/Preferences/com.apple.timed TMAutomaticTimeZoneEnabled)" = 0
+      timedPlist=/private/var/db/timed/Library/Preferences/com.apple.timed
+      sudo --user=_timed -- /usr/bin/defaults write "$timedPlist" TMAutomaticTimeZoneEnabled -bool false
+      if ! observed=$(sudo --user=_timed -- /usr/bin/defaults read "$timedPlist" TMAutomaticTimeZoneEnabled 2>/dev/null); then
+        printf >&2 'warning: could not read TMAutomaticTimeZoneEnabled back; time zone activation continues\n'
+      elif [[ "$observed" != 0 ]]; then
+        printf >&2 'warning: TMAutomaticTimeZoneEnabled is %s after disabling automatic time zone\n' "$observed"
+      fi
     '';
 
     defaults = {

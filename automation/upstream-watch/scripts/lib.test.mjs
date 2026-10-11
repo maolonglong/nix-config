@@ -5,7 +5,7 @@ import { gitHubAuthArgs, markerFor, parseAnalysis, parseManifest, selectFeedback
 const validAnalysis = {
 	decision: 'issue',
 	summary: 'Relevant package configuration changed.',
-	localFiles: ['home/base/packages.nix'],
+	localFiles: ['home/packages.nix'],
 	confidence: 'high',
 	impact: 'The enabled history widgets compete for Ctrl-R.',
 	action: 'Disable the fzf history widget while keeping Atuin enabled.',
@@ -19,7 +19,7 @@ test('parseAnalysis accepts each decision', () => {
 
 test('parseAnalysis rejects malformed output', () => {
 	assert.throws(() => parseAnalysis({ ...validAnalysis, confidence: 'certain' }));
-	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: 'home/base/packages.nix' }));
+	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: 'home/packages.nix' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, decision: 'pull_request' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, summary: '' }));
 	assert.throws(() => parseAnalysis({ ...validAnalysis, localFiles: Array(13).fill('file.nix') }));
