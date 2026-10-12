@@ -1,4 +1,4 @@
-{
+{config, ...}: {
   catppuccin = {
     atuin.enable = true;
     bat.enable = true;
@@ -20,6 +20,7 @@
     direnv = {
       enable = true;
       nix-direnv.enable = true;
+      config.whitelist.prefix = ["${config.home.homeDirectory}/.codex/worktrees/"];
     };
 
     bat.enable = true;
