@@ -102,6 +102,7 @@
 
     preCommitCheck = git-hooks.lib.${system}.run {
       src = ./.;
+      package = pkgs.prek;
       hooks = {
         alejandra.enable = true;
         typos = {

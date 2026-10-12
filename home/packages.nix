@@ -18,6 +18,7 @@
     wrk
     scc
     commitizen
+    prek
 
     # Containers and remote work
     mutagen
