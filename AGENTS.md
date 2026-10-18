@@ -6,7 +6,6 @@
 - `hosts/<name>/`: `vars.nix` for identity (`username`, `userfullname`, `useremail`), `default.nix` for system overrides, `home.nix` for user overrides. `mkDarwin` in `flake.nix` takes only the host name.
 - Shared modules: `modules/darwin/` for system settings, `home/` for user settings (this flake is Darwin-only, so there is no platform split).
 - Hosts: `docs/hosts.md` lists how `personal-mba` and `work-mbp` differ and where a setting belongs. Read it before adding a setting only one machine needs, or moving one between `home/` and `hosts/`.
-- For changes to `automation/upstream-watch/` or `.github/workflows/upstream-watch.yml`, follow `automation/upstream-watch/AGENTS.md`.
 
 ## Commands and Verification
 
@@ -19,7 +18,6 @@
 The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A default `nix flake check` on Linux is not evidence that the Darwin checks ran. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
 
 - Host-specific Nix changes: evaluate the affected host. Shared Nix or flake changes: evaluate both `work-mbp` and `personal-mba`. Run `just c` on a supported environment; build affected hosts when evaluation alone cannot validate the change.
-- Automation changes: use the checks in its nested guidance; unrelated Nix checks are not required.
 - Documentation-only changes: check the diff and any changed paths or commands; no Nix evaluation or build is required.
 
 ## Nix Conventions and Boundaries
