@@ -10,7 +10,7 @@ description: Review a diff, commit, branch, or PR in this nix-darwin repo for pi
 ## Steps
 
 1. Read the change, plus the prior fixes in the touched paths: `git log --no-merges --format='%h %s' -- <path>`.
-2. Map each changed file to an area below and apply that area's checks. Route `automation/upstream-watch/**` and `.github/workflows/upstream-watch.yml` to `automation/upstream-watch/AGENTS.md` and stop there.
+2. Map each changed file to an area below and apply that area's checks.
 3. Verify every option and value against the pinned inputs in `flake.lock`, not memory. Read eval warnings in stderr, not just the exit code.
 4. Label each finding with its **proof level**:
    - **eval**: `just eval <host>` shows it.
