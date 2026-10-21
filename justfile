@@ -1,5 +1,8 @@
 set ignore-comments
 
+# `build` is macOS-only. An unguarded alias makes `just` refuse to parse
+# on Linux, so `just eval` and `just check` would never run.
+[macos]
 alias b := build
 alias c := check
 
