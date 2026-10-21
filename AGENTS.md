@@ -39,3 +39,16 @@ The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A 
 Never commit raw credentials. Store secrets as agenix `.age` files in the separate `nix-secrets` repository (`mysecrets` input) and wire them through `modules/darwin/secrets.nix`. When changing encrypted secrets, confirm the required keys are available and document recipient or key-distribution follow-up in the PR.
 
 Agents must not read or output decrypted secret files, even when their permissions allow access. Inspect Nix declarations and file metadata instead of following decrypted paths such as `config.age.secrets.*.path` or Nix `!include` targets.
+
+## Cursor Cloud specific instructions
+
+Cloud Agents run on Linux. Nix is installed single-user (this image has no systemd), with flakes enabled. `alejandra`, `nil`, `taplo`, `typos`, `just`, and `gitleaks` are on `PATH`, taken from the `nixpkgs-darwin` revision in `flake.lock`, because `nix develop` only exists for `aarch64-darwin`.
+
+`just eval` instantiates host derivations that import-from-derivation and must build for `aarch64-darwin` (catppuccin's build hook). That cannot run on this Linux VM, even after the private `mysecrets` input is fetched. Do not override that input. On Linux, run the pre-commit tools directly instead of `just c` / `nix flake check`:
+
+- `alejandra --check .`
+- `typos`
+- `taplo fmt --check`
+- `gitleaks detect --source . --redact --no-banner`
+
+`just fmt` calls `nix fmt`, which uses `formatter.${system}` and is not defined for Linux. Format with `alejandra`.
