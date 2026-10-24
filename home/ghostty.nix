@@ -13,7 +13,6 @@
       cursor-style = "block";
       cursor-style-blink = false;
       font-family = ["ComicShannsMono Nerd Font" "Hannotate SC"];
-      font-feature = "feat";
       font-size = 16;
       font-thicken = true;
       keybind = "shift+enter=text:\\n";

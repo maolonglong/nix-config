@@ -36,7 +36,7 @@ Done when every changed file is mapped to an area and every finding carries a pr
 
 ## Runtime-only behavior
 
-- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check. `fpath` additions need an order below 570, where HM runs `compinit` (`home/homebrew.nix` uses 550).
+- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check. `fpath` additions need an order below 570 (where HM runs `compinit` without `oh-my-zsh`; `oh-my-zsh` runs at 800, and `home/homebrew.nix` uses 550).
 - `unalias gog gops gsu` in `home/zsh.nix` errors on every shell start once `oh-my-zsh.plugins` stops defining them. Re-check the list when plugins change.
 - Home Manager wraps `vim` with `-u <generated vimrc>`, so `~/.vimrc` is never read; Vim settings belong in `programs.vim.extraConfig`.
 - Free-form strings pass eval however wrong: Ghostty keys and fonts (`621ecff7`), Starship settings. A named font must come from `modules/darwin/fonts.nix` or a system font.

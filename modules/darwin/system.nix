@@ -1,9 +1,16 @@
 {
   inputs,
   lib,
-  myvars,
   ...
 }: {
+  # Home Manager and Oh-My-Zsh run compinit after extending fpath, and Starship
+  # owns the prompt, so skip the redundant system-wide compinit and prompt suse.
+  programs.zsh = {
+    enableGlobalCompInit = false;
+    enableBashCompletion = false;
+    promptInit = "";
+  };
+
   system = {
     configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 

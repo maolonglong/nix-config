@@ -8,6 +8,7 @@
     "$HOME/.claude/local"
     "$HOME/.local/share/mise/shims"
     "/opt/homebrew/bin"
+    "/opt/homebrew/sbin"
     "${config.home.homeDirectory}/go/bin"
   ];
 }
