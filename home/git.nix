@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   myvars,
   pkgs,
@@ -58,5 +59,16 @@
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
+    package = pkgs.symlinkJoin {
+      name = "delta-auto-theme";
+      paths = [pkgs.delta];
+      nativeBuildInputs = [pkgs.makeWrapper];
+      postBuild = ''
+        wrapProgram $out/bin/delta \
+          --run 'if /usr/bin/defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then set -- --features=catppuccin-mocha "$@"; else set -- --features=catppuccin-latte "$@"; fi' \
+          --add-flags "--config ${config.catppuccin.sources.delta}/catppuccin.gitconfig"
+      '';
+      inherit (pkgs.delta) meta version;
+    };
   };
 }
