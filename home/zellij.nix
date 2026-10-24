@@ -5,7 +5,8 @@
     enableFishIntegration = false;
     enableZshIntegration = false;
     settings = {
-      theme = "catppuccin-mocha";
+      theme_dark = "catppuccin-mocha";
+      theme_light = "catppuccin-latte";
       pane_frames = true;
       ui = {
         pane_frames = {

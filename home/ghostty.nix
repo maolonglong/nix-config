@@ -24,12 +24,12 @@
       selection-invert-fg-bg = true;
       shell-integration = "zsh";
       shell-integration-features = "sudo,no-cursor,ssh-terminfo,ssh-env";
-      theme = "Catppuccin Mocha";
+      theme = "light:Catppuccin Latte,dark:Catppuccin Mocha";
       unfocused-split-opacity = 0.85;
       window-padding-balance = true;
       window-padding-x = 8;
       window-padding-y = 6;
-      window-theme = "dark";
+      window-theme = "auto";
     };
   };
 }

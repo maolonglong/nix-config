@@ -1,6 +1,4 @@
 {
-  catppuccin.lazygit.enable = true;
-
   programs.lazygit = {
     enable = true;
     settings = {
@@ -12,7 +10,7 @@
         autoFetch = false;
         diffRenderers = [
           {
-            command = "delta --dark --paging=never";
+            command = "delta --paging=never";
             colorArg = "always";
           }
         ];
