@@ -9,7 +9,7 @@
       clipboard-paste-protection = true;
       clipboard-read = "ask";
       clipboard-write = "allow";
-      copy-on-select = false;
+      copy-on-select = "none";
       cursor-style = "block";
       cursor-style-blink = false;
       font-family = ["ComicShannsMono Nerd Font" "Hannotate SC"];
@@ -20,7 +20,6 @@
       macos-titlebar-proxy-icon = "hidden";
       macos-titlebar-style = "tabs";
       mouse-hide-while-typing = true;
-      scrollback-limit = 10000000;
       selection-invert-fg-bg = true;
       shell-integration = "zsh";
       shell-integration-features = "sudo,no-cursor,ssh-terminfo,ssh-env";
