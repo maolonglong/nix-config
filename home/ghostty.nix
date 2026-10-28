@@ -11,7 +11,7 @@
       clipboard-write = "allow";
       copy-on-select = "none";
       cursor-style = "block";
-      cursor-style-blink = false;
+      cursor-style-blink = true;
       font-family = ["ComicShannsMono Nerd Font" "Hannotate SC"];
       font-size = 16;
       font-thicken = true;
