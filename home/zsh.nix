@@ -6,6 +6,8 @@
 }: {
   home.packages = [
     inputs.mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.shell-safe-rm
+    # Provides `go` subcommand completion (_golang), formerly from the Oh My Zsh golang plugin.
+    pkgs.zsh-completions
   ];
 
   programs.zsh = {
@@ -30,6 +32,20 @@
       if [ -n "$REX_BIN_DIR" ]; then
         export PATH="$REX_BIN_DIR:$PATH"
       fi
+
+      # Oh My Zsh lib/completion.zsh and lib/key-bindings.zsh used to provide
+      # these. Without complist and menu select, the Tab menu has no highlight.
+      zmodload -i zsh/complist
+      zstyle ':completion:*' menu select
+      zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
+      setopt noflowcontrol complete_in_word always_to_end
+
+      # Literal sequences cover both normal and application cursor key modes.
+      bindkey -M viins '^[[H' beginning-of-line '^[OH' beginning-of-line \
+        '^[[F' end-of-line '^[OF' end-of-line '^[[3~' delete-char \
+        '^[[1;5C' forward-word '^[[1;5D' backward-word \
+        '^[[Z' reverse-menu-complete '^P' up-history '^N' down-history
+      bindkey -M vicmd '^[[3~' delete-char '^[[H' beginning-of-line '^[[F' end-of-line
 
       bindkey '^a' beginning-of-line
       bindkey '^e' end-of-line
