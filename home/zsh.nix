@@ -39,6 +39,8 @@
       zstyle ':completion:*' menu select
       zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
       setopt noflowcontrol complete_in_word always_to_end
+      # Oh My Zsh lib/directories.zsh: cd and z push the previous directory so popd can return.
+      setopt auto_pushd pushd_ignore_dups pushdminus
 
       # Literal sequences cover both normal and application cursor key modes.
       bindkey -M viins '^[[H' beginning-of-line '^[OH' beginning-of-line \
