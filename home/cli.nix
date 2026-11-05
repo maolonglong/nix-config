@@ -1,4 +1,7 @@
 {config, ...}: {
+  # Antigravity CLI (`agy`) auto-compact token threshold.
+  home.sessionVariables.AGY_CLI_AUTO_COMPACT_OVERRIDE = "300000";
+
   programs = {
     atuin = {
       enable = true;
