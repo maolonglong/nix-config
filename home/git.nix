@@ -53,6 +53,7 @@
       "*~"
       ".DS_Store"
       "**/*.local.*"
+      ".alma-snapshots"
     ];
   };
 
