@@ -17,7 +17,11 @@
     direnv = {
       enable = true;
       nix-direnv.enable = true;
-      config.whitelist.prefix = ["${config.home.homeDirectory}/.codex/worktrees/"];
+      config.whitelist.prefix = [
+        "${config.home.homeDirectory}/.codex/worktrees/"
+        "${config.home.homeDirectory}/.t3/worktrees/"
+        "${config.home.homeDirectory}/.herdr/worktrees/"
+      ];
     };
 
     bat = {
