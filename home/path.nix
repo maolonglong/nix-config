@@ -1,7 +1,8 @@
 {config, ...}: {
-  # Order matters: earlier entries win. Host modules append their own entries.
+  # Order matters: earlier entries win. nix-darwin's `environment.systemPath`
+  # already appends `/usr/local/bin` after the Nix profiles, so keeping it out
+  # of `sessionPath` stops `.pkg` installers from shadowing user/Nix binaries.
   home.sessionPath = [
-    "/usr/local/bin"
     "$HOME/bin"
     "$HOME/.bin"
     "$HOME/.bun/bin"

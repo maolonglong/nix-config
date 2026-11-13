@@ -1,37 +1,18 @@
 {pkgs, ...}: {
+  # Core system utilities only; interactive CLI tools live in `home/packages.nix`.
+  # `git` and `git-lfs` stay here because `work-mbp` disables `programs.git`.
   environment.systemPackages = with pkgs; [
     git
     git-lfs
 
-    zip
-    xz
-    zstd
-    unzipNLS
-    p7zip
-
     gnugrep
     gnused
     gawk
-    jq
-
-    mtr
-    iperf3
-    dnsutils
-    ldns
-    socat
-    nmap
-    ipcalc
+    gnutar
 
     file
     findutils
     which
-    tree
-    gnutar
     rsync
-
-    htop
-    fastfetch
-
-    rlwrap
   ];
 }

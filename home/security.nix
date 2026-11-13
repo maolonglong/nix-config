@@ -1,5 +1,8 @@
 {pkgs, ...}: {
-  home.packages = [pkgs.age];
+  home.packages = with pkgs; [
+    age
+    gnupg
+  ];
 
   # Re-export per interactive shell: panes inherit a stale GPG_TTY from the
   # multiplexer server, and gpg-agent needs the pane's own tty for pinentry.

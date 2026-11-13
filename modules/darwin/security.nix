@@ -1,6 +1,4 @@
-{config, ...}: let
-  homeDir = config.users.users.${config.system.primaryUser}.home;
-in {
+{
   # Distrust the root that signed a compromised eMudhra intermediate.
   # cacert 3.131.1 removed the three emSign roots from certdata.txt, leaving
   # only Comodo AAA Services root (still trusted for emailProtection).
@@ -18,13 +16,9 @@ in {
     reattach = true;
   };
 
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = false;
-  };
-
-  launchd.user.agents.gnupg-agent.serviceConfig = {
-    StandardErrorPath = "${homeDir}/Library/Logs/gnupg-agent.stderr.log";
-    StandardOutPath = "${homeDir}/Library/Logs/gnupg-agent.stdout.log";
-  };
+  # Defense in depth if macOS Remote Login (sshd) is ever enabled.
+  environment.etc."ssh/sshd_config.d/200-disable-password-auth.conf".text = ''
+    PasswordAuthentication no
+    KbdInteractiveAuthentication no
+  '';
 }

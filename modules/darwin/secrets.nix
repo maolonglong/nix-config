@@ -11,6 +11,13 @@ in {
     agenix.darwinModules.default
   ];
 
+  # `!include` below ignores a missing file without failing, so log boot-time
+  # decryption output instead of failing silently into GitHub rate limits.
+  launchd.daemons."activate-agenix".serviceConfig = {
+    StandardErrorPath = "/Library/Logs/org.nixos.activate-agenix.stderr.log";
+    StandardOutPath = "/Library/Logs/org.nixos.activate-agenix.stdout.log";
+  };
+
   environment.systemPackages = [
     agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
