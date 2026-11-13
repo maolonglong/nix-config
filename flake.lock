@@ -10,19 +10,19 @@
         ],
         "nixpkgs": [
           "nixpkgs-darwin"
-        ],
-        "systems": "systems"
+        ]
       },
       "locked": {
-        "lastModified": 1770165109,
-        "narHash": "sha256-9VnK6Oqai65puVJ4WYtCTvlJeXxMzAp/69HhQuTdl/I=",
+        "lastModified": 1790530381,
+        "narHash": "sha256-/FjF9A8HVLVftjdmz1MPA2G0wSYWRaC628NTAsCqeyI=",
         "owner": "ryantm",
         "repo": "agenix",
-        "rev": "b027ee29d959fda4b60b57566d64c98a202e0feb",
+        "rev": "9353cb29366a8535ac9483065284785fd48012a2",
         "type": "github"
       },
       "original": {
         "owner": "ryantm",
+        "ref": "0.18.0",
         "repo": "agenix",
         "type": "github"
       }
@@ -188,21 +188,6 @@
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs-darwin": "nixpkgs-darwin"
-      }
-    },
-    "systems": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
       }
     }
   },

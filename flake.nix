@@ -14,8 +14,10 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
+    # Pin to a release tag so `just up` does not advance the secrets module to
+    # unreviewed commits silently.
     agenix = {
-      url = "github:ryantm/agenix";
+      url = "github:ryantm/agenix/0.18.0";
       inputs = {
         nixpkgs.follows = "nixpkgs-darwin";
         darwin.follows = "nix-darwin";
