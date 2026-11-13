@@ -3,8 +3,8 @@
   lib,
   ...
 }: {
-  # Home Manager and Oh-My-Zsh run compinit after extending fpath, and Starship
-  # owns the prompt, so skip the redundant system-wide compinit and prompt suse.
+  # Home Manager runs compinit after extending fpath, and Starship owns the
+  # prompt, so skip the redundant system-wide compinit and prompt setup.
   programs.zsh = {
     enableGlobalCompInit = false;
     enableBashCompletion = false;

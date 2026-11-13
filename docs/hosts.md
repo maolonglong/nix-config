@@ -14,9 +14,11 @@ shell, editor and terminal setup. Everything that differs lives in
 | mise | Shared tools only | Adds `NPM_CONFIG_REGISTRY` and extra npm CLIs |
 | `PATH` | Shared entries | Also `~/.bytebm/bin` |
 
-Hostname and the Git/SSH split are asserted per host in `flake.nix`, so
-`just c` or `just eval <host>` fails if they drift. The rest of the table is
-kept by hand; `hosts/<name>/home.nix` is the source of truth.
+User, hostname, the Git/SSH split (including `~/.gitconfig` shadow protection),
+and the absence of internal company references (`byted`/`bytebm`) on
+`personal-mba` are asserted per host in `flake.nix`, so `just c` or
+`just eval <host>` fails if they drift. The rest of the table is kept by hand;
+`hosts/<name>/home.nix` is the source of truth.
 
 ## Where a setting goes
 

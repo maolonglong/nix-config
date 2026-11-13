@@ -9,11 +9,11 @@
 
 ## Commands and Verification
 
-- `just eval <host>` evaluates a host without building or activating it; defaults to `work-mbp`.
-- `just c` runs `nix flake check --show-trace`: host evaluation checks and pre-commit hooks for Alejandra, typos, Taplo, and gitleaks.
-- `just b <host>` builds without activation via `darwin-rebuild`; macOS only, defaults to `work-mbp`.
-- `just diff <host>` builds, then lists package changes against the running system; `just fmt` formats with Alejandra.
-- `nix develop` provides Alejandra, nil, Taplo, typos, and installs pre-commit hooks.
+- `just eval <host>` evaluates a host without building or activating it; defaults to the local Mac (`personal-mba` on `chensl-mba`, `work-mbp` otherwise).
+- `just c` runs `nix flake check --show-trace`: host evaluation checks and pre-commit hooks for Alejandra, deadnix, statix, typos, Taplo, and gitleaks.
+- `just b <host>` builds without activation via `darwin-rebuild`; macOS only, defaults to the local Mac.
+- `just diff <host>` builds, then lists package changes against the running system; `just fmt` formats with Alejandra; `just brew-up` updates Homebrew explicitly (activation skips `brew update`).
+- `nix develop` provides Alejandra, deadnix, nil, statix, Taplo, typos, and installs pre-commit hooks.
 
 The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A default `nix flake check` on Linux is not evidence that the Darwin checks ran. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
 
@@ -44,9 +44,11 @@ Agents must not read or output decrypted secret files, even when their permissio
 
 Cloud Agents run on Linux. Nix is installed single-user (this image has no systemd), with flakes enabled. `alejandra`, `nil`, `taplo`, `typos`, `just`, and `gitleaks` are on `PATH`, taken from the `nixpkgs-darwin` revision in `flake.lock`, because `nix develop` only exists for `aarch64-darwin`.
 
-`just eval` instantiates host derivations that import-from-derivation and must build for `aarch64-darwin` (catppuccin's build hook). That cannot run on this Linux VM, even after the private `mysecrets` input is fetched. Do not override that input. On Linux, run the pre-commit tools directly instead of `just c` / `nix flake check`:
+`just eval <host>` uses pure evaluation (no import-from-derivation) and runs on Linux once the private `mysecrets` input is accessible; do not override `mysecrets` to bypass access failures. `just c` / `nix flake check` builds `aarch64-darwin` check derivations and cannot run on Linux without a Darwin builder, so run the pre-commit tools directly when on Linux:
 
 - `alejandra --check .`
+- `deadnix --fail`
+- `statix check`
 - `typos`
 - `taplo fmt --check`
 - `gitleaks detect --source . --redact --no-banner`
