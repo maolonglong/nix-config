@@ -40,11 +40,6 @@
       url = "github:maolonglong/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
-
-    catppuccin = {
-      url = "github:catppuccin/nix/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-    };
   };
 
   outputs = inputs @ {
@@ -54,7 +49,6 @@
     home-manager,
     nix-index-database,
     git-hooks,
-    catppuccin,
     ...
   }: let
     system = "aarch64-darwin";
@@ -88,8 +82,6 @@
               useUserPackages = true;
               extraSpecialArgs = specialArgs;
               users.${myvars.username}.imports = [
-                catppuccin.homeModules.catppuccin
-                {catppuccin.flavor = "mocha";}
                 ./home
                 ./hosts/${name}/home.nix
               ];

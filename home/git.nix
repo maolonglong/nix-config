@@ -1,10 +1,16 @@
 {
-  config,
   lib,
   myvars,
   pkgs,
   ...
-}: {
+}: let
+  catppuccinDelta = pkgs.fetchFromGitHub {
+    owner = "catppuccin";
+    repo = "delta";
+    rev = "74b47a345638a2f19b3e5bdb9d7e4984066f9ac7";
+    hash = "sha256-NjqqB/BHqduiNWKeksiRZUMfjRUodJlsVu1yaEIZRsM=";
+  };
+in {
   home.packages = [pkgs.git-extras];
 
   programs.git = {
@@ -67,7 +73,7 @@
       postBuild = ''
         wrapProgram $out/bin/delta \
           --run 'if /usr/bin/defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then set -- --features=catppuccin-mocha "$@"; else set -- --features=catppuccin-latte "$@"; fi' \
-          --add-flags "--config ${config.catppuccin.sources.delta}/catppuccin.gitconfig"
+          --add-flags "--config ${catppuccinDelta}/catppuccin.gitconfig"
       '';
       inherit (pkgs.delta) meta version;
     };
