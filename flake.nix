@@ -16,9 +16,11 @@
 
     agenix = {
       url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-      inputs.darwin.follows = "nix-darwin";
-      inputs.home-manager.follows = "home-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-darwin";
+        darwin.follows = "nix-darwin";
+        home-manager.follows = "home-manager";
+      };
     };
 
     nix-index-database = {
@@ -97,6 +99,8 @@
       package = pkgs.prek;
       hooks = {
         alejandra.enable = true;
+        deadnix.enable = true;
+        statix.enable = true;
         typos = {
           enable = true;
           settings = {
@@ -119,29 +123,43 @@
     # attrset also names the hosts, so none can exist without expectations.
     hostExpectations = {
       personal-mba = {
+        username = "chensl";
         hostname = "chensl-mba";
         managesGitAndSsh = true;
+        allowsInternalConfig = false;
       };
       work-mbp = {
+        username = "bytedance";
         hostname = "CRWQCPJC7G";
         managesGitAndSsh = false;
+        allowsInternalConfig = true;
       };
     };
 
     evalDarwinConfiguration = name: {
+      username,
       hostname,
       managesGitAndSsh,
+      allowsInternalConfig,
     }: let
       config = self.darwinConfigurations.${name}.config;
       user = config.system.primaryUser;
       home = config.home-manager.users.${user};
       check = nixpkgs-darwin.lib.assertMsg;
+      userSurface = builtins.toJSON {
+        inherit (home.home) sessionPath sessionVariables;
+        mise = home.programs.mise.globalConfig;
+      };
+      hasInternalRef = builtins.match ".*(byted|bytebm).*" userSurface != null;
     in
+      assert check (user == username) "${name}: unexpected primary user";
       assert check (home.home.username == user) "${name}: Home Manager user differs from primary user";
       assert check (home.home.homeDirectory == config.users.users.${user}.home) "${name}: Home Manager and system home directories differ";
       assert check (config.networking.hostName == hostname) "${name}: unexpected hostname";
       assert check (home.programs.git.enable == managesGitAndSsh) "${name}: unexpected Home Manager Git management";
       assert check (home.programs.ssh.enable == managesGitAndSsh) "${name}: unexpected Home Manager SSH management";
+      assert check ((home.home.activation ? backupExistingGitconfig) == managesGitAndSsh) "${name}: unexpected ~/.gitconfig backup hook";
+      assert check (allowsInternalConfig || !hasInternalRef) "${name}: internal company reference leaked into shared configuration";
         pkgs.writeText "eval-${name}" (
           builtins.unsafeDiscardStringContext
           config.system.build.toplevel.drvPath
@@ -162,11 +180,13 @@
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
         alejandra
+        deadnix
         nil
+        statix
         taplo
         typos
       ];
-      shellHook = preCommitCheck.shellHook;
+      inherit (preCommitCheck) shellHook;
     };
   };
 }

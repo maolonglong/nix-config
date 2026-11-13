@@ -12,13 +12,13 @@
     enableNushellIntegration = false;
     globalConfig = {
       tools = {
-        bun = "latest";
+        bun = "1";
         node = "24";
         "npm:@earendil-works/pi-coding-agent" = "latest";
         "npm:@openai/codex" = "latest";
         "npm:@agentclientprotocol/codex-acp" = "latest";
         "npm:agent-browser" = "latest";
-        pnpm = "latest";
+        pnpm = "12";
       };
     };
   };

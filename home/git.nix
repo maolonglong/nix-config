@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   myvars,
   pkgs,
@@ -11,6 +12,17 @@
     hash = "sha256-NjqqB/BHqduiNWKeksiRZUMfjRUodJlsVu1yaEIZRsM=";
   };
 in {
+  # `programs.git` writes `~/.config/git/config`; a stray `~/.gitconfig` would
+  # silently shadow it. Guarded on `programs.git.enable` so `work-mbp`'s
+  # company-managed `~/.gitconfig` is left untouched.
+  home.activation.backupExistingGitconfig = lib.mkIf config.programs.git.enable (
+    lib.hm.dag.entryAfter ["writeBoundary"] ''
+      if [[ -e "$HOME/.gitconfig" ]]; then
+        run mv $VERBOSE_ARG "$HOME/.gitconfig" "$HOME/.gitconfig.bak"
+      fi
+    ''
+  );
+
   home.packages = [pkgs.git-extras];
 
   programs.git = {
