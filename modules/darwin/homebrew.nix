@@ -15,7 +15,8 @@ in {
     enable = true;
 
     onActivation = {
-      autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
+      # Keep `just switch` fast and offline-idempotent; run `just brew-up` to update.
+      autoUpdate = false;
       upgrade = false; # Upgrade outdated casks, formulae, and App Store apps
       # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
       cleanup = "zap";
