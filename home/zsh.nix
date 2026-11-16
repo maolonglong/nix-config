@@ -1,11 +1,9 @@
 {
-  inputs,
   lib,
   pkgs,
   ...
 }: {
   home.packages = [
-    inputs.mynur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.shell-safe-rm
     # Provides `go` subcommand completion (_golang), formerly from the Oh My Zsh golang plugin.
     pkgs.zsh-completions
   ];
@@ -61,7 +59,6 @@
 
     shellAliases = {
       j = "just";
-      rm = "safe-rm";
       gl = "git pull";
       gco = "git checkout";
     };
