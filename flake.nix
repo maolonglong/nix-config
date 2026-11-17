@@ -114,7 +114,10 @@
         gitleaks = {
           enable = true;
           name = "Detect hardcoded secrets";
+          # Scan the source tree. git-hooks' default args target `gitleaks git`
+          # and include `--pre-commit`, which `gitleaks dir` rejects.
           entry = "${pkgs.gitleaks}/bin/gitleaks dir --redact --verbose";
+          args = pkgs.lib.mkForce [];
           pass_filenames = false;
         };
       };
