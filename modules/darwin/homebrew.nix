@@ -49,7 +49,6 @@ in {
       "rtk"
       "mise"
       "mole"
-      "worktrunk" # git worktree CLI (`wt`); conflicts with the wiredtiger `wt` binary
     ];
 
     # `brew install --cask`

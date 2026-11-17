@@ -15,6 +15,7 @@
     ./xdg.nix
     ./zellij.nix
     ./zsh.nix
+    ./worktrunk.nix
   ];
 
   # `home.username` and `home.homeDirectory` come from `users.users` through
