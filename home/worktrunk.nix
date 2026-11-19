@@ -2,6 +2,7 @@
   programs.worktrunk = {
     enable = true;
     enableZshIntegration = true;
+    settings.worktree-path = "~/.worktrees/{{ repo }}/{{ branch | sanitize }}";
 
     # The rex-worktrunk picker closes its own session. Shell `wt remove` and
     # `wt merge` do not, so close the session from the post-remove hook.
