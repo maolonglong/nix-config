@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  # Core system utilities only; interactive CLI tools live in `home/packages.nix`.
+  # Core system utilities only; interactive CLI tools live in `home/base/packages.nix`.
   # `git` and `git-lfs` stay here because `work-mbp` disables `programs.git`.
   environment.systemPackages = with pkgs; [
     git

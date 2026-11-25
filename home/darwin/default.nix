@@ -1,6 +1,7 @@
 {
   imports = [
-    ./homebrew.nix
     ./ghostty.nix
+    ./homebrew.nix
+    ./packages.nix
   ];
 }

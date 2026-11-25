@@ -18,6 +18,6 @@ in {
     extraConfig = vimConfig;
   };
 
-  # Still read by macOS's own /usr/bin/vim.
+  # Still read by the system's own /usr/bin/vim.
   home.file.".vimrc".text = vimConfig;
 }

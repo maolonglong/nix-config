@@ -13,7 +13,7 @@
       then null
       else pkgs.mise
     );
-    # Brew-installed on Darwin; tools resolve via the shims on PATH (home/path.nix).
+    # Brew-installed on Darwin; tools resolve via the shims on PATH (home/base/path.nix).
     enableBashIntegration = false;
     enableZshIntegration = false;
     enableFishIntegration = false;

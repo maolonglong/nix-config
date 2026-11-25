@@ -2,22 +2,22 @@
 
 ## Project Map
 
-- `flake.nix` exports `darwinConfigurations`; Home Manager is integrated into nix-darwin, with no standalone `homeConfigurations`.
-- `hosts/<name>/`: `vars.nix` for identity (`username`, `userfullname`, `useremail`), `default.nix` for system overrides, `home.nix` for user overrides. `mkDarwin` in `flake.nix` takes only the host name.
-- Shared modules: `modules/darwin/` for system settings, `home/` for user settings (this flake is Darwin-only, so there is no platform split).
-- Hosts: `docs/hosts.md` lists how `personal-mba` and `work-mbp` differ and where a setting belongs. Read it before adding a setting only one machine needs, or moving one between `home/` and `hosts/`.
+- `flake.nix` exports `darwinConfigurations` (with integrated Home Manager) for macOS hosts and standalone `homeConfigurations` (`dev@x86_64-linux`, `dev@aarch64-linux`) for generic Linux dev servers.
+- `hosts/<name>/`: `vars.nix` for identity (`username`, `userfullname`, `useremail`), `default.nix` for Darwin system overrides, `home.nix` for user overrides. `mkDarwin` and `mkLinuxHome` in `flake.nix` assemble hosts from the `darwinHosts` and `linuxHomes` tables.
+- Shared modules: `modules/darwin/` for macOS system settings; `home/base/` for cross-platform user settings; `home/darwin/` for macOS-only user modules (`ghostty`, `homebrew`, media packages); `home/linux/` for Linux-only user modules (Nix profile PATH).
+- Hosts: `docs/hosts.md` lists how `personal-mba`, `work-mbp`, and `linux-dev` differ and where a setting belongs. Read it before adding a host-specific setting or moving one between `home/` and `hosts/`.
 
 ## Commands and Verification
 
-- `just eval <host>` evaluates a host without building or activating it; defaults to the local Mac (`personal-mba` on `chensl-mba`, `work-mbp` otherwise).
-- `just c` runs `nix flake check --show-trace`: host evaluation checks and pre-commit hooks for Alejandra, deadnix, statix, typos, Taplo, and gitleaks.
-- `just b <host>` builds without activation via `darwin-rebuild`; macOS only, defaults to the local Mac.
-- `just diff <host>` builds, then lists package changes against the running system; `just fmt` formats with Alejandra; `just brew-up` updates Homebrew explicitly (activation skips `brew update`).
-- `nix develop` provides Alejandra, deadnix, nil, statix, Taplo, typos, and installs pre-commit hooks.
+- `just eval <target>` evaluates a target without building or activating it (`personal-mba`, `work-mbp`, `linux-dev-x86_64-linux`, `linux-dev-aarch64-linux`). Defaults by hostname on known Macs (`chensl-mba` -> `personal-mba`, `CRWQCPJC7G` -> `work-mbp`) and to `linux-dev-<arch>-linux` on Linux; unknown Macs require an explicit target.
+- `just c` runs `nix flake check --show-trace`: evaluation checks for all Darwin and Linux targets plus pre-commit hooks for Alejandra, deadnix, statix, typos, Taplo, and gitleaks.
+- `just b <target>` builds without activation (`darwin-rebuild build` on macOS, `home-manager build` on Linux).
+- `just diff <host>` (macOS) builds, then lists package changes against the running system; `just fmt` formats with Alejandra; `just brew-up` (macOS) updates Homebrew explicitly (activation skips `brew update`).
+- `nix develop` provides Alejandra, deadnix, nil, statix, Taplo, typos, and installs pre-commit hooks on `aarch64-darwin`, `x86_64-linux`, and `aarch64-linux`.
 
-The flake exports checks, formatter, and dev shell only for `aarch64-darwin`. A default `nix flake check` on Linux is not evidence that the Darwin checks ran. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
+The flake exports checks, formatter, and dev shell for `aarch64-darwin`, `x86_64-linux`, and `aarch64-linux`. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
 
-- Host-specific Nix changes: evaluate the affected host. Shared Nix or flake changes: evaluate both `work-mbp` and `personal-mba`. Run `just c` on a supported environment; build affected hosts when evaluation alone cannot validate the change.
+- Host-specific Nix changes: evaluate the affected target(s). Shared Nix or flake changes: run `just c` (which evaluates all Darwin hosts, both Linux `homeConfigurations`, and pre-commit hooks); build affected targets when evaluation alone cannot validate the change.
 - Documentation-only changes: check the diff and any changed paths or commands; no Nix evaluation or build is required.
 
 ## Nix Conventions and Boundaries
@@ -42,9 +42,9 @@ Agents must not read or output decrypted secret files, even when their permissio
 
 ## Cursor Cloud specific instructions
 
-Cloud Agents run on Linux. Nix is installed single-user (this image has no systemd), with flakes enabled. `alejandra`, `nil`, `taplo`, `typos`, `just`, and `gitleaks` are on `PATH`, taken from the `nixpkgs-darwin` revision in `flake.lock`, because `nix develop` only exists for `aarch64-darwin`.
+Cloud Agents run on Linux. Nix is installed single-user (this image has no systemd), with flakes enabled. `alejandra`, `nil`, `taplo`, `typos`, `just`, and `gitleaks` are on `PATH`, taken from the `nixpkgs-darwin` revision in `flake.lock`.
 
-`just eval <host>` uses pure evaluation (no import-from-derivation) and runs on Linux once the private `mysecrets` input is accessible; do not override `mysecrets` to bypass access failures. `just c` / `nix flake check` builds `aarch64-darwin` check derivations and cannot run on Linux without a Darwin builder, so run the pre-commit tools directly when on Linux:
+`just c`, `just eval <target>`, `just fmt`, and `nix develop` all support `x86_64-linux` and `aarch64-linux` once the private `mysecrets` input is accessible; do not override `mysecrets` to bypass access failures. If `mysecrets` is unavailable in the environment, run the pre-commit tools directly:
 
 - `alejandra --check .`
 - `deadnix --fail`
@@ -52,5 +52,3 @@ Cloud Agents run on Linux. Nix is installed single-user (this image has no syste
 - `typos`
 - `taplo fmt --check`
 - `gitleaks detect --source . --redact --no-banner`
-
-`just fmt` calls `nix fmt`, which uses `formatter.${system}` and is not defined for Linux. Format with `alejandra`.

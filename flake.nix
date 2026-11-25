@@ -1,5 +1,5 @@
 {
-  description = "My nix-darwin configuration";
+  description = "My nix-darwin and Home Manager configuration";
 
   inputs = {
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -55,11 +55,17 @@
     git-hooks,
     ...
   }: let
-    system = "aarch64-darwin";
-    pkgs = nixpkgs-darwin.legacyPackages.${system};
+    inherit (nixpkgs-darwin) lib;
+    darwinSystem = "aarch64-darwin";
+    supportedSystems = [
+      "aarch64-darwin"
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
+    forAllSystems = lib.genAttrs supportedSystems;
 
-    # A host is `hosts/<name>/`: `vars.nix` (identity), `default.nix` (system
-    # overrides) and `home.nix` (Home Manager overrides).
+    # A Darwin host is `hosts/<name>/`: `vars.nix` (identity), `default.nix`
+    # (system overrides) and `home.nix` (Home Manager overrides).
     mkDarwin = name: let
       myvars = import ./hosts/${name}/vars.nix;
       specialArgs = {inherit inputs myvars;};
@@ -69,7 +75,7 @@
         modules = [
           {
             nixpkgs = {
-              hostPlatform = system;
+              hostPlatform = darwinSystem;
               config.allowUnfree = true;
             };
           }
@@ -86,8 +92,8 @@
               useUserPackages = true;
               extraSpecialArgs = specialArgs;
               users.${myvars.username}.imports = [
-                ./home
-                ./home/darwin.nix
+                ./home/base
+                ./home/darwin
                 ./hosts/${name}/home.nix
               ];
             };
@@ -97,6 +103,7 @@
         ];
       };
 
+    # A standalone Linux Home Manager host is `hosts/<name>/`: `vars.nix` and `home.nix`.
     mkLinuxHome = name: linuxSystem: let
       myvars = import ./hosts/${name}/vars.nix;
       linuxPkgs = import nixpkgs-darwin {
@@ -108,7 +115,8 @@
         pkgs = linuxPkgs;
         extraSpecialArgs = {inherit inputs myvars;};
         modules = [
-          ./home
+          ./home/base
+          ./home/linux
           ./hosts/${name}/home.nix
           {
             home = {
@@ -119,37 +127,41 @@
         ];
       };
 
-    preCommitCheck = git-hooks.lib.${system}.run {
-      src = ./.;
-      package = pkgs.prek;
-      hooks = {
-        alejandra.enable = true;
-        deadnix.enable = true;
-        statix.enable = true;
-        typos = {
-          enable = true;
-          settings = {
-            write = true;
-            configPath = "./.typos.toml";
+    preCommitChecks = forAllSystems (system: let
+      pkgs = nixpkgs-darwin.legacyPackages.${system};
+    in
+      git-hooks.lib.${system}.run {
+        src = ./.;
+        package = pkgs.prek;
+        hooks = {
+          alejandra.enable = true;
+          deadnix.enable = true;
+          statix.enable = true;
+          typos = {
+            enable = true;
+            settings = {
+              write = true;
+              configPath = "./.typos.toml";
+            };
+          };
+          taplo.enable = true;
+          gitleaks = {
+            enable = true;
+            name = "Detect hardcoded secrets";
+            # Scan the source tree. git-hooks' default args target `gitleaks git`
+            # and include `--pre-commit`, which `gitleaks dir` rejects.
+            entry = "${pkgs.gitleaks}/bin/gitleaks dir --redact --verbose";
+            args = lib.mkForce [];
+            pass_filenames = false;
           };
         };
-        taplo.enable = true;
-        gitleaks = {
-          enable = true;
-          name = "Detect hardcoded secrets";
-          # Scan the source tree. git-hooks' default args target `gitleaks git`
-          # and include `--pre-commit`, which `gitleaks dir` rejects.
-          entry = "${pkgs.gitleaks}/bin/gitleaks dir --redact --verbose";
-          args = pkgs.lib.mkForce [];
-          pass_filenames = false;
-        };
-      };
-    };
+      });
 
     # Facts each host must keep. They are spelled out here instead of derived
-    # from hosts/, so drift in hosts/ or mkDarwin fails `nix flake check`. This
-    # attrset also names the hosts, so none can exist without expectations.
-    hostExpectations = {
+    # from hosts/, so drift in hosts/ or flake builders fails `nix flake check`.
+    # These attrsets also name the exported configurations, so none can exist
+    # without expectations.
+    darwinHosts = {
       personal-mba = {
         username = "chensl";
         hostname = "chensl-mba";
@@ -164,7 +176,32 @@
       };
     };
 
-    evalDarwinConfiguration = name: {
+    linuxHomes = {
+      "dev@x86_64-linux" = {
+        host = "linux-dev";
+        system = "x86_64-linux";
+        username = "dev";
+        managesGit = true;
+        allowsInternalConfig = false;
+      };
+      "dev@aarch64-linux" = {
+        host = "linux-dev";
+        system = "aarch64-linux";
+        username = "dev";
+        managesGit = true;
+        allowsInternalConfig = false;
+      };
+    };
+
+    hasInternalRef = home: let
+      userSurface = builtins.toJSON {
+        inherit (home.home) sessionPath sessionVariables;
+        mise = home.programs.mise.globalConfig;
+      };
+    in
+      builtins.match ".*(byted|bytebm).*" userSurface != null;
+
+    evalDarwinConfiguration = pkgs: name: {
       username,
       hostname,
       managesGitAndSsh,
@@ -173,12 +210,7 @@
       config = self.darwinConfigurations.${name}.config;
       user = config.system.primaryUser;
       home = config.home-manager.users.${user};
-      check = nixpkgs-darwin.lib.assertMsg;
-      userSurface = builtins.toJSON {
-        inherit (home.home) sessionPath sessionVariables;
-        mise = home.programs.mise.globalConfig;
-      };
-      hasInternalRef = builtins.match ".*(byted|bytebm).*" userSurface != null;
+      check = lib.assertMsg;
     in
       assert check (user == username) "${name}: unexpected primary user";
       assert check (home.home.username == user) "${name}: Home Manager user differs from primary user";
@@ -187,39 +219,68 @@
       assert check (home.programs.git.enable == managesGitAndSsh) "${name}: unexpected Home Manager Git management";
       assert check (home.programs.ssh.enable == managesGitAndSsh) "${name}: unexpected Home Manager SSH management";
       assert check ((home.home.activation ? backupExistingGitconfig) == managesGitAndSsh) "${name}: unexpected ~/.gitconfig backup hook";
-      assert check (allowsInternalConfig || !hasInternalRef) "${name}: internal company reference leaked into shared configuration";
+      assert check (allowsInternalConfig || !(hasInternalRef home)) "${name}: internal company reference leaked into shared configuration";
         pkgs.writeText "eval-${name}" (
           builtins.unsafeDiscardStringContext
           config.system.build.toplevel.drvPath
         );
+
+    evalHomeConfiguration = pkgs: name: {
+      host,
+      system,
+      username,
+      managesGit,
+      allowsInternalConfig,
+    }: let
+      cfg = self.homeConfigurations.${name};
+      home = cfg.config;
+      check = lib.assertMsg;
+    in
+      assert check (home.home.username == username) "${name}: unexpected Home Manager user";
+      assert check (home.home.homeDirectory == "/home/${username}") "${name}: unexpected Home Manager home directory";
+      assert check (home.programs.git.enable == managesGit) "${name}: unexpected Home Manager Git management";
+      assert check ((home.home.activation ? backupExistingGitconfig) == managesGit) "${name}: unexpected ~/.gitconfig backup hook";
+      assert check (allowsInternalConfig || !(hasInternalRef home)) "${name}: internal company reference leaked into shared configuration";
+        pkgs.writeText "eval-${host}-${system}" (
+          builtins.unsafeDiscardStringContext
+          cfg.activationPackage.drvPath
+        );
   in {
-    darwinConfigurations = nixpkgs-darwin.lib.genAttrs (builtins.attrNames hostExpectations) mkDarwin;
+    darwinConfigurations = lib.genAttrs (builtins.attrNames darwinHosts) mkDarwin;
 
-    homeConfigurations = {
-      "dev@x86_64-linux" = mkLinuxHome "linux-dev" "x86_64-linux";
-      "dev@aarch64-linux" = mkLinuxHome "linux-dev" "aarch64-linux";
-    };
+    homeConfigurations = lib.mapAttrs (_: cfg: mkLinuxHome cfg.host cfg.system) linuxHomes;
 
-    checks.${system} =
-      {pre-commit-check = preCommitCheck;}
-      // nixpkgs-darwin.lib.mapAttrs' (name: expect: {
+    checks = forAllSystems (system: let
+      pkgs = nixpkgs-darwin.legacyPackages.${system};
+    in
+      {pre-commit-check = preCommitChecks.${system};}
+      // lib.mapAttrs' (name: expect: {
         name = "${name}-eval";
-        value = evalDarwinConfiguration name expect;
+        value = evalDarwinConfiguration pkgs name expect;
       })
-      hostExpectations;
+      darwinHosts
+      // lib.mapAttrs' (name: expect: {
+        name = "${expect.host}-${expect.system}-eval";
+        value = evalHomeConfiguration pkgs name expect;
+      })
+      linuxHomes);
 
-    formatter.${system} = pkgs.alejandra;
+    formatter = forAllSystems (system: nixpkgs-darwin.legacyPackages.${system}.alejandra);
 
-    devShells.${system}.default = pkgs.mkShell {
-      packages = with pkgs; [
-        alejandra
-        deadnix
-        nil
-        statix
-        taplo
-        typos
-      ];
-      inherit (preCommitCheck) shellHook;
-    };
+    devShells = forAllSystems (system: let
+      pkgs = nixpkgs-darwin.legacyPackages.${system};
+    in {
+      default = pkgs.mkShell {
+        packages = with pkgs; [
+          alejandra
+          deadnix
+          nil
+          statix
+          taplo
+          typos
+        ];
+        inherit (preCommitChecks.${system}) shellHook;
+      };
+    });
   };
 }

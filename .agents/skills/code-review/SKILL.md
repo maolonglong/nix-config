@@ -24,19 +24,19 @@ Done when every changed file is mapped to an area and every finding carries a pr
 
 - Home Manager tracks `master`, nix-darwin and nixpkgs track unstable, so options get renamed under you. `4b4277d2` moved ssh `matchBlocks` to `settings`; HM now renames `fileWidgetCommand` to `fileWidget.command`. Confirm each option exists in the pinned source.
 - Input branches move together. `2f39abf8` fixed a nix-darwin branch that disagreed with nixpkgs. `agenix` is pinned to its `0.18.0` release tag while `nixpkgs-darwin`, `nix-darwin`, and `home-manager` track unstable/`master`, so flag unintended `ref` changes and any `stateVersion` bump (`system.stateVersion`, HM `stateVersion`).
-- `git.nix` sets `programs.git.enable` with `lib.mkDefault` so `work-mbp` can disable it. A priority change there breaks the work host.
+- `home/base/git.nix` sets `programs.git.enable` with `lib.mkDefault` so `work-mbp` can disable it. A priority change there breaks the work host.
 
-## Two hosts, one base
+## Multi-host, shared base
 
-- Users differ (`chensl` vs `bytedance`). Derive paths from `myvars.username` or `config.home.homeDirectory`; a literal path went stale in `da99b296`. `home.username` and `home.homeDirectory` come from `users.users` via Home Manager, so do not set them in `home/`.
-- `work-mbp` disables `programs.git` and `programs.ssh`, so a shared change to either lands only on `personal-mba`. Confirm that is intended.
-- Per-host expectations (primary user, hostname, git/ssh management, `~/.gitconfig` backup hook scoping, user/home agreement, and no `byted`/`bytebm` leak onto `personal-mba`) are asserted in the `flake.nix` checks and run by `just eval`. A diff that edits an expectation and its host module together needs a reason; one that edits only the assertion is suspect.
-- Placement follows `docs/hosts.md`; anything internal to the company in `home/` is a finding.
+- Users differ (`chensl`, `bytedance`, `dev`). Derive paths from `myvars.username`, `config.home.homeDirectory`, or `config.home.profileDirectory`; a literal path went stale in `da99b296`. Do not set `home.username` or `home.homeDirectory` in `home/` (Darwin derives them from `users.users`; Linux sets them in `mkLinuxHome`).
+- `work-mbp` disables `programs.git` and `programs.ssh`, so a shared change to either lands on `personal-mba` and `linux-dev` only. Confirm that is intended.
+- Per-host expectations (primary user, hostname, git/ssh management, `~/.gitconfig` backup hook scoping, user/home agreement, and no `byted`/`bytebm` leak onto non-internal hosts) are asserted in `darwinHosts` / `linuxHomes` checks in `flake.nix` and run by `just c` / `just eval`. A diff that edits an expectation and its host module together needs a reason; one that edits only the assertion is suspect.
+- Placement follows `docs/hosts.md` (`home/base/`, `home/darwin/`, `home/linux/`, `hosts/<name>/`); anything internal to the company in `home/` or Darwin-only in `home/base/` is a finding.
 - After touching `programs.mise.globalConfig`, evaluate the merged result: `nix eval .#darwinConfigurations.work-mbp.config.home-manager.users.bytedance.programs.mise.globalConfig.tools --json`.
 
 ## Runtime-only behavior
 
-- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check (`home/zsh.nix` runs at 990 after fzf's 910 and before Atuin's 1000). `fpath` additions need an order below 570 (where HM runs `compinit`; `home/homebrew.nix` uses 550).
+- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check (`home/base/zsh.nix` runs at 990 after fzf's 910 and before Atuin's 1000). `fpath` additions need an order below 570 (where HM runs `compinit`; `home/darwin/homebrew.nix` uses 550).
 - Home Manager wraps `vim` with `-u <generated vimrc>`, so `~/.vimrc` is never read; Vim settings belong in `programs.vim.extraConfig`.
 - Free-form strings pass eval however wrong: Ghostty keys and fonts (`621ecff7`), Starship settings. A named font must come from `modules/darwin/fonts.nix` or a system font.
 - macOS defaults can have inverted meaning (`fa702000`, `spans-displays`). Check the semantics of each changed default against Apple's `defaults` behavior.

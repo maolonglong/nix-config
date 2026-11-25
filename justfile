@@ -1,27 +1,45 @@
 set ignore-comments
 
-# `build` is macOS-only. An unguarded alias makes `just` refuse to parse
-# on Linux, so `just eval` and `just check` would never run.
-[macos]
 alias b := build
 alias c := check
 
+local_os := os()
+local_arch := arch()
+local_system := if local_os == "macos" {
+  if local_arch == "aarch64" { "aarch64-darwin" } else { "x86_64-darwin" }
+} else {
+  local_arch + "-linux"
+}
 local_hostname := `hostname -s`
-default_host := if local_hostname == "chensl-mba" { "personal-mba" } else { "work-mbp" }
+default_host := if local_hostname == "chensl-mba" {
+  "personal-mba"
+} else if local_hostname == "CRWQCPJC7G" {
+  "work-mbp"
+} else if local_os == "linux" {
+  "linux-dev-" + local_system
+} else {
+  ""
+}
 
 [private]
 default:
   just --list
 
-# Evaluate every host and run the flake's pre-commit hooks.
+# Evaluate every Darwin and Linux target and run the flake's pre-commit hooks.
 [group('verify')]
 check:
   nix flake check --show-trace
 
-# Evaluates the host and runs its invariant assertions without building.
+# Evaluates a target and runs its invariant assertions without building.
 [group('verify')]
-eval host=default_host:
-  nix eval .#checks.aarch64-darwin.{{host}}-eval.drvPath --show-trace
+eval target=default_host:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  if [[ -z "{{target}}" ]]; then
+    printf >&2 'error: unknown local host %s; pass a target explicitly (e.g. personal-mba, work-mbp, linux-dev-x86_64-linux)\n' "{{local_hostname}}"
+    exit 1
+  fi
+  nix eval ".#checks.{{local_system}}.{{target}}-eval.drvPath" --show-trace
 
 [group('verify')]
 fmt:
@@ -30,7 +48,13 @@ fmt:
 [group('system')]
 [macos]
 build host=default_host:
-  darwin-rebuild build --flake .#{{host}}
+  #!/usr/bin/env bash
+  set -euo pipefail
+  if [[ -z "{{host}}" ]]; then
+    printf >&2 'error: unknown local host %s; pass a host explicitly (e.g. personal-mba, work-mbp)\n' "{{local_hostname}}"
+    exit 1
+  fi
+  darwin-rebuild build --flake ".#{{host}}"
 
 # Build, then list the package changes against the running system.
 [group('system')]
@@ -43,6 +67,10 @@ diff host=default_host: (build host)
 switch host=default_host:
   #!/usr/bin/env bash
   set -euo pipefail
+  if [[ -z "{{host}}" ]]; then
+    printf >&2 'error: unknown local host %s; pass a host explicitly (e.g. personal-mba, work-mbp)\n' "{{local_hostname}}"
+    exit 1
+  fi
   expected=$(nix eval --raw ".#darwinConfigurations.{{host}}.config.networking.hostName")
   actual=$(scutil --get HostName 2>/dev/null || hostname -s)
   if [[ "$actual" != "$expected" ]]; then
@@ -64,13 +92,36 @@ brew-up:
   brew upgrade
 
 [group('system')]
+[macos]
 history:
   darwin-rebuild --list-generations
 
+[group('system')]
+[linux]
+build target=("dev@" + local_system):
+  home-manager build --flake ".#{{target}}"
+
+[group('system')]
+[linux]
+switch target=("dev@" + local_system):
+  home-manager switch --flake ".#{{target}}"
+
+[group('system')]
+[linux]
+history:
+  home-manager generations
+
 # Delete system generations older than 7 days, then collect garbage.
 [group('system')]
+[macos]
 gc:
   sudo nix-collect-garbage --delete-older-than 7d
+  nix-collect-garbage --delete-older-than 7d
+
+# Delete user generations older than 7 days, then collect garbage.
+[group('system')]
+[linux]
+gc:
   nix-collect-garbage --delete-older-than 7d
 
 # Update all inputs, or only `input` when given.
