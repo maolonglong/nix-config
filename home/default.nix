@@ -3,9 +3,7 @@
     ./packages.nix
     ./cli.nix
     ./dev-tools.nix
-    ./ghostty.nix
     ./git.nix
-    ./homebrew.nix
     ./lazygit.nix
     ./path.nix
     ./security.nix

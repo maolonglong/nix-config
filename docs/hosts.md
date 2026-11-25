@@ -23,7 +23,10 @@ and the absence of internal company references (`byted`/`bytebm`) on
 ## Where a setting goes
 
 - Default to the shared directories: `modules/darwin/` for system settings,
-  `home/` for user settings. Both hosts get it.
+  `home/` for cross-platform user settings, and `home/darwin.nix` for
+  macOS-only user modules (`homebrew.nix`, `ghostty.nix`).
+- Generic Linux dev servers use `hosts/linux-dev/` via `homeConfigurations`
+  (`dev@x86_64-linux`, `dev@aarch64-linux`).
 - Put it in `hosts/<name>/` only when one machine needs it or must not have
   it. For `work-mbp` that means anything the company owns or that names an
   internal registry, tool or path: nothing internal enters `home/`.

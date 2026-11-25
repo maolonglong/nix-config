@@ -28,6 +28,11 @@ in {
   programs.git = {
     enable = lib.mkDefault true;
     signing.key = "80263B1A6D611DE4";
+    includes = [
+      {
+        path = "~/.config/git/local.gitconfig";
+      }
+    ];
 
     settings = {
       user = {
@@ -82,11 +87,17 @@ in {
       name = "delta-auto-theme";
       paths = [pkgs.delta];
       nativeBuildInputs = [pkgs.makeWrapper];
-      postBuild = ''
-        wrapProgram $out/bin/delta \
-          --run 'if /usr/bin/defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then set -- --features=catppuccin-mocha "$@"; else set -- --features=catppuccin-latte "$@"; fi' \
-          --add-flags "--config ${catppuccinDelta}/catppuccin.gitconfig"
-      '';
+      postBuild =
+        if pkgs.stdenv.hostPlatform.isDarwin
+        then ''
+          wrapProgram $out/bin/delta \
+            --run 'if /usr/bin/defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then set -- --features=catppuccin-mocha "$@"; else set -- --features=catppuccin-latte "$@"; fi' \
+            --add-flags "--config ${catppuccinDelta}/catppuccin.gitconfig"
+        ''
+        else ''
+          wrapProgram $out/bin/delta \
+            --add-flags "--features=catppuccin-mocha --config ${catppuccinDelta}/catppuccin.gitconfig"
+        '';
       inherit (pkgs.delta) meta version;
     };
   };

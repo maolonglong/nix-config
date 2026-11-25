@@ -1,4 +1,8 @@
 {
+  lib,
+  pkgs,
+  ...
+}: {
   programs.zellij = {
     enable = true;
     enableBashIntegration = false;
@@ -20,7 +24,7 @@
       serialization_interval = 30;
       show_startup_tips = false;
       show_release_notes = false;
-      copy_command = "pbcopy";
+      copy_command = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin "pbcopy";
       copy_clipboard = "system";
       copy_on_select = false;
       scroll_buffer_size = 50000;

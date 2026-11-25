@@ -87,12 +87,35 @@
               extraSpecialArgs = specialArgs;
               users.${myvars.username}.imports = [
                 ./home
+                ./home/darwin.nix
                 ./hosts/${name}/home.nix
               ];
             };
           }
 
           ./hosts/${name}
+        ];
+      };
+
+    mkLinuxHome = name: linuxSystem: let
+      myvars = import ./hosts/${name}/vars.nix;
+      linuxPkgs = import nixpkgs-darwin {
+        system = linuxSystem;
+        config.allowUnfree = true;
+      };
+    in
+      home-manager.lib.homeManagerConfiguration {
+        pkgs = linuxPkgs;
+        extraSpecialArgs = {inherit inputs myvars;};
+        modules = [
+          ./home
+          ./hosts/${name}/home.nix
+          {
+            home = {
+              inherit (myvars) username;
+              homeDirectory = "/home/${myvars.username}";
+            };
+          }
         ];
       };
 
@@ -171,6 +194,11 @@
         );
   in {
     darwinConfigurations = nixpkgs-darwin.lib.genAttrs (builtins.attrNames hostExpectations) mkDarwin;
+
+    homeConfigurations = {
+      "dev@x86_64-linux" = mkLinuxHome "linux-dev" "x86_64-linux";
+      "dev@aarch64-linux" = mkLinuxHome "linux-dev" "aarch64-linux";
+    };
 
     checks.${system} =
       {pre-commit-check = preCommitCheck;}

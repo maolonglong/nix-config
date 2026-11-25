@@ -1,11 +1,19 @@
 {
+  lib,
+  pkgs,
+  ...
+}: {
   services.pueue.enable = true;
 
   # Language runtimes and agent CLIs, installed on demand by mise.
   programs.mise = {
     enable = true;
-    package = null;
-    # Brew-installed; tools resolve via the shims on PATH (home/path.nix).
+    package = lib.mkDefault (
+      if pkgs.stdenv.hostPlatform.isDarwin
+      then null
+      else pkgs.mise
+    );
+    # Brew-installed on Darwin; tools resolve via the shims on PATH (home/path.nix).
     enableBashIntegration = false;
     enableZshIntegration = false;
     enableFishIntegration = false;
