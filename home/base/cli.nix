@@ -19,6 +19,7 @@
         "${config.home.homeDirectory}/.t3/worktrees/"
         "${config.home.homeDirectory}/.herdr/worktrees/"
         "${config.home.homeDirectory}/.worktrees/"
+        "${config.home.homeDirectory}/orca/workspaces/"
       ];
     };
 
