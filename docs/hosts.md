@@ -18,8 +18,10 @@ Home Manager (`homeConfigurations`). Everything that differs lives in
 | `PATH` | Shared entries + Homebrew | Shared entries + Homebrew + `~/.bytebm/bin` | Shared entries + Nix profiles (`home/linux/default.nix`) |
 
 User, hostname (Darwin), the Git/SSH split (including `~/.gitconfig` shadow
-protection), and the absence of internal company references (`byted`/`bytebm`)
-on non-internal hosts (`personal-mba` and `linux-dev`) are asserted in
+protection), `mise` package ownership (Homebrew on Darwin, nixpkgs on Linux),
+Atuin/fzf Ctrl-R exclusion, and the absence of internal company references
+(`byted`/`bytebm`) across session env/PATH, packages, `mise`, zsh, direnv, git,
+and ssh on non-internal hosts (`personal-mba` and `linux-dev`) are asserted in
 `flake.nix`, so `just c` or `just eval <target>` fails if they drift. The rest
 of the table is kept by hand; `hosts/<name>/home.nix` is the source of truth.
 
@@ -36,5 +38,6 @@ of the table is kept by hand; `hosts/<name>/home.nix` is the source of truth.
 - A setting that is a value difference (`programs.mise.globalConfig`,
   `home.sessionPath`) is added from the host or platform module and merges with
   the shared one; do not copy the shared list into the host.
-- Adding a host means a `hosts/<name>/` directory and an entry in `darwinHosts`
-  or `linuxHomes` in `flake.nix`.
+- Adding a host means a `hosts/<name>/` directory, an entry in `darwinHosts`
+  or `linuxHomes` in `flake.nix`, and (for known Macs) a `default_host` mapping
+  in `justfile`.

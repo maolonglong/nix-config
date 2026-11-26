@@ -3,6 +3,11 @@
   lib,
   ...
 }: {
+  xdg = {
+    enable = true;
+    localBinInPath = true;
+  };
+
   # Order matters: earlier entries win. `mkBefore` keeps user bins and mise
   # shims ahead of platform package managers (`home/darwin/homebrew.nix`,
   # `home/linux/default.nix`) regardless of module import depth. nix-darwin's

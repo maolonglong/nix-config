@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review a diff, commit, branch, or PR in this nix-darwin repo for pitfalls that `nix eval` cannot see. Adds repo-specific checks to a generic review.
+description: Review a change or PR in this nix-darwin and Home Manager repo for pitfalls that `nix eval` cannot see. Adds repo-specific checks to a generic review.
 ---
 
 # Code review for this repo
@@ -13,8 +13,8 @@ description: Review a diff, commit, branch, or PR in this nix-darwin repo for pi
 2. Map each changed file to an area below and apply that area's checks.
 3. Verify every option and value against the pinned inputs in `flake.lock`, not memory. Read eval warnings in stderr, not just the exit code.
 4. Label each finding with its **proof level**:
-   - **eval**: `just eval <host>` shows it.
-   - **build**: only `just b <host>` shows it.
+   - **eval**: `just eval <target>` shows it.
+   - **build**: only `just b <target>` shows it.
    - **runtime**: only a live shell or app shows it. Agents do not activate, so report it as unverified and name what the user should observe after `just switch`.
 5. Report **blocking** findings apart from **optional** ones. Keep optional ones inside the scope of the change.
 
@@ -30,13 +30,13 @@ Done when every changed file is mapped to an area and every finding carries a pr
 
 - Users differ (`chensl`, `bytedance`, `dev`). Derive paths from `myvars.username`, `config.home.homeDirectory`, or `config.home.profileDirectory`; a literal path went stale in `da99b296`. Do not set `home.username` or `home.homeDirectory` in `home/` (Darwin derives them from `users.users`; Linux sets them in `mkLinuxHome`).
 - `work-mbp` disables `programs.git` and `programs.ssh`, so a shared change to either lands on `personal-mba` and `linux-dev` only. Confirm that is intended.
-- Per-host expectations (primary user, hostname, git/ssh management, `~/.gitconfig` backup hook scoping, user/home agreement, and no `byted`/`bytebm` leak onto non-internal hosts) are asserted in `darwinHosts` / `linuxHomes` checks in `flake.nix` and run by `just c` / `just eval`. A diff that edits an expectation and its host module together needs a reason; one that edits only the assertion is suspect.
+- Per-host expectations (primary user, hostname, git/ssh management, `~/.gitconfig` backup hook scoping, user/home agreement, `mise` package ownership, Atuin/fzf Ctrl-R exclusion, and no `byted`/`bytebm` leak onto non-internal hosts) are asserted in `darwinHosts` / `linuxHomes` checks in `flake.nix` and run by `just c` / `just eval`. A diff that edits an expectation and its host module together needs a reason; one that edits only the assertion is suspect.
 - Placement follows `docs/hosts.md` (`home/base/`, `home/darwin/`, `home/linux/`, `hosts/<name>/`); anything internal to the company in `home/` or Darwin-only in `home/base/` is a finding.
 - After touching `programs.mise.globalConfig`, evaluate the merged result: `nix eval .#darwinConfigurations.work-mbp.config.home-manager.users.bytedance.programs.mise.globalConfig.tools --json`.
 
 ## Runtime-only behavior
 
-- Init order decides who wins. Both fzf and Atuin bind Ctrl-R (`99a15775`); today fzf's history widget is disabled. New key bindings need a conflict check (`home/base/zsh.nix` runs at 990 after fzf's 910 and before Atuin's 1000). `fpath` additions need an order below 570 (where HM runs `compinit`; `home/darwin/homebrew.nix` uses 550).
+- Init order decides who wins. Atuin/fzf Ctrl-R exclusion (`99a15775`) is asserted at eval time; other key bindings still need a manual conflict check (`home/base/zsh.nix` runs at 990 after fzf's 910 and before Atuin's 1000). `fpath` additions need an order below 570 (where HM runs `compinit`; `home/darwin/homebrew.nix` uses 550).
 - Home Manager wraps `vim` with `-u <generated vimrc>`, so `~/.vimrc` is never read; Vim settings belong in `programs.vim.extraConfig`.
 - Free-form strings pass eval however wrong: Ghostty keys and fonts (`621ecff7`), Starship settings. A named font must come from `modules/darwin/fonts.nix` or a system font.
 - macOS defaults can have inverted meaning (`fa702000`, `spans-displays`). Check the semantics of each changed default against Apple's `defaults` behavior.
@@ -45,7 +45,6 @@ Done when every changed file is mapped to an area and every finding carries a pr
 ## Fetched and derived inputs
 
 - `fetchFromGitHub` pins (delta Catppuccin config, tmux, vimrc): `rev` and `hash` change together, and only a build proves the hash. After a tmux `rev` bump, the build shows whether `.tmux.conf.local.patch` still applies.
-- `readFile` or `fromTOML` on another package's output breaks when its layout changes (`383ee4b0`, `bbd5aee1`). Confirm the file exists in the pinned package and parses.
 - mise keys are backend identifiers Nix never validates (`2f271456`: `npm:pnpm` became `pnpm`). Core runtimes (`node`, `bun`, `pnpm`) are major-pinned (`e2f87dac`); confirm new identifiers with `mise registry`.
 
 ## Homebrew
@@ -61,5 +60,5 @@ Done when every changed file is mapped to an area and every finding carries a pr
 ## Flake and hooks
 
 - A `flake.lock` hunk inside a non-update change (`008a8231`, `383ee4b0`) is a finding. Lock updates ship alone as `chore(flake)`.
-- Hooks live in `preCommitCheck` in `flake.nix`. `typos` runs with `write = true` and edits files in place, so read `git diff` after a failed commit; genuine identifiers go into `.typos.toml`. A hook `language` must match how the tool is installed (`a23b2dec`).
+- Hooks live in `preCommitChecks` in `flake.nix`. `typos` runs with `write = true` and edits files in place, so read `git diff` after a failed commit; genuine identifiers go into `.typos.toml`. A hook `language` must match how the tool is installed (`a23b2dec`).
 - `.pre-commit-config.yaml` and `result` are ignored symlinks; a staged one is a finding.

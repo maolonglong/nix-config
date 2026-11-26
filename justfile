@@ -35,11 +35,15 @@ check:
 eval target=default_host:
   #!/usr/bin/env bash
   set -euo pipefail
-  if [[ -z "{{target}}" ]]; then
+  target="{{target}}"
+  if [[ -z "$target" ]]; then
     printf >&2 'error: unknown local host %s; pass a target explicitly (e.g. personal-mba, work-mbp, linux-dev-x86_64-linux)\n' "{{local_hostname}}"
     exit 1
   fi
-  nix eval ".#checks.{{local_system}}.{{target}}-eval.drvPath" --show-trace
+  case "$target" in
+    dev@*) target="linux-dev-${target#dev@}" ;;
+  esac
+  nix eval ".#checks.{{local_system}}.${target}-eval.drvPath" --show-trace
 
 [group('verify')]
 fmt:
@@ -98,13 +102,25 @@ history:
 
 [group('system')]
 [linux]
-build target=("dev@" + local_system):
-  home-manager build --flake ".#{{target}}"
+build target=default_host:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  target="{{target}}"
+  case "$target" in
+    linux-dev-*) target="dev@${target#linux-dev-}" ;;
+  esac
+  home-manager build --flake ".#${target}"
 
 [group('system')]
 [linux]
-switch target=("dev@" + local_system):
-  home-manager switch --flake ".#{{target}}"
+switch target=default_host:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  target="{{target}}"
+  case "$target" in
+    linux-dev-*) target="dev@${target#linux-dev-}" ;;
+  esac
+  home-manager switch --flake ".#${target}"
 
 [group('system')]
 [linux]

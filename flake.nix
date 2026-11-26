@@ -196,7 +196,14 @@
     hasInternalRef = home: let
       userSurface = builtins.toJSON {
         inherit (home.home) sessionPath sessionVariables;
+        packages = map (p: p.pname or p.name or "") home.home.packages;
         mise = home.programs.mise.globalConfig;
+        zsh = {
+          inherit (home.programs.zsh) initContent envExtra shellAliases;
+        };
+        direnv = home.programs.direnv.config;
+        git = home.programs.git.settings;
+        ssh = home.programs.ssh.settings;
       };
     in
       builtins.match ".*(byted|bytebm).*" userSurface != null;
@@ -219,6 +226,8 @@
       assert check (home.programs.git.enable == managesGitAndSsh) "${name}: unexpected Home Manager Git management";
       assert check (home.programs.ssh.enable == managesGitAndSsh) "${name}: unexpected Home Manager SSH management";
       assert check ((home.home.activation ? backupExistingGitconfig) == managesGitAndSsh) "${name}: unexpected ~/.gitconfig backup hook";
+      assert check (home.programs.mise.package == null) "${name}: mise must come from Homebrew on Darwin";
+      assert check (!(home.programs.atuin.enable && home.programs.fzf.enable) || home.programs.fzf.historyWidget.command == "") "${name}: fzf historyWidget must be disabled when Atuin owns Ctrl-R";
       assert check (allowsInternalConfig || !(hasInternalRef home)) "${name}: internal company reference leaked into shared configuration";
         pkgs.writeText "eval-${name}" (
           builtins.unsafeDiscardStringContext
@@ -240,6 +249,8 @@
       assert check (home.home.homeDirectory == "/home/${username}") "${name}: unexpected Home Manager home directory";
       assert check (home.programs.git.enable == managesGit) "${name}: unexpected Home Manager Git management";
       assert check ((home.home.activation ? backupExistingGitconfig) == managesGit) "${name}: unexpected ~/.gitconfig backup hook";
+      assert check (home.programs.mise.package != null) "${name}: mise must be installed from nixpkgs on Linux";
+      assert check (!(home.programs.atuin.enable && home.programs.fzf.enable) || home.programs.fzf.historyWidget.command == "") "${name}: fzf historyWidget must be disabled when Atuin owns Ctrl-R";
       assert check (allowsInternalConfig || !(hasInternalRef home)) "${name}: internal company reference leaked into shared configuration";
         pkgs.writeText "eval-${host}-${system}" (
           builtins.unsafeDiscardStringContext

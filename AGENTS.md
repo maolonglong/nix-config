@@ -2,53 +2,33 @@
 
 ## Project Map
 
-- `flake.nix` exports `darwinConfigurations` (with integrated Home Manager) for macOS hosts and standalone `homeConfigurations` (`dev@x86_64-linux`, `dev@aarch64-linux`) for generic Linux dev servers.
-- `hosts/<name>/`: `vars.nix` for identity (`username`, `userfullname`, `useremail`), `default.nix` for Darwin system overrides, `home.nix` for user overrides. `mkDarwin` and `mkLinuxHome` in `flake.nix` assemble hosts from the `darwinHosts` and `linuxHomes` tables.
-- Shared modules: `modules/darwin/` for macOS system settings; `home/base/` for cross-platform user settings; `home/darwin/` for macOS-only user modules (`ghostty`, `homebrew`, media packages); `home/linux/` for Linux-only user modules (Nix profile PATH).
-- Hosts: `docs/hosts.md` lists how `personal-mba`, `work-mbp`, and `linux-dev` differ and where a setting belongs. Read it before adding a host-specific setting or moving one between `home/` and `hosts/`.
+- `flake.nix` exports `darwinConfigurations` (macOS with integrated Home Manager) and standalone `homeConfigurations` (`dev@x86_64-linux`, `dev@aarch64-linux`), assembled by `mkDarwin` / `mkLinuxHome` from `darwinHosts` and `linuxHomes`.
+- `hosts/<name>/`: `vars.nix` (identity: `username`, `userfullname`, `useremail`), `default.nix` (Darwin system overrides), `home.nix` (user overrides).
+- Before adding a host, adding a host-specific setting, or placing/moving a setting across `modules/darwin/`, `home/`, and `hosts/`, read `docs/hosts.md`.
 
-## Commands and Verification
+## Verification
 
-- `just eval <target>` evaluates a target without building or activating it (`personal-mba`, `work-mbp`, `linux-dev-x86_64-linux`, `linux-dev-aarch64-linux`). Defaults by hostname on known Macs (`chensl-mba` -> `personal-mba`, `CRWQCPJC7G` -> `work-mbp`) and to `linux-dev-<arch>-linux` on Linux; unknown Macs require an explicit target.
-- `just c` runs `nix flake check --show-trace`: evaluation checks for all Darwin and Linux targets plus pre-commit hooks for Alejandra, deadnix, statix, typos, Taplo, and gitleaks.
-- `just b <target>` builds without activation (`darwin-rebuild build` on macOS, `home-manager build` on Linux).
-- `just diff <host>` (macOS) builds, then lists package changes against the running system; `just fmt` formats with Alejandra; `just brew-up` (macOS) updates Homebrew explicitly (activation skips `brew update`).
-- `nix develop` provides Alejandra, deadnix, nil, statix, Taplo, typos, and installs pre-commit hooks on `aarch64-darwin`, `x86_64-linux`, and `aarch64-linux`.
+- **Host-specific Nix changes**: run `just eval [target]` for each affected target.
+- **Shared Nix or flake changes**: run `just c` (`nix flake check --show-trace`: evaluates all Darwin and Linux targets plus pre-commit hooks); run `just b [target]` when evaluation alone cannot validate the change.
+- **Documentation-only changes**: verify the diff and any changed paths or commands; no Nix evaluation or build is required.
 
-The flake exports checks, formatter, and dev shell for `aarch64-darwin`, `x86_64-linux`, and `aarch64-linux`. Evaluation requires access to the private `mysecrets` input; report unavailable checks rather than changing inputs to bypass access failures.
+Targets are `personal-mba`, `work-mbp`, `linux-dev-x86_64-linux`, and `linux-dev-aarch64-linux` (`dev@<arch>-linux` is also accepted on Linux). `just eval` and `just b` default by hostname on known Macs and to `linux-dev-<arch>-linux` on Linux; unknown Macs require an explicit target. Run `just --list` for other recipes (`just fmt`, `just diff`, `just brew-up`).
 
-- Host-specific Nix changes: evaluate the affected target(s). Shared Nix or flake changes: run `just c` (which evaluates all Darwin hosts, both Linux `homeConfigurations`, and pre-commit hooks); build affected targets when evaluation alone cannot validate the change.
-- Documentation-only changes: check the diff and any changed paths or commands; no Nix evaluation or build is required.
+Stop at `just eval` or `just b`; leave `darwin-rebuild switch`, `home-manager switch`, activation commands, and `flake.lock` updates to the user unless explicitly requested.
 
-## Nix Conventions and Boundaries
+When running in Cursor Cloud or without access to the private `mysecrets` input, report unavailable eval checks rather than overriding inputs, and read `docs/cloud-agent.md` for fallback checks.
 
-- Format Nix with Alejandra (`alejandra` or `nix fmt`); use kebab-case module names and explicit `imports` lists rather than auto-discovery.
-- When adding or changing options, verify their contracts against the input sources pinned by `flake.lock`. Consult online documentation as needed; pinned sources take precedence.
-- Use the standard `pkgs` argument, supplied by the `nixpkgs-darwin` unstable input.
-- Do not update `flake.lock` unless explicitly requested.
-- Do not run `darwin-rebuild switch`, `home-manager switch`, or activation commands unless explicitly requested.
+## Nix Conventions
 
-## Commit & Pull Request Guidelines
-
-- Use Conventional Commits: `<type>(<scope>): <summary>` — imperative, <= 72 chars, no trailing period. Keep scope identifiers short (`darwin`, `starship`, `flake`).
-- **Always write a commit body** explaining the *why* (bullets welcome), not just the *what*.
-- Each pull request should describe the host or module touched, list tested commands, and mention any secrets or follow-up actions. Link related issues when available, and add screenshots only for UI-facing tooling changes (e.g., terminal themes).
+- Use kebab-case module names, explicit `imports` lists (no auto-discovery), and format Nix with `just fmt` (Alejandra).
+- Verify new or changed options against the input sources pinned in `flake.lock`; pinned sources take precedence over online documentation.
 
 ## Security & Secrets
 
-Never commit raw credentials. Store secrets as agenix `.age` files in the separate `nix-secrets` repository (`mysecrets` input) and wire them through `modules/darwin/secrets.nix`. When changing encrypted secrets, confirm the required keys are available and document recipient or key-distribution follow-up in the PR.
+- Store credentials only as agenix `.age` files in `nix-secrets` (`mysecrets` input) wired through `modules/darwin/secrets.nix`; never commit raw credentials. When changing encrypted secrets, confirm required keys and document recipient or key-distribution follow-up in the PR.
+- Inspect Nix declarations and file metadata instead of reading or outputting decrypted secret files (`config.age.secrets.*.path`, Nix `!include` targets), even when permissions allow access.
 
-Agents must not read or output decrypted secret files, even when their permissions allow access. Inspect Nix declarations and file metadata instead of following decrypted paths such as `config.age.secrets.*.path` or Nix `!include` targets.
+## Commits & Pull Requests
 
-## Cursor Cloud specific instructions
-
-Cloud Agents run on Linux. Nix is installed single-user (this image has no systemd), with flakes enabled. `alejandra`, `nil`, `taplo`, `typos`, `just`, and `gitleaks` are on `PATH`, taken from the `nixpkgs-darwin` revision in `flake.lock`.
-
-`just c`, `just eval <target>`, `just fmt`, and `nix develop` all support `x86_64-linux` and `aarch64-linux` once the private `mysecrets` input is accessible; do not override `mysecrets` to bypass access failures. If `mysecrets` is unavailable in the environment, run the pre-commit tools directly:
-
-- `alejandra --check .`
-- `deadnix --fail`
-- `statix check`
-- `typos`
-- `taplo fmt --check`
-- `gitleaks detect --source . --redact --no-banner`
+- Conventional Commits: `<type>(<scope>): <summary>` — imperative, <= 72 chars, no trailing period, short scope (`darwin`, `starship`, `flake`). Always include a commit body explaining *why*.
+- PRs state touched hosts/modules, verification commands run, and any secrets or follow-up actions (screenshots only for UI-facing tooling changes).

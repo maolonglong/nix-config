@@ -10,7 +10,6 @@
     ./starship.nix
     ./tmux
     ./vim.nix
-    ./xdg.nix
     ./zellij.nix
     ./zsh.nix
     ./worktrunk.nix
