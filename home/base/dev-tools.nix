@@ -15,6 +15,7 @@
         bun = "1";
         node = "24";
         "npm:@earendil-works/pi-coding-agent" = "latest";
+        "npm:@obelisk-apps/cli" = "latest";
         "npm:@openai/codex" = "latest";
         "npm:@agentclientprotocol/codex-acp" = "latest";
         "npm:agent-browser" = "latest";
